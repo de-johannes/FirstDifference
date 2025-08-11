@@ -1,0 +1,23 @@
+name: Agda CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: wenkokke/setup-agda@v2
+        with:
+          agda-version: latest
+          agda-stdlib-version: recommended
+
+      - name: Compile project (safe)
+        working-directory: src
+        run: |
+          agda --safe --without-K -i . All.agda

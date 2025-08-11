@@ -20,4 +20,4 @@ jobs:
       - name: Compile project (safe)
         working-directory: src
         run: |
-          agda --safe --without-K -i . All.agda
+          agda -l standard-library --safe --without-K -i . All.agda

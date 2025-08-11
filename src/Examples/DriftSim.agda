@@ -60,11 +60,18 @@ innovates? d₁ d₂ with edrift d₁ d₂
 
 -- We fold a list of parent pairs and increment on New.
 countNew : List (EDist × EDist) → ℕ
-countNew = foldr (λ p acc →
-                    let d₁ = proj₁ p
-                        d₂ = proj₂ p
-                    in  if innovates? d₁ d₂ then suc acc else acc)
-                 zero
+countNew =
+  foldr
+    (λ p acc →
+       let d₁ = proj₁ p
+           d₂ = proj₂ p
+       in  helper d₁ d₂ acc)
+    zero
+  where
+    helper : EDist → EDist → ℕ → ℕ
+    helper d₁ d₂ acc with innovates? d₁ d₂
+    ... | true  = suc acc
+    ... | false = acc
 
 ------------------------------------------------------------------------
 -- 4) Sanity checks (definitional equalities so CI actually proves something)

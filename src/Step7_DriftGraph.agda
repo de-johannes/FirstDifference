@@ -187,24 +187,36 @@ graph-to-operations G n v₁ v₂ = extract-result n v₁ v₂ (events G)
   ...   | _ | _ = extract-result n v₁ v₂ es
 
 ------------------------------------------------------------------------
+-- GLOBAL CONSTANTS FOR TESTING
+------------------------------------------------------------------------
+
+-- | Standard test distinctions for reuse
+v₁-test : Distinction  
+v₁-test = mk-dist 2 (true ∷ false ∷ [])
+
+v₂-test : Distinction
+v₂-test = mk-dist 2 (false ∷ true ∷ [])
+
+v₃-test : Distinction
+v₃-test = mk-dist 2 (false ∷ false ∷ [])
+
+e₁-test : DriftEvent
+e₁-test = v₁-test , v₂-test ⟹ v₃-test
+
+------------------------------------------------------------------------
 -- EXAMPLES AND CONSTRUCTION
 ------------------------------------------------------------------------
 
 -- | Example: 2D drift graph with one event
 example-2d-drift : DriftGraph
 example-2d-drift = record
-  { vertices = v₁ ∷ v₂ ∷ v₃ ∷ []
-  ; events = e₁ ∷ []
+  { vertices = v₁-test ∷ v₂-test ∷ v₃-test ∷ []
+  ; events = e₁-test ∷ []
   ; vertex-closure = vertex-closure-proof
   ; τ = τ-func  
   ; temporal-order = temporal-order-proof
   }
   where
-  v₁ = mk-dist 2 (true ∷ false ∷ [])
-  v₂ = mk-dist 2 (false ∷ true ∷ [])  
-  v₃ = mk-dist 2 (false ∷ false ∷ [])
-  e₁ = v₁ , v₂ ⟹ v₃
-  
   τ-func : Distinction → ℕ
   τ-func (mk-dist 2 (true ∷ false ∷ [])) = 0
   τ-func (mk-dist 2 (false ∷ true ∷ [])) = 0  
@@ -212,16 +224,16 @@ example-2d-drift = record
   τ-func _ = 0
   
   vertex-closure-proof : ∀ (e : DriftEvent) (v : Distinction) → 
-                        v ∈-list (event-vertices e) → v ∈-list (v₁ ∷ v₂ ∷ v₃ ∷ [])
-  vertex-closure-proof (.v₁ , .v₂ ⟹ .v₃) .v₁ here = here
-  vertex-closure-proof (.v₁ , .v₂ ⟹ .v₃) .v₂ (there here) = there here
-  vertex-closure-proof (.v₁ , .v₂ ⟹ .v₃) .v₃ (there (there here)) = there (there here)
-  vertex-closure-proof (.v₁ , .v₂ ⟹ .v₃) _ (there (there (there ())))
+                        v ∈-list (event-vertices e) → v ∈-list (v₁-test ∷ v₂-test ∷ v₃-test ∷ [])
+  vertex-closure-proof (.v₁-test , .v₂-test ⟹ .v₃-test) .v₁-test here = here
+  vertex-closure-proof (.v₁-test , .v₂-test ⟹ .v₃-test) .v₂-test (there here) = there here
+  vertex-closure-proof (.v₁-test , .v₂-test ⟹ .v₃-test) .v₃-test (there (there here)) = there (there here)
+  vertex-closure-proof (.v₁-test , .v₂-test ⟹ .v₃-test) _ (there (there (there ())))
   
   temporal-order-proof : ∀ (e : DriftEvent) → 
                         τ-func (parent₁ e) < τ-func (child e) × 
                         τ-func (parent₂ e) < τ-func (child e)
-  temporal-order-proof (.v₁ , .v₂ ⟹ .v₃) = s≤s z≤n , s≤s z≤n
+  temporal-order-proof (.v₁-test , .v₂-test ⟹ .v₃-test) = s≤s z≤n , s≤s z≤n
 
 ------------------------------------------------------------------------
 -- CONSTRUCTION OPERATIONS
@@ -273,18 +285,13 @@ test-drift-operation = graph-to-operations example-2d-drift 2
                        (true ∷ false ∷ []) 
                        (false ∷ true ∷ [])
 
--- | Test: Reachability witness construction
-test-reachability : _⟹₁_ {example-2d-drift} v₁ v₃
-test-reachability = mk-direct-reach e₁ v₁ v₃ here (inj₁ refl) refl
-  where 
-    v₁ = mk-dist 2 (true ∷ false ∷ [])
-    v₃ = mk-dist 2 (false ∷ false ∷ [])  
-    e₁ = v₁ , mk-dist 2 (false ∷ true ∷ []) ⟹ v₃
+-- | Test: Reachability witness construction - now using global constants
+test-reachability : _⟹₁_ {example-2d-drift} v₁-test v₃-test
+test-reachability = mk-direct-reach e₁-test v₁-test v₃-test here (inj₁ refl) refl
 
 -- | Test: Acyclicity for our example
-test-acyclicity : ¬ (_⤜_ {example-2d-drift} v₃ v₃)
-test-acyclicity = theorem-acyclic example-2d-drift v₃
-  where v₃ = mk-dist 2 (false ∷ false ∷ [])
+test-acyclicity : ¬ (_⤜_ {example-2d-drift} v₃-test v₃-test)
+test-acyclicity = theorem-acyclic example-2d-drift v₃-test
 
 -- | Test: Transitive reachability construction
 test-transitive : {G : DriftGraph} → {u v w : Distinction} → 
@@ -314,3 +321,4 @@ test-transitive = mk-transitive-reach
 -- | _⤜_ relation   ↔ "reachability in R(G)" (Chapter 6)
 -- | compose        ↔ "transitivity of reachability" (path composition)
 -- | graph-to-operations ↔ Bridge between explicit graph and Boolean ops
+

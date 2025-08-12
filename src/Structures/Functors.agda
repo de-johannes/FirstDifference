@@ -3,10 +3,10 @@ module Structures.Functors where
 open import Agda.Primitive using (lzero)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import Data.Nat using (ℕ; zero; suc)
-open import Data.Nat.Base using (_≤_; z≤n; s≤s)   -- ≤-Konstruktoren
 open import Data.Unit using (⊤; tt)
 
-open import Structures.CutCat
+-- Wichtig: alias, damit wir C._≤_, C.refl≤, C.s≤s, C._∙_ benutzen
+open import Structures.CutCat as C using (_∙_; refl≤; s≤s) renaming (_≤_ to _≤ᴄ_)
 open import Structures.DistOpOperad using
   ( DistOpAlg; HomAlg; NAlg
   ; plus; plus-hom; shiftHom; shift-id
@@ -16,12 +16,12 @@ open DistOpAlg public
 open HomAlg public
 
 ------------------------------------------------------------------------
--- difference from a ≤-witness, definitionally: diff (refl≤ m) ≡ 0
+-- difference: zählt die s≤s-Schritte im CutCat-≤-Zeugen
 ------------------------------------------------------------------------
 
-diff : ∀ {m n} → m ≤ n → ℕ
-diff {zero}   {n}     z≤n      = n
-diff {suc m}  {suc n} (s≤s p)  = diff {m} {n} p
+diff : ∀ {m n} → m _≤ᴄ_ n → ℕ
+diff (C.refl≤ _) = 0
+diff (C.s≤s p)   = suc (diff p)
 
 ------------------------------------------------------------------------
 -- Functor CutCat → DistOpAlg  (Semantic Time)
@@ -30,7 +30,7 @@ diff {suc m}  {suc n} (s≤s p)  = diff {m} {n} p
 F-obj : ℕ → DistOpAlg lzero
 F-obj _ = NAlg
 
-F-arr : ∀ {m n} → m ≤ n → HomAlg (F-obj m) (F-obj n)
+F-arr : ∀ {m n} → m _≤ᴄ_ n → HomAlg (F-obj m) (F-obj n)
 F-arr p = shiftHom (diff p)
 
 semanticTime : ℕ → Carrier NAlg
@@ -40,12 +40,12 @@ semanticTime n = n
 -- Functoriality
 ------------------------------------------------------------------------
 
--- Identity: since diff (refl≤ m) reduces to 0, shift-id applies
-F-id : ∀ {m} n → (F-arr (refl≤ m)) .f n ≡ (idAlg (F-obj m)) .f n
+-- Identity: diff (refl≤ m) ≡ 0 definitorisch ⇒ shift-id passt
+F-id : ∀ {m} n → (F-arr (C.refl≤ m)) .f n ≡ (idAlg (F-obj m)) .f n
 F-id n = shift-id n
 
--- Composition: reduces if _∘Alg_ composes shifts additively
+-- Composition (reduziert, falls _∘Alg_ Shifts additiv komponiert)
 F-comp :
-  ∀ {a b c} (g : b ≤ c) (f : a ≤ b) n →
-    (_∘Alg_ (F-arr g) (F-arr f)) .f n ≡ (F-arr (g ∙ f)) .f n
+  ∀ {a b c} (g : b _≤ᴄ_ c) (f : a _≤ᴄ_ b) n →
+    (_∘Alg_ (F-arr g) (F-arr f)) .f n ≡ (F-arr (g C._∙_ f)) .f n
 F-comp g f n = refl

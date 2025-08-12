@@ -16,17 +16,6 @@ open import Core.Irrefutable   public
 -- Enhanced drift with semantic time
 open import Structures.Drift public
 
--- Conceptual bridges (key for coherence)
-open import Structures.DriftToCut public
-open import Structures.DriftToOperad public
-
--- Categorical backbone
-open import Structures.CutCat public
-open import Structures.DistOpOperad public
-
--- The semantic functor (replaces old Functors)
-open import Structures.SemanticFunctor public
-
 ------------------------------------------------------------------------
 -- Integration: Complete foundational chain
 ------------------------------------------------------------------------

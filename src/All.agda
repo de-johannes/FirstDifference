@@ -9,7 +9,7 @@ open import Structures.CutCat  public
 open import Structures.Drift   public
 open import Structures.DistOpOperad public
 open import Structures.RelOperad public
-open import Structures.Functors public renaming (plus to plusF)
+open import Structures.Functors public
 
 open import Examples.DriftSim  public
 open import Examples.CutCatDistOp public

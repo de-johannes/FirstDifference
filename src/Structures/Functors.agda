@@ -1,68 +1,80 @@
 module Structures.Functors where
 
--- Functor CutCat ⟶ DistOpAlg: “semantic time”.
--- On objects: every Xₙ ↦ NAlg. On arrows m≤n ↦ shift by diff(m,n).
-
+-- === Imports ===
 open import Agda.Primitive using (lzero)
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong; trans)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong; trans; sym)
 open import Data.Nat using (ℕ; zero; suc; _+_)
-open import Data.Unit using (⊤; tt)
+open import Data.Nat.Properties using (+-assoc; +-identityˡ; +-suc)
 
--- Our custom structures
-import Structures.CutCat as CC
-import Structures.DistOpOperad as DO
+-- Wir importieren unsere eigenen Module qualifiziert, um Namenskonflikte zu vermeiden.
+open import Structures.CutCat as Cat
+open import Structures.DistOpOperad as Alg
 
-------------------------------------------------------------------------
--- Compute the “gap” diff : m≤n ↦ (n − m) structurally
-------------------------------------------------------------------------
-
-diff : ∀ {m n} → CC._≤_ m n → ℕ
-diff {m} {n} p = go m n p
-  where
-    go : ∀ m n → CC._≤_ m n → ℕ
-    go zero     n        CC.z≤n       = n
-    go (suc m′) (suc n′) (CC.s≤s p′)  = go m′ n′ p′
-
--- Identity gap is 0
-diff-refl : ∀ m → diff (CC.refl≤ m) ≡ 0
-diff-refl zero    = refl
-diff-refl (suc m) = diff-refl m
-
--- Composition of gaps is addition
-diff-comp :
-  ∀ {a b c} (f : CC._≤_ a b) (g : CC._≤_ b c) →
-  diff (f CC._∙ᴄ_ g) ≡ diff f + diff g
-diff-comp CC.z≤n       g             = refl
-diff-comp (CC.s≤s f) (CC.s≤s g)      = cong suc (diff-comp f g)
+-- Wir öffnen die Records, um auf die Felder zugreifen zu können.
+open Cat.Category Cat.CutCat public
+open Alg.DistOpAlg public
+open Alg.HomAlg public
 
 ------------------------------------------------------------------------
--- The functor on objects and arrows
+-- 1. Eine Funktion, die aus einem Zeitpfeil (m ≤ n) die Dauer (n - m) extrahiert.
 ------------------------------------------------------------------------
 
-F-obj : ℕ → DO.DistOpAlg lzero
-F-obj _ = DO.NAlg
+duration : ∀ {m n} → Hom m n → ℕ
+duration {zero}  {n}   Cat.z≤n      = n
+duration {suc m} {suc n} (Cat.s≤s p) = duration p
 
-F-arr : ∀ {m n} → CC._≤_ m n → DO.HomAlg (F-obj m) (F-obj n)
-F-arr p = DO.shiftHom (diff p)          -- shift by the computed gap
+-- Beweis: Startzeit + Dauer = Endzeit
+end-point-proof : ∀ {m n} (p : Hom m n) → m + duration p ≡ n
+end-point-proof {zero}  {n}   Cat.z≤n      = +-identityˡ n
+end-point-proof {suc m} {suc n} (Cat.s≤s p) =
+  -- suc m + duration p  ≡ suc (m + duration p) ≡ suc n
+  trans (cong suc (+-suc m (duration p))) (cong suc (end-point-proof p))
 
--- A tiny helper to apply a HomAlg to a value
-apply : ∀ {A B} → DO.HomAlg A B → DO.Carrier A → DO.Carrier B
-apply h = DO.f h
+-- Beweis: Die Dauer von komponierten Pfeilen ist die Summe der Dauern.
+duration-comp : ∀ {a b c} (f : Hom a b) (g : Hom b c) → duration (f Cat.∘ g) ≡ duration f + duration g
+duration-comp {zero}  {b} {c} Cat.z≤n      g = trans refl (sym (end-point-proof g))
+duration-comp {suc a} {suc b} {suc c} (Cat.s≤s f) (Cat.s≤s g) = duration-comp f g
 
 ------------------------------------------------------------------------
--- Functoriality proofs
+-- 2. Definition des Funktors F: CutCat → DistOpAlg
+--    Ein Funktor bildet Objekte auf Objekte und Pfeile auf Pfeile (Morphismen) ab.
 ------------------------------------------------------------------------
 
--- Identity: diff (refl≤ m) = 0  ⇒  shiftHom 0 = idAlg
-F-id : ∀ {m} (n : ℕ) →
-  apply (F-arr (CC.refl≤ m)) n ≡ apply (DO.idAlg (F-obj m)) n
-F-id {m} n =                         -- rewrite shift amount to 0 then use DO.lemma
-  trans (cong (λ k → DO.plus k n) (diff-refl m)) (DO.shift-id n)
+-- F bildet jedes Objekt (eine Zahl n) auf dasselbe Objekt ab: (ℕ, succ).
+F-obj : Obj → Alg.DistOpAlg lzero
+F-obj _ = Alg.NAlg
 
--- Composition: diff (f∙ᴄ g) = diff f + diff g  ⇒  shifts compose additively
-F-comp :
-  ∀ {a b c} (f : CC._≤_ a b) (g : CC._≤_ b c) (n : ℕ) →
-    apply (DO._∘Alg_ (F-arr g) (F-arr f)) n ≡ apply (F-arr (f CC._∙ᴄ_ g)) n
-F-comp f g n =
-  trans (DO.shift-comp n (diff f) (diff g))
-       (cong (λ k → DO.plus k n) (sym (diff-comp f g)))
+-- F bildet jeden Pfeil (einen Beweis m ≤ n) auf einen Algebra-Morphismus ab.
+-- Dieser Morphismus ist die Funktion "addiere die Dauer des Pfeils".
+F-hom : ∀ {m n} → Hom m n → Alg.HomAlg (F-obj m) (F-obj n)
+F-hom p .f    = Alg.plus (duration p)
+F-hom p .hom  = Alg.plus-hom (duration p)
+
+------------------------------------------------------------------------
+-- 3. Beweis der Funktorialität
+--    Ein Funktor muss Identität und Komposition erhalten.
+------------------------------------------------------------------------
+
+-- Beweis 1: F erhält Identitätspfeile.
+-- F(id m) muss der Identitätsmorphismus auf F(m) sein.
+-- F(id m) ist "plus (duration (refl≤ m))", was "plus 0" ist.
+-- Wir müssen zeigen, dass (n + 0) ≡ n ist.
+F-preserves-id : ∀ {m} → F-hom (Cat.id m) ≡ Alg.idAlg (F-obj m)
+F-preserves-id {m} =
+  -- Wir müssen die Gleichheit von Records beweisen, also die Gleichheit aller Felder.
+  -- Hier gibt es nur 'f' und 'hom'. 'hom' ist trivial durch refl.
+  -- Für 'f' müssen wir beweisen: (λ n → Alg.plus (duration (Cat.id m)) n) ≡ (λ n → n)
+  -- Das reduziert sich zu: (λ n → n + 0) ≡ (λ n → n), was durch Alg.shift-id bewiesen wird.
+  record { f = Alg.shift-id; hom = refl }
+
+-- Beweis 2: F erhält Komposition.
+-- F(f ∘ g) muss F(f) ∘ F(g) sein.
+-- F(f ∘ g) ist "plus (duration (f ∘ g))".
+-- F(f) ∘ F(g) ist "plus (duration g) ∘ plus (duration f)", was "plus (duration f + duration g)" ist.
+-- Der Kern des Beweises ist unser Lemma "duration-comp".
+F-preserves-comp : ∀ {a b c} (f : Hom a b) (g : Hom b c) → F-hom (f Cat.∘ g) ≡ (F-hom f Alg.∘Alg F-hom g)
+F-preserves-comp {a} {b} {c} f g =
+  record
+    { f   = trans (cong Alg.plus (duration-comp f g)) (+-assoc _ _ _)
+    ; hom = refl
+    }

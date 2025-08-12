@@ -15,6 +15,7 @@ open import Core.Irrefutable   public
 
 -- Enhanced drift with semantic time
 open import Structures.Drift public
+open import Structures.Step1_BooleanFoundation public
 
 ------------------------------------------------------------------------
 -- Integration: Complete foundational chain

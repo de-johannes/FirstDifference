@@ -5,7 +5,8 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
 open import Data.Nat using (ℕ; zero; suc)
 
 ------------------------------------------------------------------------
--- A thin, skeletal category on ℕ with morphisms given by ≤-proofs.
+-- Temporal ordering: foundation for irreversible progression
+-- Models the "thin" category of temporal stages
 ------------------------------------------------------------------------
 
 infix 4 _≤_
@@ -13,37 +14,33 @@ data _≤_ : ℕ → ℕ → Set where
   z≤n : ∀ {n} → zero ≤ n
   s≤s : ∀ {m n} → m ≤ n → suc m ≤ suc n
 
--- Reflexivity
+-- Reflexivity: every stage relates to itself
 refl≤ : ∀ n → n ≤ n
 refl≤ zero    = z≤n
 refl≤ (suc n) = s≤s (refl≤ n)
 
--- Composition (transitivity). We write it as _∙_.
+-- Composition (transitivity): temporal progression is transitive
 infixl 5 _∙_
 _∙_ : ∀ {i j k} → i ≤ j → j ≤ k → i ≤ k
 z≤n     ∙ _        = z≤n
 s≤s p   ∙ s≤s q    = s≤s (p ∙ q)
 
--- Right identity: f ∙ refl = f
+-- Category laws for temporal progression
 idʳ-lemma : ∀ {m n} (f : m ≤ n) → f ∙ refl≤ n ≡ f
 idʳ-lemma z≤n     = refl
 idʳ-lemma (s≤s f) = cong s≤s (idʳ-lemma f)
 
--- Left identity: refl ∙ f = f
 idˡ-lemma : ∀ {m n} (f : m ≤ n) → refl≤ m ∙ f ≡ f
 idˡ-lemma z≤n     = refl
 idˡ-lemma (s≤s f) = cong s≤s (idˡ-lemma f)
 
--- Associativity for _∙_
--- General base case: if the first leg is z≤n, both sides reduce to z≤n by definition.
-assoc-∙
-  : ∀ {a b c d} (f : a ≤ b) (g : b ≤ c) (h : c ≤ d)
-  → (f ∙ g) ∙ h ≡ f ∙ (g ∙ h)
+assoc-∙ : ∀ {a b c d} (f : a ≤ b) (g : b ≤ c) (h : c ≤ d)
+        → (f ∙ g) ∙ h ≡ f ∙ (g ∙ h)
 assoc-∙ z≤n      g        h        = refl
 assoc-∙ (s≤s f) (s≤s g) (s≤s h)    = cong s≤s (assoc-∙ f g h)
 
 ------------------------------------------------------------------------
--- Minimal category record (sufficient for our purposes).
+-- Category interface: minimal structure for our purposes
 ------------------------------------------------------------------------
 
 record Category (ℓ : Level) : Set (lsuc ℓ) where
@@ -60,15 +57,16 @@ record Category (ℓ : Level) : Set (lsuc ℓ) where
 open Category public
 
 ------------------------------------------------------------------------
--- CutCat : objects are ℕ, morphisms are ≤ proofs (thin category).
--- Composition direction: first f : A→B, then g : B→C.
+-- CutCat: The temporal spine category
+-- Objects = natural numbers (temporal stages)
+-- Morphisms = ≤ proofs (temporal progression)
 ------------------------------------------------------------------------
 
 CutCat : Category lzero
 CutCat .Obj         = ℕ
 CutCat .Hom m n     = m ≤ n
 CutCat .id n        = refl≤ n
-CutCat ._∘_ f g     = f ∙ g
+CutCat ._∘_ f g     = f ∙ g  -- Note: composition order
 CutCat .idˡ f       = idˡ-lemma f
 CutCat .idʳ f       = idʳ-lemma f
 CutCat .assoc f g h = assoc-∙ f g h

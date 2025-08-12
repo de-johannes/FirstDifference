@@ -6,7 +6,8 @@ module Structures.Functors where
 
 open import Agda.Primitive using (lzero)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
-open import Data.Nat using (ℕ; zero; suc; _-_)
+open import Data.Nat using (ℕ; zero; suc)
+open import Data.Nat.Base using (_∸_)
 open import Data.Unit using (⊤; tt)
 
 open import Structures.CutCat
@@ -15,16 +16,15 @@ open import Structures.DistOpOperad using
   ; plus; plus-hom; shiftHom; shift-id
   ; idAlg; _∘Alg_ )
 
--- Bring record fields into scope
 open DistOpAlg public
 open HomAlg public
 
 ------------------------------------------------------------------------
--- Arithmetic definition: difference (n - m) from a ≤-witness
+-- Arithmetic definition: difference (n ∸ m) from a ≤-witness
 ------------------------------------------------------------------------
 
 diff : ∀ {m n} → m ≤ n → ℕ
-diff {m} {n} _ = n - m   -- use standard library subtraction
+diff {m} {n} _ = n ∸ m
 
 ------------------------------------------------------------------------
 -- Functor CutCat → DistOpAlg  (Semantic Time)
@@ -36,7 +36,6 @@ F-obj _ = NAlg
 F-arr : ∀ {m n} → m ≤ n → HomAlg (F-obj m) (F-obj n)
 F-arr p = shiftHom (diff p)
 
--- Semantic time as object mapping only (for explicit reference in code/docs)
 semanticTime : ℕ → Carrier NAlg
 semanticTime n = n
 
@@ -44,11 +43,12 @@ semanticTime n = n
 -- Functoriality proofs
 ------------------------------------------------------------------------
 
--- Identity: diff (refl≤ m) = 0, so shiftHom 0 = id
+-- Identity: diff (refl≤ m) ≡ 0 (definitionally, m ∸ m = 0), so shiftHom 0 = id
 F-id : ∀ {m} n → (F-arr (refl≤ m)) .f n ≡ (idAlg (F-obj m)) .f n
 F-id n = shift-id n
 
--- Composition: diff (g ∙ f) = diff f + diff g definitionally
+-- Composition: shiftHom (k) ∘ shiftHom (ℓ) ≡ shiftHom (ℓ + k)
+-- (this reduces by the definitions in DistOpOperad; refl suffices here)
 F-comp :
   ∀ {a b c} (g : b ≤ c) (f : a ≤ b) n →
     (_∘Alg_ (F-arr g) (F-arr f)) .f n ≡ (F-arr (g ∙ f)) .f n

@@ -9,7 +9,7 @@ open import Data.Nat using (ℕ; zero; suc; _≤_; _<_; z≤n; s≤s; _+_; _⊔_
 open import Data.Nat.Properties using (<-trans; <-irrefl)
 open import Data.Vec using (Vec; []; _∷_; lookup)
 open import Data.List using (List; []; _∷_; _++_; length; any; all; foldr; map; filter)
-open import Data.Product using (_×_; _,_; ∃-syntax; Σ; proj₁; proj₂)
+open import Data.Product using (_×_; _,_; ∃-syntax; Σ; proj₁; proj₂; ∃)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong; subst)
 open import Relation.Nullary using (¬_; Dec; yes; no)
@@ -71,8 +71,6 @@ record DriftEvent : Set where
     parent₁ : Distinction
     parent₂ : Distinction  
     child   : Distinction
-    
-open DriftEvent public  -- Standard Agda-Methode für Record-Felder
 
 -- | Smart constructor ensuring dimensional compatibility
 mk-drift-event : {n : ℕ} → (p₁ p₂ : Dist n) → (c : Dist n) → DriftEvent
@@ -109,7 +107,8 @@ record DriftGraph : Set where
     
     -- Parents must have smaller timestamp than children
     temporal-order : ∀ (e : DriftEvent) → 
-                     τ (parent₁ e) < τ (child e) × τ (parent₂ e) < τ (child e)
+                     τ (DriftEvent.parent₁ e) < τ (DriftEvent.child e) × 
+                     τ (DriftEvent.parent₂ e) < τ (DriftEvent.child e)
 
 open DriftGraph public
 
@@ -117,11 +116,13 @@ open DriftGraph public
 -- REACHABILITY AND ACYCLICITY
 ------------------------------------------------------------------------
 
--- | Direct parent relation - KORRIGIERT: Explizite Σ-Type Verwendung
+-- | Direct parent relation - KORRIGIERT: Explizite Record-Feld-Zugriffe
 _⟹₁_ : {G : DriftGraph} → Distinction → Distinction → Set
-_⟹₁_ {G} parent child = 
-  Σ DriftEvent (λ e → e ∈-list events G × 
-                      ((parent ≡ parent₁ e ⊎ parent ≡ parent₂ e) × child ≡ child e))
+_⟹₁_ {G} p c = 
+  ∃ (λ (e : DriftEvent) → 
+      e ∈-list events G × 
+      ((p ≡ DriftEvent.parent₁ e ⊎ p ≡ DriftEvent.parent₂ e) × 
+       c ≡ DriftEvent.child e))
 
 -- | Transitive closure: reachability (renamed constructor to avoid conflict)
 data _⤜_ {G : DriftGraph} : Distinction → Distinction → Set where
@@ -131,12 +132,12 @@ data _⤜_ {G : DriftGraph} : Distinction → Distinction → Set where
 -- | Helper: reachability implies temporal precedence  
 ⤜-implies-τ< : {G : DriftGraph} → ∀ {u w} → u ⤜ w → τ G u < τ G w
 ⤜-implies-τ< {G} (direct (e , (e∈events , ((inj₁ u≡p₁) , w≡c)))) = 
-  subst (λ x → x < τ G (child e)) (sym u≡p₁) 
-        (subst (λ x → τ G (parent₁ e) < x) w≡c 
+  subst (λ x → x < τ G (DriftEvent.child e)) (sym u≡p₁) 
+        (subst (λ x → τ G (DriftEvent.parent₁ e) < x) w≡c 
                (proj₁ (temporal-order G e)))
 ⤜-implies-τ< {G} (direct (e , (e∈events , ((inj₂ u≡p₂) , w≡c)))) = 
-  subst (λ x → x < τ G (child e)) (sym u≡p₂)
-        (subst (λ x → τ G (parent₂ e) < x) w≡c 
+  subst (λ x → x < τ G (DriftEvent.child e)) (sym u≡p₂)
+        (subst (λ x → τ G (DriftEvent.parent₂ e) < x) w≡c 
                (proj₂ (temporal-order G e)))
 ⤜-implies-τ< {G} (compose u⤜v v⤜w) = <-trans (⤜-implies-τ< u⤜v) (⤜-implies-τ< v⤜w)
 
@@ -231,8 +232,8 @@ example-2d-drift = record
   vertex-closure-proof (.v₁-test , .v₂-test ⟹ .v₃-test) _ (there (there (there ())))
   
   temporal-order-proof : ∀ (e : DriftEvent) → 
-                        τ-func (parent₁ e) < τ-func (child e) × 
-                        τ-func (parent₂ e) < τ-func (child e)
+                        τ-func (DriftEvent.parent₁ e) < τ-func (DriftEvent.child e) × 
+                        τ-func (DriftEvent.parent₂ e) < τ-func (DriftEvent.child e)
   temporal-order-proof (.v₁-test , .v₂-test ⟹ .v₃-test) = s≤s z≤n , s≤s z≤n
 
 ------------------------------------------------------------------------
@@ -257,8 +258,8 @@ add-drift-event G e = record G { events = e ∷ events G }
 -- | Helper: construct a direct reachability witness
 mk-direct-reach : {G : DriftGraph} → (e : DriftEvent) → (parent child : Distinction) → 
                   e ∈-list (events G) → 
-                  (parent ≡ parent₁ e ⊎ parent ≡ parent₂ e) → 
-                  child ≡ child e → 
+                  (parent ≡ DriftEvent.parent₁ e ⊎ parent ≡ DriftEvent.parent₂ e) → 
+                  child ≡ DriftEvent.child e → 
                   parent ⟹₁ child
 mk-direct-reach e parent child e∈events parent-eq child-eq = 
   e , (e∈events , (parent-eq , child-eq))

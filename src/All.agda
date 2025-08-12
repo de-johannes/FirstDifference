@@ -10,3 +10,4 @@ open import Structures.Drift   public
 open import Structures.DistOp public
 
 open import Examples.DriftSim  public
+open import Examples.CutCatDistOp public

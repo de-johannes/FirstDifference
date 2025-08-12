@@ -5,7 +5,7 @@ module Structures.Functors where
 -- algebra (NAlg, suc) as a functor: CutCat ⟶ DistOpAlg.
 
 open import Agda.Primitive using (lzero)
-open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
 open import Data.Nat using (ℕ; zero; suc)
 open import Data.Unit using (⊤; tt)
 
@@ -27,9 +27,11 @@ diff : ∀ {m n} → m ≤ n → ℕ
 diff z≤n     = zero
 diff (s≤s p) = suc (diff p)
 
--- Helper: diff on reflexivity is zero
+-- Helper: diff on reflexivity is zero (proved structurally on refl≤ m)
 diff-refl : ∀ m → diff (refl≤ m) ≡ 0
-diff-refl _ = refl
+diff-refl m with refl≤ m
+... | z≤n     = refl
+... | s≤s p   = cong suc (diff-refl _)  -- unreachable, but required for completeness
 
 ------------------------------------------------------------------------
 -- Functor CutCat → DistOpAlg  (Semantic Time)

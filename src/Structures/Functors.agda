@@ -1,70 +1,69 @@
 module Structures.Functors where
 
--- === Imports ===
 open import Agda.Primitive using (lzero)
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong; trans; sym)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong; sym; trans)
 open import Data.Nat using (ℕ; zero; suc; _+_)
 open import Data.Nat.Properties using (+-assoc; +-identityˡ; +-suc)
+open import Data.Unit using (⊤; tt)
 
--- Wir importieren unsere eigenen Module, ohne sie sofort zu öffnen.
 import Structures.CutCat as C
-import Structures.DistOpOperad as A
+open C using (_≤_; refl≤; z≤n; s≤s; _∙_)
 
--- Erst jetzt öffnen wir die spezifische Kategorie-Instanz, mit der wir arbeiten.
--- Das bringt C.Obj, C.Hom, C.id und C. _∘_ in den Namespace.
-open C.Category C.CutCat
+open import Structures.DistOpOperad using
+  ( DistOpAlg; HomAlg; NAlg
+  ; plus; plus-hom; shiftHom; shift-id
+  ; idAlg; _∘Alg_ )
 
-------------------------------------------------------------------------
--- 1. Eine Funktion, die aus einem Zeitpfeil (m ≤ n) die Dauer (n - m) extrahiert.
-------------------------------------------------------------------------
-
-duration : ∀ {m n} → Hom m n → ℕ
-duration {zero}  {n}   C.z≤n      = n
-duration {suc m} {suc n} (C.s≤s p) = duration p
-
--- Beweis: Startzeit + Dauer = Endzeit
-end-point-proof : ∀ {m n} (p : Hom m n) → m + duration p ≡ n
-end-point-proof {zero}  {n}   C.z≤n      = +-identityˡ n
-end-point-proof {suc m} {suc n} (C.s≤s p) =
-  trans (cong suc (+-suc m (duration p))) (cong suc (end-point-proof p))
-
--- Beweis: Die Dauer von komponierten Pfeilen ist die Summe der Dauern.
-duration-comp : ∀ {a b c} (f : Hom a b) (g : Hom b c) → duration (f C.∘ g) ≡ duration f + duration g
-duration-comp {zero}  {b} {c} C.z≤n      g = trans refl (sym (end-point-proof g))
-duration-comp {suc a} {suc b} {suc c} (C.s≤s f) (C.s≤s g) = duration-comp f g
+open DistOpAlg public
+open HomAlg     public
 
 ------------------------------------------------------------------------
--- 2. Definition des Funktors F: CutCat → DistOpAlg
+-- Difference from a ≤-witness: returns n − m
 ------------------------------------------------------------------------
 
--- F bildet jedes Objekt (eine Zahl n) auf die initiale Algebra (ℕ, succ).
-F-obj : Obj → A.DistOpAlg lzero
-F-obj _ = A.NAlg
+diff : ∀ {m n} → m ≤ n → ℕ
+diff {zero}   {n}     z≤n      = n
+diff {suc m}  {suc n} (s≤s p)  = diff {m} {n} p
 
--- F bildet jeden Pfeil (m ≤ n) auf einen Algebra-Morphismus ab
--- (die Funktion "addiere die Dauer des Pfeils").
-F-hom : ∀ {m n} → Hom m n → A.HomAlg (F-obj m) (F-obj n)
-F-hom p .A.f    = A.plus (duration p)
-F-hom p .A.hom  = A.plus-hom (duration p)
+-- Helper: "walking" the witness adds exactly its length
+end-eq : ∀ {b c} (g : b ≤ c) → b + diff g ≡ c
+end-eq {zero}   {c}     z≤n     = +-identityˡ c
+end-eq {suc b}  {suc c} (s≤s g) =
+  cong suc (trans (+-suc b (diff g)) (end-eq g))
+
+-- Composition law for diff
+diff-∙ : ∀ {a b c} (f : a ≤ b) (g : b ≤ c) → diff (f ∙ g) ≡ diff f + diff g
+diff-∙ {zero}   {b} {c}  z≤n      g =            
+  trans refl (sym (end-eq g))
+diff-∙ {suc a} {suc b} {suc c} (s≤s f) (s≤s g) =
+  diff-∙ f g
 
 ------------------------------------------------------------------------
--- 3. Beweis der Funktorialität
+-- Functor CutCat → DistOpAlg  (Semantic Time)
 ------------------------------------------------------------------------
 
--- Beweis 1: F erhält Identitätspfeile. F(id m) ≡ id_{F(m)}
--- F(id m) ist "plus (duration (refl≤ m))", was "plus 0" ist.
-F-preserves-id : ∀ {m} → F-hom (C.id m) ≡ A.idAlg (F-obj m)
-F-preserves-id {m} =
-  -- Um die Gleichheit von Records zu beweisen, beweisen wir die Gleichheit der Felder.
-  A.record
-    { A.f   = A.shift-id
-    ; A.hom = refl
-    }
+F-obj : ℕ → DistOpAlg lzero
+F-obj _ = NAlg
 
--- Beweis 2: F erhält Komposition. F(f ∘ g) ≡ F(f) ∘ F(g)
-F-preserves-comp : ∀ {a b c} (f : Hom a b) (g : Hom b c) → F-hom (f C.∘ g) ≡ (F-hom f A.∘Alg F-hom g)
-F-preserves-comp {a} {b} {c} f g =
-  A.record
-    { A.f   = trans (cong (A.plus) (duration-comp f g)) (+-assoc _ _ _)
-    ; A.hom = refl
-    }
+F-arr : ∀ {m n} → m ≤ n → HomAlg (F-obj m) (F-obj n)
+F-arr p = shiftHom (diff p)
+
+-- object mapping (for explicit reference)
+semanticTime : ℕ → Carrier NAlg
+semanticTime n = n
+
+------------------------------------------------------------------------
+-- Functoriality
+------------------------------------------------------------------------
+
+-- Identity: diff (refl≤ m) reduces to 0, hence shift-id applies pointwise
+F-id : ∀ {m} n → (F-arr (refl≤ m)) .f n ≡ (idAlg (F-obj m)) .f n
+F-id n = shift-id n
+
+-- Composition
+F-comp :
+  ∀ {a b c} (f : a ≤ b) (g : b ≤ c) (n : ℕ) →
+    (_∘Alg_ (F-arr g) (F-arr f)) .f n ≡ (F-arr (f ∙ g)) .f n
+F-comp f g n
+  rewrite +-assoc n (diff f) (diff g)
+        | sym (diff-∙ f g) = refl 

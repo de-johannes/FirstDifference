@@ -10,7 +10,6 @@ open import Data.Nat.Properties using (<-trans; <-irrefl)
 open import Data.Vec using (Vec; []; _∷_; lookup)
 open import Data.List using (List; []; _∷_; _++_; length; any; all; foldr; map; filter)
 open import Data.Product using (_×_; _,_; ∃-syntax; Σ; proj₁; proj₂)
-open import Data.Product using (_×_; _,_; ∃-syntax; Σ)  -- Σ explizit importieren
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong; subst)
 open import Relation.Nullary using (¬_; Dec; yes; no)
@@ -72,16 +71,8 @@ record DriftEvent : Set where
     parent₁ : Distinction
     parent₂ : Distinction  
     child   : Distinction
-
--- Explizite Feldextraktion ohne public open
-parent₁ : DriftEvent → Distinction
-parent₁ = DriftEvent.parent₁
-
-parent₂ : DriftEvent → Distinction  
-parent₂ = DriftEvent.parent₂
-
-child : DriftEvent → Distinction
-child = DriftEvent.child
+    
+open DriftEvent public  -- Standard Agda-Methode für Record-Felder
 
 -- | Smart constructor ensuring dimensional compatibility
 mk-drift-event : {n : ℕ} → (p₁ p₂ : Dist n) → (c : Dist n) → DriftEvent
@@ -234,15 +225,15 @@ example-2d-drift = record
   
   vertex-closure-proof : ∀ (e : DriftEvent) (v : Distinction) → 
                         v ∈-list (event-vertices e) → v ∈-list (v₁-test ∷ v₂-test ∷ v₃-test ∷ [])
-  vertex-closure-proof (.(mk-dist 2 (true ∷ false ∷ [])) , .(mk-dist 2 (false ∷ true ∷ [])) ⟹ .(mk-dist 2 (false ∷ false ∷ []))) .(mk-dist 2 (true ∷ false ∷ [])) here = here
-  vertex-closure-proof (.(mk-dist 2 (true ∷ false ∷ [])) , .(mk-dist 2 (false ∷ true ∷ [])) ⟹ .(mk-dist 2 (false ∷ false ∷ []))) .(mk-dist 2 (false ∷ true ∷ [])) (there here) = there here
-  vertex-closure-proof (.(mk-dist 2 (true ∷ false ∷ [])) , .(mk-dist 2 (false ∷ true ∷ [])) ⟹ .(mk-dist 2 (false ∷ false ∷ []))) .(mk-dist 2 (false ∷ false ∷ [])) (there (there here)) = there (there here)
-  vertex-closure-proof (.(mk-dist 2 (true ∷ false ∷ [])) , .(mk-dist 2 (false ∷ true ∷ [])) ⟹ .(mk-dist 2 (false ∷ false ∷ []))) _ (there (there (there ())))
+  vertex-closure-proof (.v₁-test , .v₂-test ⟹ .v₃-test) .v₁-test here = here
+  vertex-closure-proof (.v₁-test , .v₂-test ⟹ .v₃-test) .v₂-test (there here) = there here
+  vertex-closure-proof (.v₁-test , .v₂-test ⟹ .v₃-test) .v₃-test (there (there here)) = there (there here)
+  vertex-closure-proof (.v₁-test , .v₂-test ⟹ .v₃-test) _ (there (there (there ())))
   
   temporal-order-proof : ∀ (e : DriftEvent) → 
                         τ-func (parent₁ e) < τ-func (child e) × 
                         τ-func (parent₂ e) < τ-func (child e)
-  temporal-order-proof (.(mk-dist 2 (true ∷ false ∷ [])) , .(mk-dist 2 (false ∷ true ∷ [])) ⟹ .(mk-dist 2 (false ∷ false ∷ []))) = s≤s z≤n , s≤s z≤n
+  temporal-order-proof (.v₁-test , .v₂-test ⟹ .v₃-test) = s≤s z≤n , s≤s z≤n
 
 ------------------------------------------------------------------------
 -- CONSTRUCTION OPERATIONS
@@ -306,6 +297,18 @@ test-acyclicity = theorem-acyclic example-2d-drift v₃-test
 test-transitive : {G : DriftGraph} → {u v w : Distinction} → 
                   u ⤜ v → v ⤜ w → u ⤜ w
 test-transitive = mk-transitive-reach
+
+------------------------------------------------------------------------
+-- PROPERTIES AND THEOREMS
+------------------------------------------------------------------------
+
+-- | Reachability is transitive (by construction)
+⤜-transitive : {G : DriftGraph} → ∀ {u v w} → u ⤜ v → v ⤜ w → u ⤜ w  
+⤜-transitive = compose
+
+-- | Direct reachability is a special case of general reachability
+⟹₁-to-⤜ : {G : DriftGraph} → ∀ {u v} → u ⟹₁ v → u ⤜ v
+⟹₁-to-⤜ = direct
 
 ------------------------------------------------------------------------
 -- RESULT: Perfect Drift Graph Structure!

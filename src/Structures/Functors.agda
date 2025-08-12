@@ -1,67 +1,68 @@
 module Structures.Functors where
 
--- This module formalises "semantic time" T(n) from Part I of the Backbone PDF.
--- Semantic time counts irreducible drift events and maps them to ℕ via the initial
--- algebra (NAlg, suc) as a functor: CutCat ⟶ DistOpAlg.
+-- Functor CutCat ⟶ DistOpAlg: “semantic time”.
+-- On objects: every Xₙ ↦ NAlg. On arrows m≤n ↦ shift by diff(m,n).
 
 open import Agda.Primitive using (lzero)
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong; sym; trans)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong; trans)
 open import Data.Nat using (ℕ; zero; suc; _+_)
-open import Data.Nat.Properties using (+-identityʳ; +-comm; +-assoc)
 open import Data.Unit using (⊤; tt)
 
--- Import our custom category and operad structures
+-- Our custom structures
 import Structures.CutCat as CC
 import Structures.DistOpOperad as DO
 
 ------------------------------------------------------------------------
--- Arithmetic definition: difference (n - m) from a ≤-witness
+-- Compute the “gap” diff : m≤n ↦ (n − m) structurally
 ------------------------------------------------------------------------
 
-diff : ∀ {m n} → m CC._≤_ n → ℕ
+diff : ∀ {m n} → CC._≤_ m n → ℕ
 diff {m} {n} p = go m n p
   where
-    go : ∀ m n → m CC._≤_ n → ℕ
-    go zero     n       CC.z≤n     = n
-    go (suc m') (suc n') (CC.s≤s p') = go m' n' p'
+    go : ∀ m n → CC._≤_ m n → ℕ
+    go zero     n        CC.z≤n       = n
+    go (suc m′) (suc n′) (CC.s≤s p′)  = go m′ n′ p′
 
--- Lemma: diff refl≤ m = 0
+-- Identity gap is 0
 diff-refl : ∀ m → diff (CC.refl≤ m) ≡ 0
 diff-refl zero    = refl
 diff-refl (suc m) = diff-refl m
 
--- Lemma: diff composition = sum of diffs
-diff-comp : ∀ {a b c} (f : a CC._≤_ b) (g : b CC._≤_ c) →
-              diff (f CC.∙ g) ≡ diff f + diff g
-diff-comp CC.z≤n      _            = refl
-diff-comp (CC.s≤s f) (CC.s≤s g) =
-  cong suc (diff-comp f g)
+-- Composition of gaps is addition
+diff-comp :
+  ∀ {a b c} (f : CC._≤_ a b) (g : CC._≤_ b c) →
+  diff (f CC._∙ᴄ_ g) ≡ diff f + diff g
+diff-comp CC.z≤n       g             = refl
+diff-comp (CC.s≤s f) (CC.s≤s g)      = cong suc (diff-comp f g)
 
 ------------------------------------------------------------------------
--- Functor CutCat → DistOpAlg  (Semantic Time)
+-- The functor on objects and arrows
 ------------------------------------------------------------------------
 
 F-obj : ℕ → DO.DistOpAlg lzero
 F-obj _ = DO.NAlg
 
-F-arr : ∀ {m n} → m CC._≤_ n → DO.HomAlg (F-obj m) (F-obj n)
-F-arr p = DO.shiftHom (diff p)
+F-arr : ∀ {m n} → CC._≤_ m n → DO.HomAlg (F-obj m) (F-obj n)
+F-arr p = DO.shiftHom (diff p)          -- shift by the computed gap
 
--- Semantic time as object mapping only (for explicit reference)
-semanticTime : ℕ → DO.Carrier DO.NAlg
-semanticTime n = n
+-- A tiny helper to apply a HomAlg to a value
+apply : ∀ {A B} → DO.HomAlg A B → DO.Carrier A → DO.Carrier B
+apply h = DO.f h
 
 ------------------------------------------------------------------------
 -- Functoriality proofs
 ------------------------------------------------------------------------
 
--- Identity: diff (refl≤ m) = 0, so shiftHom 0 = idAlg
-F-id : ∀ {m} n → (F-arr (CC.refl≤ m)) .DO.f n ≡ (DO.idAlg (F-obj m)) .DO.f n
-F-id {m} n = trans (cong (λ k → DO.plus k n) (diff-refl m)) (DO.shift-id n)
+-- Identity: diff (refl≤ m) = 0  ⇒  shiftHom 0 = idAlg
+F-id : ∀ {m} (n : ℕ) →
+  apply (F-arr (CC.refl≤ m)) n ≡ apply (DO.idAlg (F-obj m)) n
+F-id {m} n =                         -- rewrite shift amount to 0 then use DO.lemma
+  trans (cong (λ k → DO.plus k n) (diff-refl m)) (DO.shift-id n)
 
--- Composition: diff (f ∙ g) = diff f + diff g, so shifts compose additively
+-- Composition: diff (f∙ᴄ g) = diff f + diff g  ⇒  shifts compose additively
 F-comp :
-  ∀ {a b c} (f : a CC._≤_ b) (g : b CC._≤_ c) n →
-    (DO._∘Alg_ (F-arr g) (F-arr f)) .DO.f n ≡ (F-arr (f CC.∙ g)) .DO.f n
+  ∀ {a b c} (f : CC._≤_ a b) (g : CC._≤_ b c) (n : ℕ) →
+    apply (DO._∘Alg_ (F-arr g) (F-arr f)) n ≡ apply (F-arr (f CC._∙ᴄ_ g)) n
 F-comp f g n =
-  cong (λ k → DO.plus k n) (diff-comp f g)
+  trans (DO.shift-comp n (diff f) (diff g))
+       (cong (λ k → DO.plus k n) (sym (diff-comp f g)))

@@ -3,7 +3,7 @@
 
 -- | Step 4: Partial Order from Drift Operation
 -- | Order relation: a ≤ b iff drift a b ≡ a
-module Structures.Step4_PartialOrder where
+module Step4_PartialOrder where
 
 open import Step1_BooleanFoundation
 open import Step2_VectorOperations  

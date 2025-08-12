@@ -3,7 +3,7 @@ module Structures.SemanticFunctor where
 open import Agda.Primitive using (lzero)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong; sym; trans)
 open import Data.Nat using (ℕ; zero; suc; _+_; _≤_; _∸_)
-open import Data.Nat.Properties using (+-assoc; +-identityˡ; +-identityʳ; ≤-refl; ≤-trans; m+n∸n≡m)
+open import Data.Nat.Properties using (+-assoc; +-identityˡ; +-identityʳ; +-comm; ≤-refl; ≤-trans; m+n∸n≡m)
 
 -- Import our enhanced structures
 open import Structures.CutCat using (Category; CutCat)
@@ -25,7 +25,10 @@ m+n∸m≡n {suc m} {suc n} (Data.Nat.s≤s p) = cong suc (m+n∸m≡n p)
 
 -- Subtraction distributes over addition when conditions are met
 ∸-distr : ∀ {a b c} → a ≤ b → b ≤ c → (c ∸ a) ≡ (c ∸ b) + (b ∸ a)
-∸-distr {zero}  {b}     {c}     _        p        = sym (+-identityʳ (c ∸ b))
+∸-distr {zero}  {b}     {c}     _        p        = 
+  -- c ∸ zero ≡ (c ∸ b) + (b ∸ zero)
+  -- c ≡ (c ∸ b) + b
+  trans refl (sym (trans (+-comm (c ∸ b) b) (m+n∸m≡n p)))
 ∸-distr {suc a} {zero}  {c}     ()       p
 ∸-distr {suc a} {suc b} {zero}  _        ()
 ∸-distr {suc a} {suc b} {suc c} (Data.Nat.s≤s f) (Data.Nat.s≤s g) = ∸-distr f g

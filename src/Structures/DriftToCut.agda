@@ -4,13 +4,13 @@ open import Data.List using (_∷_)
 open import Data.Nat using (ℕ)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
--- Now both modules use the same ≤ relation - perfect harmony!
-open import Structures.CutCat using (Category; CutCat)  
+-- Now everything is consistent again!
+open import Structures.CutCat using (_≤_; Category; CutCat)  
 open import Structures.Drift using (History; T; Dist; T-monotonic)
 
 ------------------------------------------------------------------------
 -- Bridge: Semantic Time induces objects in CutCat
--- No type conversion needed - both use Data.Nat.≤!
+-- Beautiful simplicity restored!
 ------------------------------------------------------------------------
 
 -- Semantic time of history gives CutCat object
@@ -18,7 +18,7 @@ semanticTimeObject : ∀ {n} → History n → Category.Obj CutCat
 semanticTimeObject h = T h
 
 -- History extension induces CutCat morphism via monotonicity
--- Beautiful: T-monotonic produces exactly the right type!
+-- Perfect: T-monotonic produces exactly the right type!
 historyExtension→Morphism : 
   ∀ {n} (h : History n) (d : Dist n) →
   Category.Hom CutCat (semanticTimeObject h) (semanticTimeObject (d ∷ h))

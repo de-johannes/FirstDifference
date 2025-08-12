@@ -7,7 +7,7 @@ open import Core.Demo          public
 
 open import Structures.CutCat  public
 open import Structures.Drift   public
-open import Structures.DistOperad public
+open import Structures.DistOpOperad public
 open import Structures.RelOperad public
 open import Structures.Functors public
 

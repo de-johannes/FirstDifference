@@ -6,7 +6,7 @@ open import Data.Nat using (ℕ; zero; suc; _+_)
 open import Data.Unit using (⊤; tt)
 
 ------------------------------------------------------------------------
--- Einfache unäre Operad-Hülle (nur als Platzhalter für später).
+-- A simple unary operad wrapper (placeholder for later extensions)
 ------------------------------------------------------------------------
 
 record Operad₁ (ℓ : Level) : Set (lsuc ℓ) where
@@ -19,15 +19,15 @@ record Operad₁ (ℓ : Level) : Set (lsuc ℓ) where
     assoc : ∀ o₁ o₂ o₃ → comp (comp o₁ o₂) o₃ ≡ comp o₁ (comp o₂ o₃)
 
 UnaryOp : Operad₁ lzero
-UnaryOp .Operad₁.Op        = ⊤
-UnaryOp .Operad₁.unit      = tt
-UnaryOp .Operad₁.comp _ _  = tt
-UnaryOp .Operad₁.unitL _   = refl
-UnaryOp .Operad₁.unitR _   = refl
+UnaryOp .Operad₁.Op          = ⊤
+UnaryOp .Operad₁.unit        = tt
+UnaryOp .Operad₁.comp _ _    = tt
+UnaryOp .Operad₁.unitL _     = refl
+UnaryOp .Operad₁.unitR _     = refl
 UnaryOp .Operad₁.assoc _ _ _ = refl
 
 ------------------------------------------------------------------------
--- DistOp-Algebren: (A , U : A → A)
+-- DistOp algebras: (A , U : A → A)
 ------------------------------------------------------------------------
 
 record DistOpAlg (ℓ : Level) : Set (lsuc ℓ) where
@@ -36,7 +36,7 @@ record DistOpAlg (ℓ : Level) : Set (lsuc ℓ) where
     U       : Carrier → Carrier
 open DistOpAlg public
 
--- Morphismen zwischen evtl. verschiedenen Levels
+-- Morphisms between possibly different universe levels
 record HomAlg {ℓ₁ ℓ₂ : Level}
               (A : DistOpAlg ℓ₁) (B : DistOpAlg ℓ₂)
               : Set (lsuc (ℓ₁ ⊔ ℓ₂)) where
@@ -45,12 +45,12 @@ record HomAlg {ℓ₁ ℓ₂ : Level}
     hom : ∀ x → f (U A x) ≡ U B (f x)
 open HomAlg public
 
--- Identität
+-- Identity morphism
 idAlg : ∀ {ℓ} (A : DistOpAlg ℓ) → HomAlg A A
 idAlg A .f   = λ x → x
 idAlg A .hom = λ _ → refl
 
--- Komposition
+-- Composition of morphisms
 _∘Alg_ :
   ∀ {ℓ₁ ℓ₂ ℓ₃}
     {A : DistOpAlg ℓ₁} {B : DistOpAlg ℓ₂} {C : DistOpAlg ℓ₃} →
@@ -60,7 +60,7 @@ _∘Alg_ :
   trans (cong (f g) (hom h x)) (hom g (f h x))
 
 ------------------------------------------------------------------------
--- Initiale Algebra (ℕ, suc) und Faltung
+-- Initial algebra (ℕ, suc) and fold
 ------------------------------------------------------------------------
 
 NAlg : DistOpAlg lzero
@@ -71,12 +71,12 @@ fold : ∀ {ℓ} (A : DistOpAlg ℓ) → Carrier A → ℕ → Carrier A
 fold A a₀ zero    = a₀
 fold A a₀ (suc n) = U A (fold A a₀ n)
 
--- Universeller Morphismus NAlg → A (egal welches Level A hat)
+-- Universal morphism from NAlg to A (any universe level)
 mkFold : ∀ {ℓ} (A : DistOpAlg ℓ) (a₀ : Carrier A) → HomAlg NAlg A
 mkFold A a₀ .f     = fold A a₀
-mkFold A a₀ .hom n = refl
+mkFold A a₀ .hom _ = refl
 
--- Eindeutigkeit der Faltung (Initialität)
+-- Uniqueness of folds (initiality proof)
 fold-uniq :
   ∀ {ℓ} (A : DistOpAlg ℓ) (a₀ : Carrier A)
     (h : HomAlg NAlg A) (f₀ : f h zero ≡ a₀)
@@ -86,14 +86,14 @@ fold-uniq A a₀ h f₀ (suc n) =
   trans (hom h n) (cong (U A) (fold-uniq A a₀ h f₀ n))
 
 ------------------------------------------------------------------------
--- (Optional) kleine Demo-Helfer
+-- (Optional) small demo helpers
 ------------------------------------------------------------------------
 
 plus : ℕ → ℕ → ℕ
 plus k n = n + k
 
 plus-hom : ∀ k n → plus k (suc n) ≡ suc (plus k n)
-plus-hom k n = refl
+plus-hom _ _ = refl
 
 shiftHom : ℕ → HomAlg NAlg NAlg
 shiftHom k .f     = plus k

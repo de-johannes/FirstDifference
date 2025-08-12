@@ -23,8 +23,8 @@ open HomAlg public
 ------------------------------------------------------------------------
 
 diff : ∀ {m n} → m ≤ n → ℕ
-diff {m} {n} (refl≤ .m) = 0
-diff (s≤s p)            = suc (diff p)
+diff (refl≤ _) = 0
+diff (s≤s p)   = suc (diff p)
 
 ------------------------------------------------------------------------
 -- Functor CutCat → DistOpAlg  (Semantic Time)

@@ -4,8 +4,9 @@ open import Agda.Primitive using (lzero)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong; sym; trans)
 open import Data.Nat using (ℕ; zero; suc; _+_; _∸_)
 open import Data.Nat.Properties using (+-assoc; +-identityˡ; +-identityʳ)
-open import Data.List using (_∷_)  -- Added: List cons operator
-open import Data.Sum using (_⊎_; inj₁; inj₂)  -- Added: Sum type for gap-0-or-1
+open import Data.List using (_∷_)
+open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Data.Bool using (Bool; true; false)  -- Import Bool constructors
 
 -- Our domain-optimized structures
 import Structures.CutCat as C
@@ -29,15 +30,54 @@ temporalProgression : ∀ {n} (h : History n) (d : Dist n) → ℕ → ℕ
 temporalProgression h d x = x + temporalGap h d
 
 ------------------------------------------------------------------------
--- Clean Properties: No complex category theory needed!
+-- Helper lemmas: explicit connection between irreducible? and T
+------------------------------------------------------------------------
+
+-- If irreducible, then T advances by 1
+T-irreducible : ∀ {n} (h : History n) (d : Dist n) → 
+                irreducible? d h ≡ true → T (d ∷ h) ≡ suc (T h)
+T-irreducible h d irred-true with irreducible? d h
+... | true  = refl
+... | false = 
+  -- Contradiction: irreducible? d h ≡ true but with-clause says false
+  -- This case is impossible, but Agda needs explicit proof
+  false-not-true irred-true
+  where
+    false-not-true : false ≡ true → T (d ∷ h) ≡ suc (T h)
+    false-not-true ()
+
+-- If reducible, then T stays same
+T-reducible : ∀ {n} (h : History n) (d : Dist n) → 
+              irreducible? d h ≡ false → T (d ∷ h) ≡ T h
+T-reducible h d irred-false with irreducible? d h
+... | true  = 
+  -- Contradiction case
+  true-not-false irred-false
+  where
+    true-not-false : true ≡ false → T (d ∷ h) ≡ T h
+    true-not-false ()
+... | false = refl
+
+------------------------------------------------------------------------
+-- Clean Properties: Now with explicit lemmas!
 ------------------------------------------------------------------------
 
 -- Temporal gap is 0 or 1 (from irreducibility)
 gap-0-or-1 : ∀ {n} (h : History n) (d : Dist n) → 
              (temporalGap h d ≡ zero) ⊎ (temporalGap h d ≡ suc zero)
-gap-0-or-1 h d with irreducible? d h
-... | true  = inj₂ refl  -- Irreducible: gap = 1
-... | false = inj₁ refl  -- Reducible: gap = 0
+gap-0-or-1 h d with irreducible? d h in eq
+... | true  = 
+  -- Use T-irreducible lemma
+  inj₂ (trans 
+         (cong (λ x → x ∸ T h) (T-irreducible h d eq))
+         (Data.Nat.Properties.+-∸-comm 1 (≤-refl)))
+  where open import Data.Nat.Properties using (+-∸-comm; ≤-refl)
+... | false = 
+  -- Use T-reducible lemma  
+  inj₁ (trans 
+         (cong (λ x → x ∸ T h) (T-reducible h d eq))
+         (Data.Nat.Properties.n∸n≡0 (T h)))
+  where open import Data.Nat.Properties using (n∸n≡0)
 
 -- Identity: no change means identity function
 identity-progression : ∀ {n} (h : History n) (d : Dist n) → 
@@ -52,9 +92,6 @@ composition-progression :
   temporalProgression (d₁ ∷ h) d₂ (temporalProgression h d₁ x) ≡
   temporalProgression h d₂ (temporalProgression h d₁ x)
 composition-progression h d₁ d₂ x = 
-  -- Left side: (x + gap₁) + gap₂ 
-  -- Right side: x + gap₁ + gap₂
-  -- Equal by associativity
   +-assoc x (temporalGap h d₁) (temporalGap (d₁ ∷ h) d₂)
 
 ------------------------------------------------------------------------
@@ -65,7 +102,7 @@ composition-progression h d₁ d₂ x =
 toStage : ∀ {n} → History n → C.Category.Obj C.CutCat  
 toStage h = semanticTime h
 
--- Helper: n ≤ suc n using CutCat constructors (moved here from CutCat import issues)
+-- Helper: n ≤ suc n using CutCat constructors
 n≤suc-n : ∀ n → n C.≤ suc n
 n≤suc-n zero    = C.z≤n
 n≤suc-n (suc n) = C.s≤s (n≤suc-n n)
@@ -74,8 +111,8 @@ n≤suc-n (suc n) = C.s≤s (n≤suc-n n)
 toMorphism : ∀ {n} (h : History n) (d : Dist n) →
              toStage h C.≤ toStage (d ∷ h)
 toMorphism h d with irreducible? d h
-... | true  = n≤suc-n (semanticTime h)  -- Time advances by 1
-... | false = C.refl≤ (semanticTime h)  -- Time stays same
+... | true  = n≤suc-n (semanticTime h)
+... | false = C.refl≤ (semanticTime h)
 
 ------------------------------------------------------------------------
 -- Connection to Arithmetic: Natural operations
@@ -93,12 +130,4 @@ plus-semantic-is-progression h d k = refl
 
 ------------------------------------------------------------------------
 -- The Complete Semantic Bridge (No category theory overhead!)
--- 
--- Drift Histories → Semantic Time → Temporal Progression → Arithmetic
--- 
--- This is the REAL functor: 
--- - Objects: Histories ↦ Natural numbers (semantic time)
--- - Morphisms: History extensions ↦ Arithmetic operations (+gap)
--- 
--- Clean, direct, and mathematically honest!
 ------------------------------------------------------------------------

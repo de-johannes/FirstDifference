@@ -52,19 +52,48 @@ semanticTime : ℕ → Carrier NAlg
 semanticTime n = n
 
 ------------------------------------------------------------------------
--- Functoriality: Clean proofs!
+-- Functoriality: Clean proofs with explicit typing!
 ------------------------------------------------------------------------
 
 F-id : ∀ {m} n → (F-arr (refl≤ m)) .f n ≡ (idAlg (F-obj m)) .f n
 F-id {m} n rewrite diff-refl m = shift-id n
 
+-- Composition with explicit intermediate typing to help Agda
 F-comp : ∀ {a b c} (f : a ≤ b) (g : b ≤ c) (n : ℕ) →
          (_∘Alg_ (F-arr g) (F-arr f)) .f n ≡ (F-arr (f ∙ g)) .f n
-F-comp f g n
-  rewrite +-assoc n (diff f) (diff g)
-        | sym (diff-∙ f g) = refl
+F-comp {a} {b} {c} f g n = 
+  let 
+    fa : HomAlg (F-obj a) (F-obj b)
+    fa = F-arr f
+    
+    gb : HomAlg (F-obj b) (F-obj c) 
+    gb = F-arr g
+    
+    comp : HomAlg (F-obj a) (F-obj c)
+    comp = _∘Alg_ gb fa
+    
+    target : HomAlg (F-obj a) (F-obj c)
+    target = F-arr (f ∙ g)
+    
+  in begin
+    comp .f n
+  ≡⟨ refl ⟩
+    plus (diff g) (plus (diff f) n)
+  ≡⟨ refl ⟩  
+    (n + diff f) + diff g
+  ≡⟨ +-assoc n (diff f) (diff g) ⟩
+    n + (diff f + diff g)
+  ≡⟨ cong (λ x → n + x) (sym (diff-∙ f g)) ⟩
+    n + diff (f ∙ g)
+  ≡⟨ refl ⟩
+    plus (diff (f ∙ g)) n
+  ≡⟨ refl ⟩
+    target .f n
+  ∎
+  where 
+    open ≡-Reasoning
+    open import Relation.Binary.PropositionalEquality.≡-Reasoning
 
 ------------------------------------------------------------------------
--- This is how domain-specific design should work: 
--- Custom definitions optimized for the problem domain!
+-- Beautiful domain-specific design restored!
 ------------------------------------------------------------------------

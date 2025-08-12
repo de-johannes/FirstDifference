@@ -2,6 +2,7 @@ module Structures.DistOpOperad where
 
 open import Agda.Primitive using (Level; lzero; lsuc; _⊔_)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong; trans)
+open import Data.Nat.Properties using (+-identityʳ)
 open import Data.Nat using (ℕ; zero; suc; _+_)
 open import Data.Unit using (⊤; tt)
 
@@ -101,4 +102,4 @@ shiftHom k .hom n = plus-hom k n
 
 -- Identity shift: +0 is the identity morphism on NAlg
 shift-id : ∀ n → plus 0 n ≡ n
-shift-id _ = refl
+shift-id n = +-identityʳ n

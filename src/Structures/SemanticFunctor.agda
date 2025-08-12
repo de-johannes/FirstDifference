@@ -4,6 +4,8 @@ open import Agda.Primitive using (lzero)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong; sym; trans)
 open import Data.Nat using (ℕ; zero; suc; _+_; _∸_)
 open import Data.Nat.Properties using (+-assoc; +-identityˡ; +-identityʳ)
+open import Data.List using (_∷_)  -- Added: List cons operator
+open import Data.Sum using (_⊎_; inj₁; inj₂)  -- Added: Sum type for gap-0-or-1
 
 -- Our domain-optimized structures
 import Structures.CutCat as C
@@ -36,7 +38,6 @@ gap-0-or-1 : ∀ {n} (h : History n) (d : Dist n) →
 gap-0-or-1 h d with irreducible? d h
 ... | true  = inj₂ refl  -- Irreducible: gap = 1
 ... | false = inj₁ refl  -- Reducible: gap = 0
-  where open import Data.Sum using (_⊎_; inj₁; inj₂)
 
 -- Identity: no change means identity function
 identity-progression : ∀ {n} (h : History n) (d : Dist n) → 
@@ -64,15 +65,17 @@ composition-progression h d₁ d₂ x =
 toStage : ∀ {n} → History n → C.Category.Obj C.CutCat  
 toStage h = semanticTime h
 
+-- Helper: n ≤ suc n using CutCat constructors (moved here from CutCat import issues)
+n≤suc-n : ∀ n → n C.≤ suc n
+n≤suc-n zero    = C.z≤n
+n≤suc-n (suc n) = C.s≤s (n≤suc-n n)
+
 -- Temporal progression corresponds to CutCat morphism
 toMorphism : ∀ {n} (h : History n) (d : Dist n) →
              toStage h C.≤ toStage (d ∷ h)
 toMorphism h d with irreducible? d h
-... | true  = C.n≤suc-n (semanticTime h)  -- Time advances by 1
-... | false = C.refl≤ (semanticTime h)    -- Time stays same
-  where
-    -- Helper from CutCat showing n ≤ suc n
-    open C using () renaming (n≤suc-n to n≤suc-n)
+... | true  = n≤suc-n (semanticTime h)  -- Time advances by 1
+... | false = C.refl≤ (semanticTime h)  -- Time stays same
 
 ------------------------------------------------------------------------
 -- Connection to Arithmetic: Natural operations

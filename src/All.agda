@@ -11,12 +11,12 @@ open import Core.Irrefutable   public
 ------------------------------------------------------------------------
 
 -- Enhanced Structures --
-open import Structures.Step1_BooleanFoundation public
-open import Structures.Step2_VectorOperations public
-open import Structures.Step3_AlgebraLaws public
-open import Structures.Step4_PartialOrder public
-open import Structures.Step5_CategoryStructure public
-open import Structures.Step6_SemanticTimeFunctor public
+open import Step1_BooleanFoundation public
+open import Step2_VectorOperations public
+open import Step3_AlgebraLaws public
+open import Step4_PartialOrder public
+open import Step5_CategoryStructure public
+open import Step6_SemanticTimeFunctor public
 
 ------------------------------------------------------------------------
 -- Optional: Examples and demonstrations

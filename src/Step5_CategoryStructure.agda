@@ -3,7 +3,7 @@
 
 -- | Step 5: Category of Drift-Preserving Morphisms
 -- | Structure-preserving maps between Boolean vector spaces  
-module Structures.Step5_CategoryStructure where
+module Step5_CategoryStructure where
 
 open import Step1_BooleanFoundation through Step4_PartialOrder
 

@@ -117,16 +117,16 @@ open DriftGraph public
 -- REACHABILITY AND ACYCLICITY
 ------------------------------------------------------------------------
 
--- | Direct parent relation - corrected syntax
+-- | Direct parent relation
 _⟹₁_ : {G : DriftGraph} → Distinction → Distinction → Set
 _⟹₁_ {G} parent child = 
   ∃-syntax (λ e → e ∈-list events G × 
                   ((parent ≡ parent₁ e ⊎ parent ≡ parent₂ e) × child ≡ child e))
 
--- | Transitive closure: reachability
+-- | Transitive closure: reachability (renamed constructor to avoid conflict)
 data _⤜_ {G : DriftGraph} : Distinction → Distinction → Set where
-  direct : ∀ {u v} → u ⟹₁ v → u ⤜ v
-  trans  : ∀ {u v w} → u ⤜ v → v ⤜ w → u ⤜ w
+  direct   : ∀ {u v} → u ⟹₁ v → u ⤜ v
+  compose  : ∀ {u v w} → u ⤜ v → v ⤜ w → u ⤜ w
 
 -- | Helper: reachability implies temporal precedence  
 ⤜-implies-τ< : {G : DriftGraph} → ∀ {u w} → u ⤜ w → τ G u < τ G w
@@ -138,7 +138,7 @@ data _⤜_ {G : DriftGraph} : Distinction → Distinction → Set where
   subst (λ x → x < τ G (child e)) (sym u≡p₂)
         (subst (λ x → τ G (parent₂ e) < x) w≡c 
                (proj₂ (temporal-order G e)))
-⤜-implies-τ< {G} (trans u⤜v v⤜w) = <-trans (⤜-implies-τ< u⤜v) (⤜-implies-τ< v⤜w)
+⤜-implies-τ< {G} (compose u⤜v v⤜w) = <-trans (⤜-implies-τ< u⤜v) (⤜-implies-τ< v⤜w)
 
 -- | Key theorem: The graph is acyclic (well-founded)
 theorem-acyclic : (G : DriftGraph) → ∀ (v : Distinction) → ¬ (v ⤜ v)
@@ -216,7 +216,7 @@ example-2d-drift = record
   vertex-closure-proof (.v₁ , .v₂ ⟹ .v₃) .v₁ here = here
   vertex-closure-proof (.v₁ , .v₂ ⟹ .v₃) .v₂ (there here) = there here
   vertex-closure-proof (.v₁ , .v₂ ⟹ .v₃) .v₃ (there (there here)) = there (there here)
-  vertex-closure-proof (.v₁ , .v₂ ⟹ .v₃) _ (there (there (there ())))
+  vertex-closure-proof (.v₁ , .v₂ ⟹ .v�3) _ (there (there (there ())))
   
   temporal-order-proof : ∀ (e : DriftEvent) → 
                         τ-func (parent₁ e) < τ-func (child e) × 
@@ -251,6 +251,11 @@ mk-direct-reach : {G : DriftGraph} → (e : DriftEvent) → (parent child : Dist
 mk-direct-reach e parent child e∈events parent-eq child-eq = 
   e , (e∈events , (parent-eq , child-eq))
 
+-- | Helper: compose reachability paths
+mk-transitive-reach : {G : DriftGraph} → {u v w : Distinction} → 
+                      u ⤜ v → v ⤜ w → u ⤜ w
+mk-transitive-reach u⤜v v⤜w = compose u⤜v v⤜w
+
 ------------------------------------------------------------------------
 -- TESTING AND VALIDATION
 ------------------------------------------------------------------------
@@ -268,7 +273,7 @@ test-drift-operation = graph-to-operations example-2d-drift 2
                        (true ∷ false ∷ []) 
                        (false ∷ true ∷ [])
 
--- | Test: Reachability witness construction - corrected
+-- | Test: Reachability witness construction
 test-reachability : _⟹₁_ {example-2d-drift} v₁ v₃
 test-reachability = mk-direct-reach e₁ v₁ v₃ here (inj₁ refl) refl
   where 
@@ -281,12 +286,25 @@ test-acyclicity : ¬ (_⤜_ {example-2d-drift} v₃ v₃)
 test-acyclicity = theorem-acyclic example-2d-drift v₃
   where v₃ = mk-dist 2 (false ∷ false ∷ [])
 
--- | Test: Validate graph structure
-test-graph-structure : DriftGraph
-test-graph-structure = example-2d-drift
+-- | Test: Transitive reachability construction
+test-transitive : {G : DriftGraph} → {u v w : Distinction} → 
+                  u ⤜ v → v ⤜ w → u ⤜ w
+test-transitive = mk-transitive-reach
 
 ------------------------------------------------------------------------
--- SUMMARY OF WHAT WE'VE BUILT
+-- PROPERTIES AND THEOREMS
+------------------------------------------------------------------------
+
+-- | Reachability is transitive (by construction)
+⤜-transitive : {G : DriftGraph} → ∀ {u v w} → u ⤜ v → v ⤜ w → u ⤜ w  
+⤜-transitive = compose
+
+-- | Direct reachability is a special case of general reachability
+⟹₁-to-⤜ : {G : DriftGraph} → ∀ {u v} → u ⟹₁ v → u ⤜ v
+⟹₁-to-⤜ = direct
+
+------------------------------------------------------------------------
+-- SUMMARY OF THEORETICAL CORRESPONDENCE
 ------------------------------------------------------------------------
 -- |
 -- | DriftEvent      ↔ "admitted drift event (d₁,d₂) → d₃" (Chapter 5)
@@ -294,4 +312,5 @@ test-graph-structure = example-2d-drift
 -- | theorem-acyclic ↔ "G is directed acyclic graph" (Theorem 5.3)
 -- | rank-layer     ↔ "temporal fibers π⁻¹(Xₙ)" (Definition 5.4)
 -- | _⤜_ relation   ↔ "reachability in R(G)" (Chapter 6)
+-- | compose        ↔ "transitivity of reachability" (path composition)
 -- | graph-to-operations ↔ Bridge between explicit graph and Boolean ops

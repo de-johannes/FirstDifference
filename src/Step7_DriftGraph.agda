@@ -130,11 +130,11 @@ data _⤜_ {G : DriftGraph} : Distinction → Distinction → Set where
 
 -- | Helper: reachability implies temporal precedence  
 ⤜-implies-τ< : {G : DriftGraph} → ∀ {u w} → u ⤜ w → τ G u < τ G w
-⤜-implies-τ< {G} (direct (e , (e∈events , (inj₁ u≡p₁) , w≡c))) = 
+⤜-implies-τ< {G} (direct (e , (e∈events , ((inj₁ u≡p₁) , w≡c)))) = 
   subst (λ x → x < τ G (child e)) (sym u≡p₁) 
         (subst (λ x → τ G (parent₁ e) < x) w≡c 
                (proj₁ (temporal-order G e)))
-⤜-implies-τ< {G} (direct (e , (e∈events , (inj₂ u≡p₂) , w≡c))) = 
+⤜-implies-τ< {G} (direct (e , (e∈events , ((inj₂ u≡p₂) , w≡c)))) = 
   subst (λ x → x < τ G (child e)) (sym u≡p₂)
         (subst (λ x → τ G (parent₂ e) < x) w≡c 
                (proj₂ (temporal-order G e)))
@@ -311,14 +311,11 @@ test-transitive = mk-transitive-reach
 ⟹₁-to-⤜ = direct
 
 ------------------------------------------------------------------------
--- SUMMARY OF THEORETICAL CORRESPONDENCE
+-- RESULT: Perfect Drift Graph Structure!
+-- • DAG property enforced by temporal ordering τ
+-- • Reachability via explicit event composition  
+-- • Acyclicity theorem proven from τ-monotonicity
+-- • Bridge between categorical morphisms and graph operations
+-- • Foundation for process-based temporal reasoning
 ------------------------------------------------------------------------
--- |
--- | DriftEvent      ↔ "admitted drift event (d₁,d₂) → d₃" (Chapter 5)
--- | temporal-order  ↔ "τ(parents) < τ(child)" (temporal ordering)  
--- | theorem-acyclic ↔ "G is directed acyclic graph" (Theorem 5.3)
--- | rank-layer     ↔ "temporal fibers π⁻¹(Xₙ)" (Definition 5.4)
--- | _⤜_ relation   ↔ "reachability in R(G)" (Chapter 6)
--- | compose        ↔ "transitivity of reachability" (path composition)
--- | graph-to-operations ↔ Bridge between explicit graph and Boolean ops
 

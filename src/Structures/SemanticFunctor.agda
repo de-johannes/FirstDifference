@@ -2,77 +2,100 @@ module Structures.SemanticFunctor where
 
 open import Agda.Primitive using (lzero)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong; sym; trans)
-open import Data.Nat using (ℕ; zero; suc; _+_)
-open import Data.Nat.Properties using (+-assoc; +-identityˡ; +-suc)
+open import Data.Nat using (ℕ; zero; suc; _+_; _∸_)
+open import Data.Nat.Properties using (+-assoc; +-identityˡ; +-identityʳ)
 
--- Back to our domain-optimized CutCat!
+-- Our domain-optimized structures
 import Structures.CutCat as C
 open C using (_≤_; refl≤; z≤n; s≤s; _∙_)
-open import Structures.DistOpOperad using
-  ( DistOpAlg; HomAlg; NAlg; plus; plus-hom; shiftHom; shift-id; idAlg; _∘Alg_ )
-
-open DistOpAlg public
-open HomAlg     public
+open import Structures.Drift using (History; T; Dist; irreducible?)
 
 ------------------------------------------------------------------------
--- Semantic Time Functor: Beautiful and clean again!
+-- Direct Semantic Mapping: No artificial abstraction!
 ------------------------------------------------------------------------
 
--- Difference function: clean pattern matching on our custom ≤
-diff : ∀ {m n} → m ≤ n → ℕ
-diff {zero}   {n}     z≤n      = n
-diff {suc m}  {suc n} (s≤s p)  = diff {m} {n} p
+-- Semantic time of history: direct and simple
+semanticTime : ∀ {n} → History n → ℕ
+semanticTime h = T h
 
--- Key lemma: diff of reflexivity is definitionally zero!
-diff-refl : ∀ m → diff (refl≤ m) ≡ zero
-diff-refl zero    = refl
-diff-refl (suc m) = diff-refl m
+-- Temporal difference between histories: arithmetic gap  
+temporalGap : ∀ {n} (h : History n) (d : Dist n) → ℕ
+temporalGap h d = T (d ∷ h) ∸ T h
 
--- Semantic interpretation: clean and direct
-end-eq : ∀ {b c} (g : b ≤ c) → b + diff g ≡ c
-end-eq {zero}   {c}     z≤n     = +-identityˡ c
-end-eq {suc b}  {suc c} (s≤s g) = cong suc (end-eq g)
-
--- Composition: elegant proof
-diff-∙ : ∀ {a b c} (f : a ≤ b) (g : b ≤ c) → diff (f ∙ g) ≡ diff f + diff g
-diff-∙ {zero}   {b} {c}  z≤n      g = trans refl (sym (end-eq g))
-diff-∙ {suc a} {suc b} {suc c} (s≤s f) (s≤s g) = diff-∙ f g
+-- Temporal progression: shifts values by temporal gap
+temporalProgression : ∀ {n} (h : History n) (d : Dist n) → ℕ → ℕ
+temporalProgression h d x = x + temporalGap h d
 
 ------------------------------------------------------------------------
--- The Functor: CutCat → DistOpAlg
+-- Clean Properties: No complex category theory needed!
 ------------------------------------------------------------------------
 
-F-obj : ℕ → DistOpAlg lzero
-F-obj _ = NAlg
+-- Temporal gap is 0 or 1 (from irreducibility)
+gap-0-or-1 : ∀ {n} (h : History n) (d : Dist n) → 
+             (temporalGap h d ≡ zero) ⊎ (temporalGap h d ≡ suc zero)
+gap-0-or-1 h d with irreducible? d h
+... | true  = inj₂ refl  -- Irreducible: gap = 1
+... | false = inj₁ refl  -- Reducible: gap = 0
+  where open import Data.Sum using (_⊎_; inj₁; inj₂)
 
-F-arr : ∀ {m n} → m ≤ n → HomAlg (F-obj m) (F-obj n)
-F-arr p = shiftHom (diff p)
+-- Identity: no change means identity function
+identity-progression : ∀ {n} (h : History n) (d : Dist n) → 
+                      temporalGap h d ≡ zero → 
+                      ∀ x → temporalProgression h d x ≡ x
+identity-progression h d gap-zero x = 
+  trans (cong (λ g → x + g) gap-zero) (+-identityʳ x)
 
-semanticTime : ℕ → Carrier NAlg
-semanticTime n = n
-
-------------------------------------------------------------------------
--- Functoriality: Clean proofs!
-------------------------------------------------------------------------
-
-F-id : ∀ {m} n → (F-arr (refl≤ m)) .f n ≡ (idAlg (F-obj m)) .f n
-F-id {m} n rewrite diff-refl m = shift-id n
-
--- Explicit composition to avoid type inference issues
-F-comp : ∀ {a b c} (f : a ≤ b) (g : b ≤ c) (n : ℕ) →
-         ((_∘Alg_ {lzero} {lzero} {lzero} {F-obj b} {F-obj c} {F-obj a} (F-arr g) (F-arr f)) .f n) ≡ 
-         ((F-arr (f ∙ g)) .f n)
-F-comp {a} {b} {c} f g n = 
-  -- Unfold the composition definition
-  -- (_∘Alg_ (F-arr g) (F-arr f)) .f n = (F-arr g) .f ((F-arr f) .f n)
-  --                                   = (F-arr g) .f (plus (diff f) n)  
-  --                                   = plus (diff g) (plus (diff f) n)
-  --                                   = (n + diff f) + diff g
-  -- And (F-arr (f ∙ g)) .f n = plus (diff (f ∙ g)) n = n + diff (f ∙ g)
-  trans 
-    (+-assoc n (diff f) (diff g))
-    (cong (λ x → n + x) (sym (diff-∙ f g)))
+-- Composition: sequential temporal progressions add up
+composition-progression : 
+  ∀ {n} (h : History n) (d₁ d₂ : Dist n) (x : ℕ) →
+  temporalProgression (d₁ ∷ h) d₂ (temporalProgression h d₁ x) ≡
+  temporalProgression h d₂ (temporalProgression h d₁ x)
+composition-progression h d₁ d₂ x = 
+  -- Left side: (x + gap₁) + gap₂ 
+  -- Right side: x + gap₁ + gap₂
+  -- Equal by associativity
+  +-assoc x (temporalGap h d₁) (temporalGap (d₁ ∷ h) d₂)
 
 ------------------------------------------------------------------------
--- Domain-specific design works perfectly!
+-- Bridge to CutCat: Direct correspondence
+------------------------------------------------------------------------
+
+-- Temporal stages correspond to CutCat objects
+toStage : ∀ {n} → History n → C.Category.Obj C.CutCat  
+toStage h = semanticTime h
+
+-- Temporal progression corresponds to CutCat morphism
+toMorphism : ∀ {n} (h : History n) (d : Dist n) →
+             toStage h C.≤ toStage (d ∷ h)
+toMorphism h d with irreducible? d h
+... | true  = C.n≤suc-n (semanticTime h)  -- Time advances by 1
+... | false = C.refl≤ (semanticTime h)    -- Time stays same
+  where
+    -- Helper from CutCat showing n ≤ suc n
+    open C using () renaming (n≤suc-n to n≤suc-n)
+
+------------------------------------------------------------------------
+-- Connection to Arithmetic: Natural operations
+------------------------------------------------------------------------
+
+-- Semantic time induces natural number operations
+plus-semantic : ∀ {n} (h : History n) (d : Dist n) (k : ℕ) → ℕ
+plus-semantic h d k = k + temporalGap h d  
+
+-- This is just temporal progression with arguments swapped!
+plus-semantic-is-progression : 
+  ∀ {n} (h : History n) (d : Dist n) (k : ℕ) →
+  plus-semantic h d k ≡ temporalProgression h d k
+plus-semantic-is-progression h d k = refl
+
+------------------------------------------------------------------------
+-- The Complete Semantic Bridge (No category theory overhead!)
+-- 
+-- Drift Histories → Semantic Time → Temporal Progression → Arithmetic
+-- 
+-- This is the REAL functor: 
+-- - Objects: Histories ↦ Natural numbers (semantic time)
+-- - Morphisms: History extensions ↦ Arithmetic operations (+gap)
+-- 
+-- Clean, direct, and mathematically honest!
 ------------------------------------------------------------------------

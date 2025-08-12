@@ -11,7 +11,6 @@ open import Core.Irrefutable   public
 ------------------------------------------------------------------------
 
 -- Enhanced Structures --
-open import Structures.Drift public
 open import Structures.Step1_BooleanFoundation public
 open import Structures.Step2_VectorOperations public
 open import Structures.Step3_AlgebraLaws public

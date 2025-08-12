@@ -1,6 +1,6 @@
 {-# OPTIONS --safe #-}
 
-module Step7_DriftGraph where
+module Step7_DriftGraph_Polished where
 
 open import Data.Nat using (ℕ; zero; suc; _≤_; _<_; z≤n; s≤s; _≟_)
 open import Data.Nat.Properties using (<-trans; <-irrefl)
@@ -32,8 +32,9 @@ data _∈_ {A : Set} (x : A) : List A → Set where
 NodeId : Set
 NodeId = ℕ
 
+-- KORRIGIERT: Einfacher Konstruktor-Name ohne Komma-Konflikt
 record Node : Set where
-  constructor _,_içeriği_
+  constructor node[_içeriği_]
   field
     nodeId  : NodeId
     content : Dist (suc (suc zero))
@@ -129,15 +130,15 @@ extract-drift-result (add-edge G parent₁ parent₂ child _ _) p₁ p₂
 -- 7. Beispiel-Konstruktion und Tests
 ------------------------------------------------------------------------
 
--- KORRIGIERT: Explizite Klammern um die Record-Konstruktion
+-- KORRIGIERT: Neue saubere Konstruktor-Syntax
 node₀ : Node
-node₀ = (0 , (true ∷ false ∷ []) içeriği)
+node₀ = node[ 0 içeriği (true ∷ false ∷ []) ]
 
 node₁ : Node
-node₁ = (1 , (false ∷ true ∷ []) içeriği)
+node₁ = node[ 1 içeriği (false ∷ true ∷ []) ]
 
 node₂ : Node
-node₂ = (2 , (drift (content node₀) (content node₁)) içeriği)
+node₂ = node[ 2 içeriği (drift (content node₀) (content node₁)) ]
 
 proof-0<2 : 0 < 2
 proof-0<2 = s≤s (s≤s z≤n)
@@ -175,10 +176,10 @@ _ : extract-drift-result example-graph 1 0 ≡ just node₂
 _ = refl
 
 ------------------------------------------------------------------------
--- ENDGÜLTIGE POLIERTE VERSION!
+-- FINALE POLIERTE VERSION! 
+-- • Saubere Konstruktor-Syntax ohne Parser-Konflikte
 -- • Konstruktive Azyklizität durch Zeitordnung
 -- • Kommutative Drift-Operationen 
 -- • Automatische Verifikation aller Tests
--- • Korrekte Operator-Precedence
 -- • Vollständige semantische Integration
 ------------------------------------------------------------------------

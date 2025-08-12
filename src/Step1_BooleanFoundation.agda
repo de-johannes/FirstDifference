@@ -3,7 +3,7 @@
 
 -- | Step 1: Exhaustive Boolean Algebra Foundation
 -- | Every property proven by complete case analysis
-module Structures.Step1_BooleanFoundation where
+module Step1_BooleanFoundation where
 
 open import Data.Bool using (Bool; true; false; _∧_; _∨_; not)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)

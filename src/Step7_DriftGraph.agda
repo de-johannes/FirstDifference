@@ -268,15 +268,30 @@ test-drift-operation = graph-to-operations example-2d-drift 2
                        (true ∷ false ∷ []) 
                        (false ∷ true ∷ [])
 
--- | Test: Reachability witness construction
-test-reachability : let v₁ = mk-dist 2 (true ∷ false ∷ [])
-                        v₃ = mk-dist 2 (false ∷ false ∷ [])
-                        e₁ = v₁ , mk-dist 2 (false ∷ true ∷ []) ⟹ v₃
-                    in  v₁ ⟹₁ v₃
-  where open DriftGraph example-2d-drift
+-- | Test: Reachability witness construction - corrected
+test-reachability : _⟹₁_ {example-2d-drift} v₁ v₃
 test-reachability = mk-direct-reach e₁ v₁ v₃ here (inj₁ refl) refl
   where 
     v₁ = mk-dist 2 (true ∷ false ∷ [])
     v₃ = mk-dist 2 (false ∷ false ∷ [])  
     e₁ = v₁ , mk-dist 2 (false ∷ true ∷ []) ⟹ v₃
 
+-- | Test: Acyclicity for our example
+test-acyclicity : ¬ (_⤜_ {example-2d-drift} v₃ v₃)
+test-acyclicity = theorem-acyclic example-2d-drift v₃
+  where v₃ = mk-dist 2 (false ∷ false ∷ [])
+
+-- | Test: Validate graph structure
+test-graph-structure : DriftGraph
+test-graph-structure = example-2d-drift
+
+------------------------------------------------------------------------
+-- SUMMARY OF WHAT WE'VE BUILT
+------------------------------------------------------------------------
+-- |
+-- | DriftEvent      ↔ "admitted drift event (d₁,d₂) → d₃" (Chapter 5)
+-- | temporal-order  ↔ "τ(parents) < τ(child)" (temporal ordering)  
+-- | theorem-acyclic ↔ "G is directed acyclic graph" (Theorem 5.3)
+-- | rank-layer     ↔ "temporal fibers π⁻¹(Xₙ)" (Definition 5.4)
+-- | _⤜_ relation   ↔ "reachability in R(G)" (Chapter 6)
+-- | graph-to-operations ↔ Bridge between explicit graph and Boolean ops

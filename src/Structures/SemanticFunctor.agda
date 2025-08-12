@@ -2,10 +2,11 @@ module Structures.SemanticFunctor where
 
 open import Agda.Primitive using (lzero)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong; sym; trans)
+open import Relation.Binary.PropositionalEquality.≡-Reasoning
 open import Data.Nat using (ℕ; zero; suc; _+_; _≤_; _∸_)
-open import Data.Nat.Properties using (+-assoc; +-identityˡ; ≤-refl; ≤-trans; m+n∸n≡m; m≤n⇒m+n∸m≡n; ∸-+-assoc)
+open import Data.Nat.Properties using (+-assoc; +-identityˡ; ≤-refl; ≤-trans; m+n∸n≡m)
 
--- Import our enhanced structures with consistent Data.Nat.≤ usage
+-- Import our enhanced structures
 open import Structures.CutCat using (Category; CutCat)
 open import Structures.DistOpOperad using
   ( DistOpAlg; HomAlg; NAlg; plus; plus-hom; shiftHom; shift-id; idAlg; _∘Alg_ )
@@ -14,8 +15,25 @@ open DistOpAlg public
 open HomAlg     public
 
 ------------------------------------------------------------------------
+-- Helper lemmas we need to prove ourselves
+------------------------------------------------------------------------
+
+-- Key lemma: m + (n ∸ m) ≡ n when m ≤ n
+m+n∸m≡n : ∀ {m n} → m ≤ n → m + (n ∸ m) ≡ n
+m+n∸m≡n {zero}  {n}     _        = +-identityˡ n
+m+n∸m≡n {suc m} {zero}  ()
+m+n∸m≡n {suc m} {suc n} (Data.Nat.s≤s p) = cong suc (m+n∸m≡n p)
+
+-- Subtraction distributes over addition when conditions are met
+∸-distr : ∀ {a b c} → a ≤ b → b ≤ c → (c ∸ a) ≡ (c ∸ b) + (b ∸ a)
+∸-distr {zero}  {b}     {c}     _        p        = sym (+-identityʳ (c ∸ b))
+  where open import Data.Nat.Properties using (+-identityʳ)
+∸-distr {suc a} {zero}  {c}     ()       p
+∸-distr {suc a} {suc b} {zero}  _        ()
+∸-distr {suc a} {suc b} {suc c} (Data.Nat.s≤s f) (Data.Nat.s≤s g) = ∸-distr f g
+
+------------------------------------------------------------------------
 -- Semantic Time Functor: CutCat → DistOpAlg
--- Using natural subtraction for simplicity
 ------------------------------------------------------------------------
 
 -- Difference function: simple natural subtraction
@@ -28,23 +46,11 @@ diff-refl m = m+n∸n≡m m 0
 
 -- Semantic interpretation: temporal progression gives arithmetic gap
 end-eq : ∀ {b c} (g : b ≤ c) → b + diff g ≡ c
-end-eq {b} {c} p = m≤n⇒m+n∸m≡n p
+end-eq {b} {c} p = m+n∸m≡n p
 
 -- Composition preserves temporal arithmetic
 diff-∙ : ∀ {a b c} (f : a ≤ b) (g : b ≤ c) → diff (≤-trans f g) ≡ diff f + diff g
-diff-∙ {a} {b} {c} f g = 
-  begin
-    c ∸ a
-  ≡⟨ sym (∸-+-assoc c (b ∸ a) a (≤-trans (Data.Nat.Properties.n∸m≤n b a) f)) ⟩
-    (c + (b ∸ a)) ∸ (a + (b ∸ a))
-  ≡⟨ cong (λ x → (c + (b ∸ a)) ∸ x) (sym (end-eq f)) ⟩
-    (c + (b ∸ a)) ∸ b
-  ≡⟨ cong (λ x → x ∸ b) (Data.Nat.Properties.+-comm c (b ∸ a)) ⟩
-    ((b ∸ a) + c) ∸ b
-  ≡⟨ ∸-+-assoc (b ∸ a) c b g ⟩
-    (b ∸ a) + (c ∸ b)
-  ∎
-  where open ≡-Reasoning
+diff-∙ {a} {b} {c} f g = ∸-distr f g
 
 ------------------------------------------------------------------------
 -- Semantic Time Functor: The conceptual bridge
@@ -78,5 +84,5 @@ F-comp f g n
         | sym (diff-∙ f g) = refl
 
 ------------------------------------------------------------------------
--- Clean solution: diff as natural subtraction, proven properties from stdlib
+-- Clean and self-contained: proven from basic principles
 ------------------------------------------------------------------------

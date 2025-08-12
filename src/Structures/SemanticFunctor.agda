@@ -7,10 +7,10 @@ module Structures.SemanticFunctor where
 open import Agda.Primitive using (lzero)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong; trans; subst)
 open import Data.Nat using (ℕ; zero; suc; _+_; _∸_)
-open import Data.Nat.Properties using (+-assoc; +-identityʳ; n∸n≡0)
+-- FIX: Import additional properties we need
+open import Data.Nat.Properties using (+-assoc; +-identityʳ; n∸n≡0; m+n∸n≡m)
 open import Data.List using (_∷_)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
--- FIX: Add 'not' to the Data.Bool import
 open import Data.Bool using (Bool; true; false; not)
 open import Data.Empty using (⊥; ⊥-elim)
 open import Data.Unit using (⊤; tt)
@@ -20,6 +20,15 @@ open import Data.Product using (_×_; _,_; proj₁; proj₂)
 import Structures.CutCat as C
 open C using (_≤_; refl≤; z≤n; s≤s)
 open import Structures.Drift using (History; T; Dist; irreducible?)
+
+------------------------------------------------------------------------
+-- Helper lemmas defined at module level (better scoping)
+------------------------------------------------------------------------
+
+-- | Helper: suc n ∸ n ≡ 1 (defined at module level for proper scoping)
+suc∸n≡1 : ∀ n → suc n ∸ n ≡ suc zero
+suc∸n≡1 n = m+n∸n≡m 1 n
+-- This uses the standard library lemma m+n∸n≡m with m = 1
 
 ------------------------------------------------------------------------
 -- Semantic mapping functions
@@ -62,7 +71,6 @@ T-behavior h d = (case-irreducible , case-reducible)
     case-reducible : irreducible? d h ≡ false → T (d ∷ h) ≡ T h  
     case-reducible eq with irreducible? d h
     ... | false = refl
-    -- FIX: Now 'not' is properly in scope and can be used
     ... | true  = ⊥-elim (subst (λ x → BoolType (not x)) eq tt)
 
 -- | Extract the irreducible case proof
@@ -77,16 +85,12 @@ T-reducible h d = proj₂ (T-behavior h d)
 
 -- | Temporal gap is always 0 or 1 (follows from irreducibility)
 -- | This captures the discrete nature of semantic time advancement
+-- FIX: Now uses the properly scoped helper function
 gap-binary : ∀ {n} (h : History n) (d : Dist n) → 
              (temporalGap h d ≡ zero) ⊎ (temporalGap h d ≡ suc zero)
 gap-binary h d with irreducible? d h
-... | true  = inj₂ (suc∸n≡1 (T h))
+... | true  = inj₂ (suc∸n≡1 (T h))  -- Now properly in scope
 ... | false = inj₁ (n∸n≡0 (T h))
-  where
-    -- Helper: suc n ∸ n ≡ 1
-    suc∸n≡1 : ∀ n → suc n ∸ n ≡ suc zero
-    suc∸n≡1 zero = refl
-    suc∸n≡1 (suc n) = suc∸n≡1 n
 
 -- | Identity progression: no temporal gap means identity function
 identity-preservation : ∀ {n} (h : History n) (d : Dist n) → 
@@ -138,5 +142,5 @@ getProgression h d = proj₂ (temporalAnalysis h d)
 -- • Drift operations (Structures.Drift)
 -- • Temporal progression (CutCat) 
 -- • Semantic time as a functor from distinction processes to ℕ
--- • Product types for bundling related proofs and functions
+-- • Standard library integration for arithmetic properties
 ------------------------------------------------------------------------

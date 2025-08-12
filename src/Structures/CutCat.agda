@@ -1,17 +1,46 @@
 module Structures.CutCat where
 
 open import Agda.Primitive using (Level; lzero; lsuc)
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong; sym; trans)
-open import Data.Nat using (ℕ; zero; suc; _≤_)
-open import Data.Nat.Properties using (≤-refl; ≤-trans; ≤-antisym; ≤-total)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
+open import Data.Nat using (ℕ; zero; suc)
 
 ------------------------------------------------------------------------
--- Temporal ordering: foundation for irreversible progression
--- Uses standard Data.Nat.≤ relation - clean and simple!
+-- Temporal ordering: custom ≤ relation optimized for our domain
+-- This is CLEANER than Data.Nat.≤ for our specific needs!
 ------------------------------------------------------------------------
 
+infix 4 _≤_
+data _≤_ : ℕ → ℕ → Set where
+  z≤n : ∀ {n} → zero ≤ n
+  s≤s : ∀ {m n} → m ≤ n → suc m ≤ suc n
+
+-- Reflexivity: every stage relates to itself
+refl≤ : ∀ n → n ≤ n
+refl≤ zero    = z≤n
+refl≤ (suc n) = s≤s (refl≤ n)
+
+-- Composition (transitivity): temporal progression is transitive
+infixl 5 _∙_
+_∙_ : ∀ {i j k} → i ≤ j → j ≤ k → i ≤ k
+z≤n     ∙ _        = z≤n
+s≤s p   ∙ s≤s q    = s≤s (p ∙ q)
+
+-- Category laws for temporal progression (clean and simple!)
+idʳ-lemma : ∀ {m n} (f : m ≤ n) → f ∙ refl≤ n ≡ f
+idʳ-lemma z≤n     = refl
+idʳ-lemma (s≤s f) = cong s≤s (idʳ-lemma f)
+
+idˡ-lemma : ∀ {m n} (f : m ≤ n) → refl≤ m ∙ f ≡ f
+idˡ-lemma z≤n     = refl
+idˡ-lemma (s≤s f) = cong s≤s (idˡ-lemma f)
+
+assoc-∙ : ∀ {a b c d} (f : a ≤ b) (g : b ≤ c) (h : c ≤ d)
+        → (f ∙ g) ∙ h ≡ f ∙ (g ∙ h)
+assoc-∙ z≤n      g        h        = refl
+assoc-∙ (s≤s f) (s≤s g) (s≤s h)    = cong s≤s (assoc-∙ f g h)
+
 ------------------------------------------------------------------------
--- Category interface: minimal structure for our purposes
+-- Category interface
 ------------------------------------------------------------------------
 
 record Category (ℓ : Level) : Set (lsuc ℓ) where
@@ -28,35 +57,14 @@ record Category (ℓ : Level) : Set (lsuc ℓ) where
 open Category public
 
 ------------------------------------------------------------------------
--- Category laws for standard ≤ relation (proven locally)
-------------------------------------------------------------------------
-
--- Left identity: ≤-refl composed with f equals f
-≤-idˡ : ∀ {m n} (f : m ≤ n) → ≤-trans ≤-refl f ≡ f
-≤-idˡ f = Data.Nat.Properties.≤-irrelevant (≤-trans ≤-refl f) f
-
--- Right identity: f composed with ≤-refl equals f  
-≤-idʳ : ∀ {m n} (f : m ≤ n) → ≤-trans f ≤-refl ≡ f
-≤-idʳ f = Data.Nat.Properties.≤-irrelevant (≤-trans f ≤-refl) f
-
--- Associativity: composition of ≤ proofs is associative
-≤-assoc : ∀ {a b c d} (f : a ≤ b) (g : b ≤ c) (h : c ≤ d)
-        → ≤-trans (≤-trans f g) h ≡ ≤-trans f (≤-trans g h)
-≤-assoc f g h = Data.Nat.Properties.≤-irrelevant 
-                  (≤-trans (≤-trans f g) h) 
-                  (≤-trans f (≤-trans g h))
-
-------------------------------------------------------------------------
--- CutCat: The temporal spine category
--- Objects = natural numbers (temporal stages)
--- Morphisms = standard ≤ proofs (temporal progression)
+-- CutCat: The temporal spine category (domain-optimized!)
 ------------------------------------------------------------------------
 
 CutCat : Category lzero
 CutCat .Obj         = ℕ
-CutCat .Hom m n     = m ≤ n          -- Standard Data.Nat.≤
-CutCat .id n        = ≤-refl         -- Standard reflexivity
-CutCat ._∘_ f g     = ≤-trans f g    -- Standard transitivity
-CutCat .idˡ f       = ≤-idˡ f        -- Proven using ≤-irrelevant
-CutCat .idʳ f       = ≤-idʳ f        -- Proven using ≤-irrelevant
-CutCat .assoc f g h = ≤-assoc f g h  -- Proven using ≤-irrelevant
+CutCat .Hom m n     = m ≤ n          -- Our custom ≤
+CutCat .id n        = refl≤ n        -- Clean reflexivity
+CutCat ._∘_ f g     = f ∙ g          -- Clean composition
+CutCat .idˡ f       = idˡ-lemma f    -- Easy proofs
+CutCat .idʳ f       = idʳ-lemma f    -- Easy proofs
+CutCat .assoc f g h = assoc-∙ f g h  -- Easy proofs

@@ -11,7 +11,7 @@ open import Data.Nat using (ℕ; zero; suc)
 open import Data.Unit using (⊤; tt)
 
 open import Structures.CutCat
-open import Structures.DistOpOperad using (DistOpAlg; HomAlg; NAlg; plus; plus-hom; shiftHom; idAlg)
+open import Structures.DistOpOperad using (DistOpAlg; HomAlg; NAlg; plus; plus-hom; shiftHom; idAlg; _∘Alg_)
 open DistOpAlg public
 open HomAlg public
 

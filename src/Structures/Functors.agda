@@ -2,7 +2,7 @@ module Structures.Functors where
 
 -- This module formalises "semantic time" T(n) from Part I of the Backbone PDF.
 -- Semantic time counts irreducible drift events and maps them to ℕ via the initial
--- algebra (NAlg, suc).
+-- algebra (NAlg, suc) as a functor: CutCat ⟶ DistOpAlg.
 
 open import Agda.Primitive using (lzero)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
@@ -27,6 +27,10 @@ diff : ∀ {m n} → m ≤ n → ℕ
 diff z≤n     = zero
 diff (s≤s p) = suc (diff p)
 
+-- Helper: diff on reflexivity is zero
+diff-refl : ∀ m → diff (refl≤ m) ≡ 0
+diff-refl _ = refl
+
 ------------------------------------------------------------------------
 -- Functor CutCat → DistOpAlg  (Semantic Time)
 ------------------------------------------------------------------------
@@ -45,9 +49,9 @@ semanticTime n = n
 -- Functoriality proofs
 ------------------------------------------------------------------------
 
--- Identity law, proven pointwise (safe mode, no funext)
+-- Identity law, proven pointwise with rewrite to handle Safe Mode
 F-id : ∀ {m} n → (F-arr (refl≤ m)) .f n ≡ (idAlg (F-obj m)) .f n
-F-id n = shift-id n
+F-id {m} n rewrite diff-refl m = shift-id n
 
 -- Composition law (definitional via structure of diff and plus)
 F-comp :

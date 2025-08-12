@@ -1,9 +1,9 @@
 module Structures.DriftToOperad where
 
 open import Agda.Primitive using (lzero)
-open import Data.Bool using (Bool; true; _≡_)
+open import Data.Bool using (Bool; true)
 open import Data.Nat using (ℕ; suc)
-open import Relation.Binary.PropositionalEquality using (_≡_)
+open import Relation.Binary.PropositionalEquality using (_≡_)  -- _≡_ comes from here!
 open import Structures.Drift using (Dist; drift; T; History; irreducible?)
 
 ------------------------------------------------------------------------

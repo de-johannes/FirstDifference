@@ -2,9 +2,9 @@ module Structures.DriftToCut where
 
 open import Data.List using (_∷_)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
--- Import ≤ from CutCat, not Data.Nat!
-open import Structures.CutCat using (_≤_; Category; CutCat)  
-open import Structures.Drift using (History; T; Dist)
+-- Import all needed constructors from CutCat at the top level
+open import Structures.CutCat using (_≤_; refl≤; s≤s; z≤n; Category; CutCat)  
+open import Structures.Drift using (History; T; Dist; irreducible?)
 
 ------------------------------------------------------------------------
 -- Bridge: Semantic Time induces objects in CutCat
@@ -14,14 +14,16 @@ open import Structures.Drift using (History; T; Dist)
 semanticTimeObject : ∀ {n} → History n → Category.Obj CutCat
 semanticTimeObject h = T h
 
--- We need T-monotonic that produces CutCat.≤, not Data.Nat.≤
--- So we redefine it here with the correct ≤ relation
+-- Helper: n ≤ suc n using CutCat constructors
+n≤suc-n : ∀ n → n ≤ suc n
+n≤suc-n zero    = z≤n
+n≤suc-n (suc n) = s≤s (n≤suc-n n)
+
+-- T-monotonic using CutCat's ≤ relation
 T-monotonic-CutCat : ∀ {n} (h : History n) (d : Dist n) → T h ≤ T (d ∷ h)
-T-monotonic-CutCat {n} h d with Structures.Drift.irreducible? d h
-... | true  = s≤s (refl≤ (T h))  -- T (d ∷ h) = suc (T h)
-... | false = refl≤ (T h)        -- T (d ∷ h) = T h
-  where
-    open import Structures.CutCat using (refl≤; s≤s; z≤n)
+T-monotonic-CutCat h d with irreducible? d h
+... | true  = n≤suc-n (T h)  -- T (d ∷ h) = suc (T h), so T h ≤ suc (T h)
+... | false = refl≤ (T h)    -- T (d ∷ h) = T h, so T h ≤ T h
 
 -- History extension induces CutCat morphism via monotonicity
 historyExtension→Morphism : 

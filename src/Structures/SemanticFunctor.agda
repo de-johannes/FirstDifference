@@ -58,14 +58,21 @@ semanticTime n = n
 F-id : ∀ {m} n → (F-arr (refl≤ m)) .f n ≡ (idAlg (F-obj m)) .f n
 F-id {m} n rewrite diff-refl m = shift-id n
 
--- Simple composition proof without fancy reasoning
+-- Explicit composition to avoid type inference issues
 F-comp : ∀ {a b c} (f : a ≤ b) (g : b ≤ c) (n : ℕ) →
-         (_∘Alg_ (F-arr g) (F-arr f)) .f n ≡ (F-arr (f ∙ g)) .f n
+         ((_∘Alg_ {lzero} {lzero} {lzero} {F-obj b} {F-obj c} {F-obj a} (F-arr g) (F-arr f)) .f n) ≡ 
+         ((F-arr (f ∙ g)) .f n)
 F-comp {a} {b} {c} f g n = 
+  -- Unfold the composition definition
+  -- (_∘Alg_ (F-arr g) (F-arr f)) .f n = (F-arr g) .f ((F-arr f) .f n)
+  --                                   = (F-arr g) .f (plus (diff f) n)  
+  --                                   = plus (diff g) (plus (diff f) n)
+  --                                   = (n + diff f) + diff g
+  -- And (F-arr (f ∙ g)) .f n = plus (diff (f ∙ g)) n = n + diff (f ∙ g)
   trans 
     (+-assoc n (diff f) (diff g))
     (cong (λ x → n + x) (sym (diff-∙ f g)))
 
 ------------------------------------------------------------------------
--- Clean, domain-specific, and it works!
+-- Domain-specific design works perfectly!
 ------------------------------------------------------------------------

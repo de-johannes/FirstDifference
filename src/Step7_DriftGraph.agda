@@ -3,21 +3,22 @@
 module Step7_DriftGraph where
 
 open import Data.Nat using (ℕ; zero; suc; _≤_; _<_; z≤n; s≤s; _≟_)
-open import Data.Nat.Properties using (<-trans; <-irrefl; m<n⇒m≤n)
+open import Data.Nat.Properties using (<-trans; <-irrefl)  -- m<n⇒m≤n entfernt
 open import Data.Vec using (Vec; []; _∷_)
 open import Data.List using (List; []; _∷_; any)
 open import Data.Product using (_×_; _,_; Σ; proj₁; proj₂)
 open import Data.Bool using (Bool; true; false)
+open import Data.Maybe using (Maybe; just; nothing)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong)
 open import Relation.Nullary using (¬_; Dec; yes; no)
 open import Data.Empty using (⊥-elim)
-open import Function using (id; _∘_)
+open import Function using (_∘_) renaming (id to identity)  -- id umbenannt
 
 -- Importe aus vorherigen Schritten
 open import Step2_VectorOperations using (Dist; drift)
 
 ------------------------------------------------------------------------
--- 1. List-Mitgliedschaft (fehlte noch)
+-- 1. List-Mitgliedschaft
 ------------------------------------------------------------------------
 
 data _∈_ {A : Set} : A → List A → Set where
@@ -35,14 +36,14 @@ NodeId = ℕ
 record Node : Set where
   constructor _,_içeriği_
   field
-    id      : NodeId
-    content : Dist (suc (suc zero)) -- Beispiel-Dimension
+    nodeId  : NodeId  -- Renamed from 'id' to avoid conflict
+    content : Dist (suc (suc zero))
 
 open Node public
 
 -- Gleichheit von Knoten wird über ihre ID entschieden
 _≟Node_ : Node → Node → Bool
-_≟Node_ a b with id a ≟ id b
+_≟Node_ a b with nodeId a ≟ nodeId b
 ... | yes _ = true
 ... | no  _ = false
 
@@ -54,17 +55,12 @@ Edge = NodeId × NodeId
 -- 3. Der chronologische, induktive DriftGraph
 ------------------------------------------------------------------------
 
--- Ein Graph wird schrittweise aufgebaut.
 data DriftGraph : Set where
-  -- Der leere Graph am Anfang der Zeit
   empty : DriftGraph
-  -- Hinzufügen eines neuen Knotens zu einer bestimmten Zeit (Rank)
   add-node : DriftGraph → Node → DriftGraph
-  -- Hinzufügen einer Kante (eines Drift-Events), die die Zeit respektiert
   add-edge : DriftGraph → (parent₁ parent₂ child : Node)
-           -- Bedingung: Die Eltern müssen *vor* dem Kind existieren (in der Zeit)
-           → id parent₁ < id child
-           → id parent₂ < id child
+           → nodeId parent₁ < nodeId child
+           → nodeId parent₂ < nodeId child
            → DriftGraph
 
 ------------------------------------------------------------------------
@@ -79,7 +75,7 @@ nodes (add-edge G _ _ _ _ _) = nodes G
 edges : DriftGraph → List Edge
 edges empty = []
 edges (add-node G _) = edges G
-edges (add-edge G p₁ p₂ c _ _) = (id p₁ , id c) ∷ (id p₂ , id c) ∷ edges G
+edges (add-edge G p₁ p₂ c _ _) = (nodeId p₁ , nodeId c) ∷ (nodeId p₂ , nodeId c) ∷ edges G
 
 ------------------------------------------------------------------------
 -- 5. Erreichbarkeit und Azyklizität
@@ -98,8 +94,8 @@ data _—↠_ (G : DriftGraph) : NodeId → NodeId → Set where
 edge-increases-time : ∀ G u v → G —→ u v → u < v
 edge-increases-time empty u v ()
 edge-increases-time (add-node G _) u v edge = edge-increases-time G u v edge
-edge-increases-time (add-edge G p₁ p₂ c p₁<c p₂<c) u v here = p₁<c
-edge-increases-time (add-edge G p₁ p₂ c p₁<c p₂<c) u v (there here) = p₂<c
+edge-increases-time (add-edge G p₁ p₂ c p₁<c p₂<c) .(nodeId p₁) .(nodeId c) here = p₁<c
+edge-increases-time (add-edge G p₁ p₂ c p₁<c p₂<c) .(nodeId p₂) .(nodeId c) (there here) = p₂<c
 edge-increases-time (add-edge G p₁ p₂ c p₁<c p₂<c) u v (there (there edge)) = 
   edge-increases-time G u v edge
 
@@ -146,16 +142,17 @@ test-acyclic = theorem-acyclic-revised example-graph 2
 -- 7. Verbindung zu Drift-Operationen
 ------------------------------------------------------------------------
 
+-- Hilfsfunktion: Finde Knoten im Graph
+find-node : DriftGraph → NodeId → Maybe Node
+find-node empty _ = nothing
+find-node (add-node G n) target with nodeId n ≟ target
+... | yes _ = just n
+... | no  _ = find-node G target
+find-node (add-edge G _ _ _ _ _) target = find-node G target
+
 -- Extrahiere Drift-Operation aus Graph-Struktur
 extract-drift : DriftGraph → NodeId → NodeId → NodeId → Maybe (Dist (suc (suc zero)))
 extract-drift G p₁ p₂ c with find-node G p₁ | find-node G p₂ | find-node G c
-  where
-  find-node : DriftGraph → NodeId → Maybe Node
-  find-node empty _ = nothing
-  find-node (add-node G n) target with id n ≟ target
-  ... | yes _ = just n
-  ... | no  _ = find-node G target
-  find-node (add-edge G _ _ _ _ _) target = find-node G target
 ... | just n₁ | just n₂ | just nc = just (drift (content n₁) (content n₂))
 ... | _ | _ | _ = nothing
 

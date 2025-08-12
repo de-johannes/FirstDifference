@@ -4,8 +4,8 @@
 -- | This bridges the gap between operational drift and categorical reachability
 module Step7_DriftGraph where
 
-open import Data.Bool using (Bool; true; false; _∧_; _∨_; not)
-open import Data.Nat using (ℕ; zero; suc; _≤_; _<_; z≤n; s≤s; _+_; _⊔_)
+open import Data.Bool using (Bool; true; false; _∧_; _∨_; not; if_then_else_)
+open import Data.Nat using (ℕ; zero; suc; _≤_; _<_; z≤n; s≤s; _+_; _⊔_; _≟_)
 open import Data.Nat.Properties using (<-trans; <-irrefl)
 open import Data.Vec using (Vec; []; _∷_; lookup)
 open import Data.List using (List; []; _∷_; _++_; length; any; all; foldr; map; filter)
@@ -13,7 +13,7 @@ open import Data.Product using (_×_; _,_; proj₁; proj₂; ∃; ∃-syntax)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong; subst)
 open import Relation.Nullary using (¬_; Dec; yes; no)
-open import Relation.Nullary.Decidable using (True; toWitness)
+open import Relation.Nullary.Decidable using (True; toWitness; ⌊_⌋)
 open import Data.Empty using (⊥; ⊥-elim)
 open import Function using (id; _∘_)
 
@@ -23,6 +23,20 @@ open import Step2_VectorOperations
 open import Step3_AlgebraLaws
 open import Step4_PartialOrder
 open import Step5_CategoryStructure
+
+------------------------------------------------------------------------
+-- VECTOR EQUALITY HELPER
+------------------------------------------------------------------------
+
+-- | Decidable equality for Bool vectors
+vec-eq : ∀ {n} → Vec Bool n → Vec Bool n → Bool
+vec-eq [] [] = true
+vec-eq (x ∷ xs) (y ∷ ys) = if (x Data.Bool.≟ y) then vec-eq xs ys else false
+  where
+  _Data.Bool.≟_ : Bool → Bool → Bool
+  true Data.Bool.≟ true = true
+  false Data.Bool.≟ false = true
+  _ Data.Bool.≟ _ = false
 
 ------------------------------------------------------------------------
 -- DISTINCTION UNIVERSE: Heterogeneous Distinctions
@@ -39,12 +53,11 @@ dim (mk-dist n _) = n
 content : (d : Distinction) → Dist (dim d)
 content (mk-dist _ v) = v
 
--- | Equality for distinctions (simplified)
+-- | Equality for distinctions
 distinction-eq : Distinction → Distinction → Bool
-distinction-eq (mk-dist n₁ v₁) (mk-dist n₂ v₂) with n₁ Data.Nat.≟ n₂
+distinction-eq (mk-dist n₁ v₁) (mk-dist n₂ v₂) with n₁ ≟ n₂
 ... | no _ = false
-... | yes refl = v₁ Data.Vec.≟ v₂
-  where open import Relation.Nullary.Decidable using (⌊_⌋)
+... | yes refl = vec-eq v₁ v₂
 
 ------------------------------------------------------------------------
 -- DRIFT EVENTS: Explicit Parent-Child Relations
@@ -135,8 +148,7 @@ theorem-acyclic G v v⤜v = <-irrefl refl (⤜-implies-τ< v⤜v)
 
 -- | All vertices at temporal rank n
 rank-layer : (G : DriftGraph) → ℕ → List Distinction
-rank-layer G n = filter (λ v → ⌊ τ G v Data.Nat.≟ n ⌋) (vertices G)
-  where open import Relation.Nullary.Decidable using (⌊_⌋)
+rank-layer G n = filter (λ v → ⌊ τ G v ≟ n ⌋) (vertices G)
 
 -- | Maximum rank in the graph  
 max-rank : DriftGraph → ℕ
@@ -166,10 +178,10 @@ graph-to-operations G n v₁ v₂ = extract-result n v₁ v₂ (events G)
   extract-result : ∀ n → Dist n → Dist n → List DriftEvent → Dist n
   extract-result n v₁ v₂ [] = drift v₁ v₂  -- Fallback to component-wise AND
   extract-result n v₁ v₂ ((mk-dist m p₁ , mk-dist m p₂ ⟹ mk-dist m c) ∷ es) 
-    with n Data.Nat.≟ m
+    with n ≟ m
   ... | no _ = extract-result n v₁ v₂ es
-  ... | yes refl with v₁ Data.Vec.≟ p₁ | v₂ Data.Vec.≟ p₂  
-  ...   | yes refl | yes refl = c
+  ... | yes refl with vec-eq v₁ p₁ | vec-eq v₂ p₂  
+  ...   | true | true = c
   ...   | _ | _ = extract-result n v₁ v₂ es
 
 ------------------------------------------------------------------------
@@ -219,12 +231,26 @@ add-vertex G v time = record G
   { vertices = v ∷ vertices G
   ; τ = λ w → if distinction-eq w v then time else τ G w
   }
-  where
-  if_then_else_ : {A : Set} → Bool → A → A → A
-  if true then x else y = x
-  if false then x else y = y
 
 -- | Add new drift event to graph (simplified)
 add-drift-event : DriftGraph → DriftEvent → DriftGraph  
 add-drift-event G e = record G { events = e ∷ events G }
 
+------------------------------------------------------------------------
+-- TESTING AND VALIDATION
+------------------------------------------------------------------------
+
+-- | Test: Check if our example graph is well-formed
+test-example-acyclic : ¬ (v₃ ⤜ v₃)
+  where
+  open DriftGraph example-2d-drift
+  v₃ = mk-dist 2 (false ∷ false ∷ [])
+test-example-acyclic = theorem-acyclic example-2d-drift v₃
+  where v₃ = mk-dist 2 (false ∷ false ∷ [])
+
+-- | Test: Check temporal layers
+test-rank-0 : List Distinction
+test-rank-0 = rank-layer example-2d-drift 0
+
+test-rank-1 : List Distinction  
+test-rank-1 = rank-layer example-2d-drift 1

@@ -16,6 +16,11 @@ open import Core.Irrefutable   public
 -- Enhanced drift with semantic time
 open import Structures.Drift public
 open import Structures.Step1_BooleanFoundation public
+open import Structures.Step2_VectorOperations public
+open import Structures.Step3_AlgebraLaws public
+open import Structures.Step4_PartialOrder public
+open import Structures.Step5_CategoryStructure public
+open import Structures.Step6_SemanticTimeFunctor public
 
 ------------------------------------------------------------------------
 -- Integration: Complete foundational chain

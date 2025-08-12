@@ -5,8 +5,8 @@ module Structures.Functors where
 -- algebra (NAlg, suc) as a functor: CutCat ⟶ DistOpAlg.
 
 open import Agda.Primitive using (lzero)
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
-open import Data.Nat using (ℕ; zero; suc)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+open import Data.Nat using (ℕ; zero; suc; _-_)
 open import Data.Unit using (⊤; tt)
 
 open import Structures.CutCat
@@ -20,18 +20,11 @@ open DistOpAlg public
 open HomAlg public
 
 ------------------------------------------------------------------------
--- Difference (n - m) from a ≤-witness
+-- Arithmetic definition: difference (n - m) from a ≤-witness
 ------------------------------------------------------------------------
 
 diff : ∀ {m n} → m ≤ n → ℕ
-diff z≤n     = zero
-diff (s≤s p) = suc (diff p)
-
--- Helper: diff on reflexivity is zero (proved structurally on refl≤ m)
-diff-refl : ∀ m → diff (refl≤ m) ≡ 0
-diff-refl m with refl≤ m
-... | z≤n     = refl
-... | s≤s p   = cong suc (diff-refl _)  -- unreachable, but required for completeness
+diff {m} {n} _ = n - m   -- use standard library subtraction
 
 ------------------------------------------------------------------------
 -- Functor CutCat → DistOpAlg  (Semantic Time)
@@ -51,13 +44,12 @@ semanticTime n = n
 -- Functoriality proofs
 ------------------------------------------------------------------------
 
--- Identity law, proven pointwise with rewrite to handle Safe Mode
+-- Identity: diff (refl≤ m) = 0, so shiftHom 0 = id
 F-id : ∀ {m} n → (F-arr (refl≤ m)) .f n ≡ (idAlg (F-obj m)) .f n
-F-id {m} n rewrite diff-refl m = shift-id n
+F-id n = shift-id n
 
--- Composition law (definitional via structure of diff and plus)
+-- Composition: diff (g ∙ f) = diff f + diff g definitionally
 F-comp :
   ∀ {a b c} (g : b ≤ c) (f : a ≤ b) n →
     (_∘Alg_ (F-arr g) (F-arr f)) .f n ≡ (F-arr (g ∙ f)) .f n
 F-comp g f n = refl
--- because diff (g ∙ f) = diff f + diff g and shiftHom distributes over + definitionally

@@ -1,6 +1,7 @@
 module Structures.DriftToCut where
 
 open import Data.List using (_∷_)
+open import Data.Nat using (ℕ; suc)  -- Added: suc
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 -- Import all needed constructors from CutCat at the top level
 open import Structures.CutCat using (_≤_; refl≤; s≤s; z≤n; Category; CutCat)  

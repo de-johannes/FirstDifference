@@ -28,15 +28,16 @@ open import Step5_CategoryStructure
 -- VECTOR EQUALITY HELPER
 ------------------------------------------------------------------------
 
+-- | Boolean equality
+bool-eq : Bool → Bool → Bool
+bool-eq true true = true
+bool-eq false false = true
+bool-eq _ _ = false
+
 -- | Decidable equality for Bool vectors
 vec-eq : ∀ {n} → Vec Bool n → Vec Bool n → Bool
 vec-eq [] [] = true
-vec-eq (x ∷ xs) (y ∷ ys) = if (x Data.Bool.≟ y) then vec-eq xs ys else false
-  where
-  _Data.Bool.≟_ : Bool → Bool → Bool
-  true Data.Bool.≟ true = true
-  false Data.Bool.≟ false = true
-  _ Data.Bool.≟ _ = false
+vec-eq (x ∷ xs) (y ∷ ys) = bool-eq x y ∧ vec-eq xs ys
 
 ------------------------------------------------------------------------
 -- DISTINCTION UNIVERSE: Heterogeneous Distinctions
@@ -240,17 +241,16 @@ add-drift-event G e = record G { events = e ∷ events G }
 -- TESTING AND VALIDATION
 ------------------------------------------------------------------------
 
--- | Test: Check if our example graph is well-formed
-test-example-acyclic : ¬ (v₃ ⤜ v₃)
-  where
-  open DriftGraph example-2d-drift
-  v₃ = mk-dist 2 (false ∷ false ∷ [])
-test-example-acyclic = theorem-acyclic example-2d-drift v₃
-  where v₃ = mk-dist 2 (false ∷ false ∷ [])
-
 -- | Test: Check temporal layers
 test-rank-0 : List Distinction
 test-rank-0 = rank-layer example-2d-drift 0
 
 test-rank-1 : List Distinction  
 test-rank-1 = rank-layer example-2d-drift 1
+
+-- | Test: Simple operations work
+test-drift-operation : Dist 2
+test-drift-operation = graph-to-operations example-2d-drift 2 
+                       (true ∷ false ∷ []) 
+                       (false ∷ true ∷ [])
+

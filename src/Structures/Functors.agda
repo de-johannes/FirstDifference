@@ -6,6 +6,7 @@ open import Data.Nat using (ℕ; zero; suc; _+_)
 open import Data.Nat.Properties using (+-assoc; +-identityˡ; +-suc)
 open import Data.Unit using (⊤; tt)
 
+-- Sauberer Import: nur qualified, dann selective opens
 import Structures.CutCat as C
 open C using (_≤_; refl≤; z≤n; s≤s; _∙_)
 
@@ -28,8 +29,9 @@ diff {suc m}  {suc n} (s≤s p)  = diff {m} {n} p
 -- Helper: "walking" the witness adds exactly its length
 end-eq : ∀ {b c} (g : b ≤ c) → b + diff g ≡ c
 end-eq {zero}   {c}     z≤n     = +-identityˡ c
-end-eq {suc b}  {suc c} (s≤s g) =
-  cong suc (trans (+-suc b (diff g)) (end-eq g))
+end-eq {suc b}  {suc c} (s≤s g) = 
+  -- suc b + diff (s≤s g) = suc b + diff g = suc (b + diff g) ≡ suc c
+  cong suc (end-eq g)
 
 -- Composition law for diff
 diff-∙ : ∀ {a b c} (f : a ≤ b) (g : b ≤ c) → diff (f ∙ g) ≡ diff f + diff g

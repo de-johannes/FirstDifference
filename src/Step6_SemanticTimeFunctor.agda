@@ -3,7 +3,7 @@
 
 -- | Step 6: Semantic Time as Rank Functor
 -- | Final piece: temporal semantics from Boolean structure
-module Structures.Step6_SemanticTimeFunctor where
+module Step6_SemanticTimeFunctor where
 
 open import Data.List using (List; length; _∷_)
 open import Data.Nat using (ℕ; _≤_)  

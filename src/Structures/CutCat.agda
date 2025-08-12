@@ -1,6 +1,6 @@
 module Structures.CutCat where
 
-open import Agda.Primitive using (Level; lzero)
+open import Agda.Primitive using (Level; lzero; lsuc)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
 open import Data.Unit using (⊤; tt)
 open import Data.Nat using (ℕ; zero; suc)

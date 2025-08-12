@@ -86,7 +86,7 @@ fold-uniq A a₀ h f₀ (suc n) =
   trans (hom h n) (cong (U A) (fold-uniq A a₀ h f₀ n))
 
 ------------------------------------------------------------------------
--- (Optional) small demo helpers
+-- (Demo) helpers
 ------------------------------------------------------------------------
 
 plus : ℕ → ℕ → ℕ
@@ -98,3 +98,7 @@ plus-hom _ _ = refl
 shiftHom : ℕ → HomAlg NAlg NAlg
 shiftHom k .f     = plus k
 shiftHom k .hom n = plus-hom k n
+
+-- Identity shift: +0 is the identity morphism on NAlg
+shift-id : ∀ n → plus 0 n ≡ n
+shift-id _ = refl

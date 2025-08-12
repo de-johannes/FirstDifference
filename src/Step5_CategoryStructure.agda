@@ -1,12 +1,12 @@
 {-# OPTIONS --safe #-}
 
--- | Step 5: Category of Drift-Preserving Morphisms (CLEAN VERSION)
+-- | Step 5: Category of Drift-Preserving Morphisms (DE MORGAN FIXED)
 module Step5_CategoryStructure where
 
 open import Data.Bool using (Bool; true; false; _∧_; _∨_; not)
 open import Data.Nat using (ℕ; zero; suc)
 open import Data.Vec using (Vec; []; _∷_)
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong; cong₂)
 open import Function using (id; _∘_)
 open import Data.Product using (_×_; _,_)
 
@@ -15,6 +15,29 @@ open import Step1_BooleanFoundation
 open import Step2_VectorOperations  
 open import Step3_AlgebraLaws
 open import Step4_PartialOrder
+
+------------------------------------------------------------------------
+-- DE MORGAN LAWS: Missing from Step1!
+------------------------------------------------------------------------
+
+-- De Morgan for AND: ¬(x ∧ y) ≡ ¬x ∨ ¬y
+de-morgan-∧ : ∀ x y → not (x ∧ y) ≡ not x ∨ not y
+de-morgan-∧ true  true  = refl
+de-morgan-∧ true  false = refl
+de-morgan-∧ false true  = refl
+de-morgan-∧ false false = refl
+
+-- De Morgan for OR: ¬(x ∨ y) ≡ ¬x ∧ ¬y
+de-morgan-∨ : ∀ x y → not (x ∨ y) ≡ not x ∧ not y
+de-morgan-∨ true  true  = refl
+de-morgan-∨ true  false = refl
+de-morgan-∨ false true  = refl
+de-morgan-∨ false false = refl
+
+-- Double negation
+not-involution : ∀ x → not (not x) ≡ x
+not-involution true  = refl
+not-involution false = refl
 
 ------------------------------------------------------------------------
 -- DRIFT MORPHISMS: Structure-Preserving Maps
@@ -71,10 +94,9 @@ drift-cat-assoc : ∀ {k l m n} (φ : DriftMorphism k l) (ψ : DriftMorphism l m
 drift-cat-assoc φ ψ χ x = refl
 
 ------------------------------------------------------------------------
--- VALID CONCRETE MORPHISMS (only working examples)
+-- NEGATION MORPHISM: Now with proper De Morgan proofs!
 ------------------------------------------------------------------------
 
--- Negation morphism - provably structure-preserving
 negateDrift : ∀ {n} → DriftMorphism n n
 negateDrift = record
   { f = neg
@@ -83,32 +105,26 @@ negateDrift = record
   ; preserves-neg = λ a → neg-involution a
   }
   where
-    -- De Morgan: neg(a ∧ b) = neg(a) ∨ neg(b)
+    -- FIXED: Now using explicit De Morgan laws
     drift-neg-swap : ∀ {n} (a b : Dist n) → neg (drift a b) ≡ join (neg a) (neg b)
     drift-neg-swap [] [] = refl
     drift-neg-swap (x ∷ xs) (y ∷ ys) = 
-      cong (not (x ∧ y) ∷_) (drift-neg-swap xs ys)
+      cong₂ _∷_ (de-morgan-∧ x y) (drift-neg-swap xs ys)
     
-    -- De Morgan: neg(a ∨ b) = neg(a) ∧ neg(b) 
     join-neg-swap : ∀ {n} (a b : Dist n) → neg (join a b) ≡ drift (neg a) (neg b)
     join-neg-swap [] [] = refl
     join-neg-swap (x ∷ xs) (y ∷ ys) = 
-      cong (not (x ∨ y) ∷_) (join-neg-swap xs ys)
+      cong₂ _∷_ (de-morgan-∨ x y) (join-neg-swap xs ys)
     
-    -- Double negation cancellation
     neg-involution : ∀ {n} (a : Dist n) → neg (neg a) ≡ a
     neg-involution [] = refl
-    neg-involution (x ∷ xs) = cong (not (not x) ∷_) (neg-involution xs)
-
--- Identity is the trivial case
-identityDrift : ∀ {n} → DriftMorphism n n
-identityDrift = idDrift
+    neg-involution (x ∷ xs) = 
+      cong₂ _∷_ (not-involution x) (neg-involution xs)
 
 ------------------------------------------------------------------------
 -- CATEGORICAL STRUCTURE PROOFS
 ------------------------------------------------------------------------
 
--- Category laws all work
 category-structure-proven : ∀ {l m n} (φ : DriftMorphism m n) (ψ : DriftMorphism l m) →
   (∀ x → DriftMorphism.f (composeDrift idDrift φ) x ≡ DriftMorphism.f φ x) ×
   (∀ x → DriftMorphism.f (composeDrift φ idDrift) x ≡ DriftMorphism.f φ x) ×  
@@ -122,27 +138,13 @@ category-structure-proven φ ψ =
 negation-involution : ∀ {n} → 
   ∀ x → DriftMorphism.f (composeDrift negateDrift negateDrift) x ≡ DriftMorphism.f idDrift x
 negation-involution [] = refl
-negation-involution (x ∷ xs) = cong (not (not x) ∷_) (negation-involution xs)
-
--- Composition with negation  
-compose-with-negation : ∀ {n} (φ : DriftMorphism n n) x →
-  DriftMorphism.f (composeDrift negateDrift φ) x ≡ neg (DriftMorphism.f φ x)
-compose-with-negation φ x = refl
+negation-involution (x ∷ xs) = 
+  cong₂ _∷_ (not-involution x) (negation-involution xs)
 
 ------------------------------------------------------------------------
--- MORPHISM PROPERTIES
-------------------------------------------------------------------------
-
--- Any morphism that commutes with negation is structure-preserving for our algebra
-morphism-respects-structure : ∀ {m n} (φ : DriftMorphism m n) (a : Dist m) →
-  -- If you preserve drift and join, negation preservation is automatic via De Morgan
-  DriftMorphism.f φ (neg a) ≡ neg (DriftMorphism.f φ a)
-morphism-respects-structure φ a = DriftMorphism.preserves-neg φ a
-
-------------------------------------------------------------------------
--- RESULT: Clean, provable categorical structure!
--- • Identity and negation morphisms fully implemented
--- • All category laws proven by refl (definitional equality)  
--- • De Morgan laws make negation morphism structure-preserving
--- • No holes, no problematic constructions, completely rigorous!
+-- RESULT: Complete with explicit Boolean proofs!
+-- • De Morgan laws proven exhaustively by pattern matching
+-- • Negation morphism properly structure-preserving
+-- • All category laws work by definitional equality
+-- • Completely rigorous - no hidden assumptions!
 ------------------------------------------------------------------------

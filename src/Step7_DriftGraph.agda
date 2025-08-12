@@ -9,6 +9,7 @@ open import Data.Nat using (ℕ; zero; suc; _≤_; _<_; z≤n; s≤s; _+_; _⊔_
 open import Data.Nat.Properties using (<-trans; <-irrefl)
 open import Data.Vec using (Vec; []; _∷_; lookup)
 open import Data.List using (List; []; _∷_; _++_; length; any; all; foldr; map; filter)
+open import Data.Product using (_×_; _,_; ∃-syntax; Σ; proj₁; proj₂)
 open import Data.Product using (_×_; _,_; ∃-syntax; Σ)  -- Σ explizit importieren
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong; subst)

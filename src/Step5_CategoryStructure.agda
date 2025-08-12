@@ -1,6 +1,6 @@
 {-# OPTIONS --safe #-}
 
--- | Step 5: Category of Drift-Preserving Morphisms (PATTERN FIXED)
+-- | Step 5: Category of Drift-Preserving Morphisms (CORRECT PROOFS)
 module Step5_CategoryStructure where
 
 open import Data.Bool using (Bool; true; false; _∧_; _∨_; not)
@@ -30,7 +30,7 @@ record DriftMorphism (m n : ℕ) : Set where
 open DriftMorphism public
 
 ------------------------------------------------------------------------
--- IDENTITY: The fundamental morphism
+-- IDENTITY: Always works
 ------------------------------------------------------------------------
 
 idDrift : ∀ {n} → DriftMorphism n n
@@ -77,26 +77,22 @@ drift-cat-assoc : ∀ {k l m n} (φ : DriftMorphism k l) (ψ : DriftMorphism l m
 drift-cat-assoc φ ψ χ x = refl
 
 ------------------------------------------------------------------------
--- CONCRETE EXAMPLE: Component swap with explicit functions
+-- COMPONENT SWAP: Correct proof by refl
 ------------------------------------------------------------------------
 
--- Helper function for swapping two-component vectors
+-- Helper function for swapping
 swap-2d : Dist (suc (suc zero)) → Dist (suc (suc zero))
 swap-2d (a ∷ b ∷ []) = b ∷ a ∷ []
 
--- Prove that swap preserves drift
+-- FIXED: The proofs are actually just refl!
 swap-preserves-drift : ∀ (v w : Dist (suc (suc zero))) → 
                        swap-2d (drift v w) ≡ drift (swap-2d v) (swap-2d w)
-swap-preserves-drift (a₁ ∷ a₂ ∷ []) (b₁ ∷ b₂ ∷ []) = 
-  cong₂ _∷_ (∧-comm a₁ b₁) (cong (_∷ []) (∧-comm a₂ b₂))
+swap-preserves-drift (a₁ ∷ a₂ ∷ []) (b₁ ∷ b₂ ∷ []) = refl
 
--- Prove that swap preserves join
 swap-preserves-join : ∀ (v w : Dist (suc (suc zero))) → 
                       swap-2d (join v w) ≡ join (swap-2d v) (swap-2d w)
-swap-preserves-join (a₁ ∷ a₂ ∷ []) (b₁ ∷ b₂ ∷ []) = 
-  cong₂ _∷_ (∨-comm a₁ b₁) (cong (_∷ []) (∨-comm a₂ b₂))
+swap-preserves-join (a₁ ∷ a₂ ∷ []) (b₁ ∷ b₂ ∷ []) = refl
 
--- Prove that swap preserves negation
 swap-preserves-neg : ∀ (v : Dist (suc (suc zero))) → 
                      swap-2d (neg v) ≡ neg (swap-2d v)
 swap-preserves-neg (a ∷ b ∷ []) = refl
@@ -110,7 +106,7 @@ swap₀₁ = record
   ; preserves-neg = swap-preserves-neg
   }
 
--- Proof that swap is self-inverse
+-- Swap is self-inverse
 swap-involution : ∀ x → DriftMorphism.f (composeDrift swap₀₁ swap₀₁) x ≡ DriftMorphism.f idDrift x
 swap-involution (a ∷ b ∷ []) = refl
 
@@ -131,15 +127,17 @@ category-structure-proven φ ψ =
 identity-neutral : ∀ {n} (d : Dist n) → DriftMorphism.f idDrift d ≡ d
 identity-neutral d = refl
 
--- Examples work
-swap-works : DriftMorphism.f swap₀₁ (true ∷ false ∷ []) ≡ (false ∷ true ∷ [])
-swap-works = refl
+-- Working examples
+swap-example : DriftMorphism.f swap₀₁ (true ∷ false ∷ []) ≡ (false ∷ true ∷ [])
+swap-example = refl
+
+drift-example : drift (true ∷ false ∷ []) (false ∷ true ∷ []) ≡ (false ∷ false ∷ [])
+drift-example = refl
 
 ------------------------------------------------------------------------
--- RESULT: Fixed categorical structure!
--- • Explicit functions instead of complex lambda patterns
--- • All proofs work with clean pattern matching
--- • Identity and swap morphisms fully implemented
--- • Category laws proven by definitional equality
--- • Completely rigorous and working!
+-- RESULT: Perfect categorical structure!
+-- • All proofs work by definitional equality (refl)
+-- • Identity and swap morphisms fully functional
+-- • Category laws automatically satisfied
+-- • Clean, minimal, completely rigorous!
 ------------------------------------------------------------------------

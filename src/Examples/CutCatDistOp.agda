@@ -1,4 +1,4 @@
-module Example.CutCatDistOp where
+module Examples.CutCatDistOp where
 
 open import Data.Nat using (ℕ; suc)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)

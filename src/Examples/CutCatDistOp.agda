@@ -7,5 +7,5 @@ examplestep : ℕ → ℕ
 examplestep = suc
 
 -- "Square commutes" here reduces to suc ∘ id ≡ id ∘ suc, i.e. refl.
-square-comm : (k : ℕ) → U k ≡ U k
+square-comm : (k : ℕ) → examplestep k ≡ examplestep k
 square-comm k = refl

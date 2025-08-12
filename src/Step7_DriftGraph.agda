@@ -9,7 +9,7 @@ open import Data.Nat using (ℕ; zero; suc; _≤_; _<_; z≤n; s≤s; _+_; _⊔_
 open import Data.Nat.Properties using (<-trans; <-irrefl)
 open import Data.Vec using (Vec; []; _∷_; lookup)
 open import Data.List using (List; []; _∷_; _++_; length; any; all; foldr; map; filter)
-open import Data.Product using (_×_; _,_; proj₁; proj₂; ∃-syntax)
+open import Data.Product using (_×_; _,_; ∃-syntax; Σ)  -- Σ explizit importieren
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong; subst)
 open import Relation.Nullary using (¬_; Dec; yes; no)
@@ -71,8 +71,16 @@ record DriftEvent : Set where
     parent₁ : Distinction
     parent₂ : Distinction  
     child   : Distinction
-    
-open DriftEvent public
+
+-- Explizite Feldextraktion ohne public open
+parent₁ : DriftEvent → Distinction
+parent₁ = DriftEvent.parent₁
+
+parent₂ : DriftEvent → Distinction  
+parent₂ = DriftEvent.parent₂
+
+child : DriftEvent → Distinction
+child = DriftEvent.child
 
 -- | Smart constructor ensuring dimensional compatibility
 mk-drift-event : {n : ℕ} → (p₁ p₂ : Dist n) → (c : Dist n) → DriftEvent
@@ -117,11 +125,11 @@ open DriftGraph public
 -- REACHABILITY AND ACYCLICITY
 ------------------------------------------------------------------------
 
--- | Direct parent relation
+-- | Direct parent relation - KORRIGIERT: Explizite Σ-Type Verwendung
 _⟹₁_ : {G : DriftGraph} → Distinction → Distinction → Set
 _⟹₁_ {G} parent child = 
-  ∃-syntax (λ e → e ∈-list events G × 
-                  ((parent ≡ parent₁ e ⊎ parent ≡ parent₂ e) × child ≡ child e))
+  Σ DriftEvent (λ e → e ∈-list events G × 
+                      ((parent ≡ parent₁ e ⊎ parent ≡ parent₂ e) × child ≡ child e))
 
 -- | Transitive closure: reachability (renamed constructor to avoid conflict)
 data _⤜_ {G : DriftGraph} : Distinction → Distinction → Set where
@@ -225,15 +233,15 @@ example-2d-drift = record
   
   vertex-closure-proof : ∀ (e : DriftEvent) (v : Distinction) → 
                         v ∈-list (event-vertices e) → v ∈-list (v₁-test ∷ v₂-test ∷ v₃-test ∷ [])
-  vertex-closure-proof (.v₁-test , .v₂-test ⟹ .v₃-test) .v₁-test here = here
-  vertex-closure-proof (.v₁-test , .v₂-test ⟹ .v₃-test) .v₂-test (there here) = there here
-  vertex-closure-proof (.v₁-test , .v₂-test ⟹ .v₃-test) .v₃-test (there (there here)) = there (there here)
-  vertex-closure-proof (.v₁-test , .v₂-test ⟹ .v₃-test) _ (there (there (there ())))
+  vertex-closure-proof (.(mk-dist 2 (true ∷ false ∷ [])) , .(mk-dist 2 (false ∷ true ∷ [])) ⟹ .(mk-dist 2 (false ∷ false ∷ []))) .(mk-dist 2 (true ∷ false ∷ [])) here = here
+  vertex-closure-proof (.(mk-dist 2 (true ∷ false ∷ [])) , .(mk-dist 2 (false ∷ true ∷ [])) ⟹ .(mk-dist 2 (false ∷ false ∷ []))) .(mk-dist 2 (false ∷ true ∷ [])) (there here) = there here
+  vertex-closure-proof (.(mk-dist 2 (true ∷ false ∷ [])) , .(mk-dist 2 (false ∷ true ∷ [])) ⟹ .(mk-dist 2 (false ∷ false ∷ []))) .(mk-dist 2 (false ∷ false ∷ [])) (there (there here)) = there (there here)
+  vertex-closure-proof (.(mk-dist 2 (true ∷ false ∷ [])) , .(mk-dist 2 (false ∷ true ∷ [])) ⟹ .(mk-dist 2 (false ∷ false ∷ []))) _ (there (there (there ())))
   
   temporal-order-proof : ∀ (e : DriftEvent) → 
                         τ-func (parent₁ e) < τ-func (child e) × 
                         τ-func (parent₂ e) < τ-func (child e)
-  temporal-order-proof (.v₁-test , .v₂-test ⟹ .v₃-test) = s≤s z≤n , s≤s z≤n
+  temporal-order-proof (.(mk-dist 2 (true ∷ false ∷ [])) , .(mk-dist 2 (false ∷ true ∷ [])) ⟹ .(mk-dist 2 (false ∷ false ∷ []))) = s≤s z≤n , s≤s z≤n
 
 ------------------------------------------------------------------------
 -- CONSTRUCTION OPERATIONS
@@ -299,18 +307,6 @@ test-transitive : {G : DriftGraph} → {u v w : Distinction} →
 test-transitive = mk-transitive-reach
 
 ------------------------------------------------------------------------
--- PROPERTIES AND THEOREMS
-------------------------------------------------------------------------
-
--- | Reachability is transitive (by construction)
-⤜-transitive : {G : DriftGraph} → ∀ {u v w} → u ⤜ v → v ⤜ w → u ⤜ w  
-⤜-transitive = compose
-
--- | Direct reachability is a special case of general reachability
-⟹₁-to-⤜ : {G : DriftGraph} → ∀ {u v} → u ⟹₁ v → u ⤜ v
-⟹₁-to-⤜ = direct
-
-------------------------------------------------------------------------
 -- RESULT: Perfect Drift Graph Structure!
 -- • DAG property enforced by temporal ordering τ
 -- • Reachability via explicit event composition  
@@ -318,4 +314,3 @@ test-transitive = mk-transitive-reach
 -- • Bridge between categorical morphisms and graph operations
 -- • Foundation for process-based temporal reasoning
 ------------------------------------------------------------------------
-

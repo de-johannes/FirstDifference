@@ -8,6 +8,7 @@ module Step4_PartialOrder where
 open import Step1_BooleanFoundation
 open import Step2_VectorOperations  
 open import Step3_AlgebraLaws
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong)
 
 ------------------------------------------------------------------------
 -- DRIFT-BASED ORDERING

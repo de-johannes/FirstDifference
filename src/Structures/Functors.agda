@@ -12,9 +12,10 @@ open import Data.Unit using (⊤; tt)
 open import Structures.CutCat
 open import Structures.DistOpOperad using
   ( DistOpAlg; HomAlg; NAlg
-  ; plus; plus-hom; shiftHom
+  ; plus; plus-hom; shiftHom; shift-id
   ; idAlg; _∘Alg_ )
 
+-- Bring record fields into scope
 open DistOpAlg public
 open HomAlg public
 
@@ -27,13 +28,6 @@ diff z≤n     = zero
 diff (s≤s p) = suc (diff p)
 
 ------------------------------------------------------------------------
--- Local definition: identity shift (+0)
-------------------------------------------------------------------------
-
-shift-id : ∀ n → plus 0 n ≡ n
-shift-id n = refl
-
-------------------------------------------------------------------------
 -- Functor CutCat → DistOpAlg  (Semantic Time)
 ------------------------------------------------------------------------
 
@@ -43,6 +37,7 @@ F-obj _ = NAlg
 F-arr : ∀ {m n} → m ≤ n → HomAlg (F-obj m) (F-obj n)
 F-arr p = shiftHom (diff p)
 
+-- Semantic time as object mapping only (for explicit reference in code/docs)
 semanticTime : ℕ → Carrier NAlg
 semanticTime n = n
 
@@ -50,10 +45,13 @@ semanticTime n = n
 -- Functoriality proofs
 ------------------------------------------------------------------------
 
+-- Identity law, proven pointwise (safe mode, no funext)
 F-id : ∀ {m} n → (F-arr (refl≤ m)) .f n ≡ (idAlg (F-obj m)) .f n
 F-id n = shift-id n
 
+-- Composition law (definitional via structure of diff and plus)
 F-comp :
   ∀ {a b c} (g : b ≤ c) (f : a ≤ b) n →
     (_∘Alg_ (F-arr g) (F-arr f)) .f n ≡ (F-arr (g ∙ f)) .f n
 F-comp g f n = refl
+-- because diff (g ∙ f) = diff f + diff g and shiftHom distributes over + definitionally

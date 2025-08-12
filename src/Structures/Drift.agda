@@ -1,4 +1,4 @@
-module D0.Drift where
+module Structure.Drift where
 
 open import Agda.Builtin.Equality using (_≡_; refl)
 open import Data.Empty using (⊥; ⊥-elim)

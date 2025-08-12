@@ -2,8 +2,8 @@ module Structures.Drift where
 
 open import Data.Bool using (Bool; true; false; _∧_; not)
 open import Data.List using (List; []; _∷_; map; _++_; length)
-open import Data.Nat using (ℕ; zero; suc; _+_; _≤_)  -- Added _≤_
-open import Data.Nat.Properties using (≤-refl; ≤-step)  -- Added these imports
+open import Data.Nat using (ℕ; zero; suc; _+_; _≤_)
+open import Data.Nat.Properties using (≤-refl; n≤1+n)  -- Use n≤1+n instead of ≤-step
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym)
 open import Data.Vec as Vec using (Vec; []; _∷_; zipWith)
@@ -80,12 +80,8 @@ ArrowOfTime δ prev with irreducible? δ prev
 ... | true  = inj₂ refl  -- Time arrow advances
 ... | false = inj₁ refl  -- Time stays constant
 
--- Helper: reflexivity from equality
-≤-refl-from-eq : ∀ {m n} → m ≡ n → m ≤ n
-≤-refl-from-eq refl = ≤-refl
-
--- Semantic time is monotonic: never decreases
+-- Semantic time is monotonic: never decreases  
 T-monotonic : ∀ {n} (h : History n) (d : Dist n) → T h ≤ T (d ∷ h)
-T-monotonic h d with ArrowOfTime d h
-... | inj₁ eq = ≤-refl-from-eq (sym eq)
-... | inj₂ eq = ≤-step ≤-refl
+T-monotonic h d with irreducible? d h
+... | true  = n≤1+n (T h)  -- T (d ∷ h) = suc (T h), so T h ≤ suc (T h)
+... | false = ≤-refl       -- T (d ∷ h) = T h, so T h ≤ T h

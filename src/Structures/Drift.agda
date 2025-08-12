@@ -2,11 +2,13 @@ module Structures.Drift where
 
 open import Data.Bool using (Bool; true; false; _∧_; not)
 open import Data.List using (List; []; _∷_; map; _++_; length)
-open import Data.Nat using (ℕ; zero; suc; _+_; _≤_)
-open import Data.Nat.Properties using (≤-refl; n≤1+n)  -- Use n≤1+n instead of ≤-step
+open import Data.Nat using (ℕ; zero; suc; _+_)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym)
 open import Data.Vec as Vec using (Vec; []; _∷_; zipWith)
+
+-- Import the CutCat ≤ relation for T-monotonic
+open import Structures.CutCat using (_≤_; z≤n; s≤s; refl≤)
 
 ------------------------------------------------------------------------
 -- Distinctions as fixed-length Bool vectors
@@ -80,8 +82,13 @@ ArrowOfTime δ prev with irreducible? δ prev
 ... | true  = inj₂ refl  -- Time arrow advances
 ... | false = inj₁ refl  -- Time stays constant
 
--- Semantic time is monotonic: never decreases  
+-- Helper: n ≤ suc n using CutCat constructors
+n≤suc-n : ∀ n → n ≤ suc n
+n≤suc-n zero    = z≤n
+n≤suc-n (suc n) = s≤s (n≤suc-n n)
+
+-- Semantic time is monotonic: never decreases (using CutCat ≤!)
 T-monotonic : ∀ {n} (h : History n) (d : Dist n) → T h ≤ T (d ∷ h)
 T-monotonic h d with irreducible? d h
-... | true  = n≤1+n (T h)  -- T (d ∷ h) = suc (T h), so T h ≤ suc (T h)
-... | false = ≤-refl       -- T (d ∷ h) = T h, so T h ≤ T h
+... | true  = n≤suc-n (T h)  -- T (d ∷ h) = suc (T h), so T h ≤ suc (T h)
+... | false = refl≤ (T h)    -- T (d ∷ h) = T h, so T h ≤ T h

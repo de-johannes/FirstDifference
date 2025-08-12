@@ -9,7 +9,7 @@ open import Data.Nat using (ℕ; zero; suc; _≤_; _<_; z≤n; s≤s; _+_; _⊔_
 open import Data.Nat.Properties using (<-trans; <-irrefl)
 open import Data.Vec using (Vec; []; _∷_; lookup)
 open import Data.List using (List; []; _∷_; _++_; length; any; all; foldr; map; filter)
-open import Data.Product using (_×_; _,_; proj₁; proj₂; ∃; ∃-syntax)
+open import Data.Product using (_×_; _,_; proj₁; proj₂; ∃-syntax)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong; subst)
 open import Relation.Nullary using (¬_; Dec; yes; no)
@@ -117,10 +117,11 @@ open DriftGraph public
 -- REACHABILITY AND ACYCLICITY
 ------------------------------------------------------------------------
 
--- | Direct parent relation
+-- | Direct parent relation - corrected syntax
 _⟹₁_ : {G : DriftGraph} → Distinction → Distinction → Set
-_⟹₁_ {G} parent child = ∃[ e ∈ events G ] 
-                        ((parent ≡ parent₁ e ⊎ parent ≡ parent₂ e) × child ≡ child e)
+_⟹₁_ {G} parent child = 
+  ∃-syntax (λ e → e ∈-list events G × 
+                  ((parent ≡ parent₁ e ⊎ parent ≡ parent₂ e) × child ≡ child e))
 
 -- | Transitive closure: reachability
 data _⤜_ {G : DriftGraph} : Distinction → Distinction → Set where
@@ -129,11 +130,11 @@ data _⤜_ {G : DriftGraph} : Distinction → Distinction → Set where
 
 -- | Helper: reachability implies temporal precedence  
 ⤜-implies-τ< : {G : DriftGraph} → ∀ {u w} → u ⤜ w → τ G u < τ G w
-⤜-implies-τ< {G} (direct (e , (inj₁ u≡p₁) , w≡c)) = 
+⤜-implies-τ< {G} (direct (e , (e∈events , (inj₁ u≡p₁) , w≡c))) = 
   subst (λ x → x < τ G (child e)) (sym u≡p₁) 
         (subst (λ x → τ G (parent₁ e) < x) w≡c 
                (proj₁ (temporal-order G e)))
-⤜-implies-τ< {G} (direct (e , (inj₂ u≡p₂) , w≡c)) = 
+⤜-implies-τ< {G} (direct (e , (e∈events , (inj₂ u≡p₂) , w≡c))) = 
   subst (λ x → x < τ G (child e)) (sym u≡p₂)
         (subst (λ x → τ G (parent₂ e) < x) w≡c 
                (proj₂ (temporal-order G e)))
@@ -238,6 +239,19 @@ add-drift-event : DriftGraph → DriftEvent → DriftGraph
 add-drift-event G e = record G { events = e ∷ events G }
 
 ------------------------------------------------------------------------
+-- CONSTRUCTION HELPERS FOR REACHABILITY
+------------------------------------------------------------------------
+
+-- | Helper: construct a direct reachability witness
+mk-direct-reach : {G : DriftGraph} → (e : DriftEvent) → (parent child : Distinction) → 
+                  e ∈-list (events G) → 
+                  (parent ≡ parent₁ e ⊎ parent ≡ parent₂ e) → 
+                  child ≡ child e → 
+                  parent ⟹₁ child
+mk-direct-reach e parent child e∈events parent-eq child-eq = 
+  e , (e∈events , (parent-eq , child-eq))
+
+------------------------------------------------------------------------
 -- TESTING AND VALIDATION
 ------------------------------------------------------------------------
 
@@ -253,4 +267,16 @@ test-drift-operation : Dist 2
 test-drift-operation = graph-to-operations example-2d-drift 2 
                        (true ∷ false ∷ []) 
                        (false ∷ true ∷ [])
+
+-- | Test: Reachability witness construction
+test-reachability : let v₁ = mk-dist 2 (true ∷ false ∷ [])
+                        v₃ = mk-dist 2 (false ∷ false ∷ [])
+                        e₁ = v₁ , mk-dist 2 (false ∷ true ∷ []) ⟹ v₃
+                    in  v₁ ⟹₁ v₃
+  where open DriftGraph example-2d-drift
+test-reachability = mk-direct-reach e₁ v₁ v₃ here (inj₁ refl) refl
+  where 
+    v₁ = mk-dist 2 (true ∷ false ∷ [])
+    v₃ = mk-dist 2 (false ∷ false ∷ [])  
+    e₁ = v₁ , mk-dist 2 (false ∷ true ∷ []) ⟹ v₃
 

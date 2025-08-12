@@ -10,10 +10,10 @@ open import Data.Nat using (ℕ; zero; suc; _+_; _∸_)
 open import Data.Nat.Properties using (+-assoc; +-identityʳ; n∸n≡0)
 open import Data.List using (_∷_)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
-open import Data.Bool using (Bool; true; false)
+-- FIX: Add 'not' to the Data.Bool import
+open import Data.Bool using (Bool; true; false; not)
 open import Data.Empty using (⊥; ⊥-elim)
 open import Data.Unit using (⊤; tt)
--- FIX: Add the missing import for product types
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 
 -- Qualified imports to avoid naming conflicts
@@ -49,7 +49,6 @@ BoolType false = ⊥
 
 -- | Key lemma: semantic time behavior depends on irreducibility
 -- | This gives us precise control over when T advances
--- | FIXED: Now properly imports and uses × from Data.Product
 T-behavior : ∀ {n} (h : History n) (d : Dist n) → 
              (irreducible? d h ≡ true → T (d ∷ h) ≡ suc (T h)) ×
              (irreducible? d h ≡ false → T (d ∷ h) ≡ T h)
@@ -63,6 +62,7 @@ T-behavior h d = (case-irreducible , case-reducible)
     case-reducible : irreducible? d h ≡ false → T (d ∷ h) ≡ T h  
     case-reducible eq with irreducible? d h
     ... | false = refl
+    -- FIX: Now 'not' is properly in scope and can be used
     ... | true  = ⊥-elim (subst (λ x → BoolType (not x)) eq tt)
 
 -- | Extract the irreducible case proof
@@ -121,7 +121,6 @@ toMorphism h d with irreducible? d h
 ------------------------------------------------------------------------
 
 -- | Combine temporal progressions: both gap and progression in one
--- | This demonstrates practical use of the product type
 temporalAnalysis : ∀ {n} (h : History n) (d : Dist n) → 
                    ℕ × (ℕ → ℕ)
 temporalAnalysis h d = (temporalGap h d , temporalProgression h d)

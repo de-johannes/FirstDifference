@@ -7,5 +7,6 @@ open import Core.Demo          public
 
 open import Structures.CutCat  public
 open import Structures.Drift   public
+open import Structures.DistOp public
 
 open import Examples.DriftSim  public

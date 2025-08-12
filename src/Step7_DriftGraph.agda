@@ -77,17 +77,16 @@ edges (add-edge G p₁ p₂ c _ _) = (nodeId p₁ , nodeId c) ∷ (nodeId p₂ ,
 -- 5. Erreichbarkeit und Azyklizität
 ------------------------------------------------------------------------
 
--- KORRIGIERT: Explizite Fixity-Deklaration für Infix-Operator
 _—→_ : DriftGraph → NodeId → NodeId → Set
 _—→_ G u v = (u , v) ∈ edges G
 
-infix 4 _—→_  -- Fixity-Level hinzugefügt
+infix 4 _—→_
 
 data _—↠_ (G : DriftGraph) : NodeId → NodeId → Set where
   direct  : ∀ {u v} → G —→ u v → G —↠ u v
   compose : ∀ {u v w} → G —↠ u v → G —↠ v w → G —↠ u w
 
-infix 4 _—↠_  -- Auch für diesen Operator
+infix 4 _—↠_
 
 edge-increases-time : ∀ G u v → G —→ u v → u < v
 edge-increases-time empty u v ()
@@ -116,14 +115,13 @@ find-node (add-node G n) target with nodeId n ≟ target
 ... | no  _ = find-node G target
 find-node (add-edge G _ _ _ _ _) target = find-node G target
 
--- KORRIGIERTE LOGIK: Stellt sicher, dass BEIDE Elternteile übereinstimmen.
 extract-drift-result : DriftGraph → NodeId → NodeId → Maybe Node
 extract-drift-result empty _ _ = nothing
 extract-drift-result (add-node G _) p₁ p₂ = extract-drift-result G p₁ p₂
 extract-drift-result (add-edge G parent₁ parent₂ child _ _) p₁ p₂
   with (parent₁ ≟NodeId p₁) ∧ (parent₂ ≟NodeId p₂)
 ... | true  = just child
-... | false with (parent₁ ≟NodeId p₂) ∧ (parent₂ ≟NodeId p₁) -- Prüfe auch getauschte Reihenfolge
+... | false with (parent₁ ≟NodeId p₂) ∧ (parent₂ ≟NodeId p₁)
 ...   | true  = just child
 ...   | false = extract-drift-result G p₁ p₂
 
@@ -131,16 +129,16 @@ extract-drift-result (add-edge G parent₁ parent₂ child _ _) p₁ p₂
 -- 7. Beispiel-Konstruktion und Tests
 ------------------------------------------------------------------------
 
+-- KORRIGIERT: Explizite Klammern um die Record-Konstruktion
 node₀ : Node
-node₀ = 0 , (true ∷ false ∷ []) içeriği
+node₀ = (0 , (true ∷ false ∷ []) içeriği)
 
 node₁ : Node
-node₁ = 1 , (false ∷ true ∷ []) içeriği
+node₁ = (1 , (false ∷ true ∷ []) içeriği)
 
 node₂ : Node
-node₂ = 2 , (drift (content node₀) (content node₁)) içeriği
+node₂ = (2 , (drift (content node₀) (content node₁)) içeriği)
 
--- KORRIGIERTE BEWEISE: Korrekte Konstruktion für m < n (was suc m <= n ist)
 proof-0<2 : 0 < 2
 proof-0<2 = s≤s (s≤s z≤n)
 
@@ -173,14 +171,14 @@ _ = refl
 _ : extract-drift-result example-graph 0 1 ≡ just node₂
 _ = refl
 
-_ : extract-drift-result example-graph 1 0 ≡ just node₂ -- Testet getauschte Reihenfolge
+_ : extract-drift-result example-graph 1 0 ≡ just node₂
 _ = refl
 
 ------------------------------------------------------------------------
--- PERFEKTE POLIERTE VERSION!
+-- ENDGÜLTIGE POLIERTE VERSION!
 -- • Konstruktive Azyklizität durch Zeitordnung
--- • Kommutative Drift-Operationen (beide Reihenfolgen)
+-- • Kommutative Drift-Operationen 
 -- • Automatische Verifikation aller Tests
--- • Saubere Infix-Operator-Syntax
+-- • Korrekte Operator-Precedence
 -- • Vollständige semantische Integration
 ------------------------------------------------------------------------

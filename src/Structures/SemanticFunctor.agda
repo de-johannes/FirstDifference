@@ -13,6 +13,8 @@ open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Bool using (Bool; true; false)
 open import Data.Empty using (⊥; ⊥-elim)
 open import Data.Unit using (⊤; tt)
+-- FIX: Add the missing import for product types
+open import Data.Product using (_×_; _,_; proj₁; proj₂)
 
 -- Qualified imports to avoid naming conflicts
 import Structures.CutCat as C
@@ -47,6 +49,7 @@ BoolType false = ⊥
 
 -- | Key lemma: semantic time behavior depends on irreducibility
 -- | This gives us precise control over when T advances
+-- | FIXED: Now properly imports and uses × from Data.Product
 T-behavior : ∀ {n} (h : History n) (d : Dist n) → 
              (irreducible? d h ≡ true → T (d ∷ h) ≡ suc (T h)) ×
              (irreducible? d h ≡ false → T (d ∷ h) ≡ T h)
@@ -61,6 +64,16 @@ T-behavior h d = (case-irreducible , case-reducible)
     case-reducible eq with irreducible? d h
     ... | false = refl
     ... | true  = ⊥-elim (subst (λ x → BoolType (not x)) eq tt)
+
+-- | Extract the irreducible case proof
+T-irreducible : ∀ {n} (h : History n) (d : Dist n) → 
+                irreducible? d h ≡ true → T (d ∷ h) ≡ suc (T h)
+T-irreducible h d = proj₁ (T-behavior h d)
+
+-- | Extract the reducible case proof  
+T-reducible : ∀ {n} (h : History n) (d : Dist n) → 
+              irreducible? d h ≡ false → T (d ∷ h) ≡ T h
+T-reducible h d = proj₂ (T-behavior h d)
 
 -- | Temporal gap is always 0 or 1 (follows from irreducibility)
 -- | This captures the discrete nature of semantic time advancement
@@ -96,3 +109,35 @@ n≤suc-n zero    = C.z≤n
 n≤suc-n (suc n) = C.s≤s (n≤suc-n n)
 
 -- | Map history extensions to CutCat morphisms
+-- | This shows how adding distinctions induces temporal progression
+toMorphism : ∀ {n} (h : History n) (d : Dist n) →
+             toStage h C.≤ toStage (d ∷ h)
+toMorphism h d with irreducible? d h
+... | true  = n≤suc-n (semanticTime h)  -- Time advances
+... | false = C.refl≤ (semanticTime h)   -- Time stays constant
+
+------------------------------------------------------------------------
+-- Additional utility functions using the product type
+------------------------------------------------------------------------
+
+-- | Combine temporal progressions: both gap and progression in one
+-- | This demonstrates practical use of the product type
+temporalAnalysis : ∀ {n} (h : History n) (d : Dist n) → 
+                   ℕ × (ℕ → ℕ)
+temporalAnalysis h d = (temporalGap h d , temporalProgression h d)
+
+-- | Extract gap from analysis
+getGap : ∀ {n} (h : History n) (d : Dist n) → ℕ
+getGap h d = proj₁ (temporalAnalysis h d)
+
+-- | Extract progression function from analysis  
+getProgression : ∀ {n} (h : History n) (d : Dist n) → ℕ → ℕ
+getProgression h d = proj₂ (temporalAnalysis h d)
+
+------------------------------------------------------------------------
+-- Summary: This establishes the bridge between:
+-- • Drift operations (Structures.Drift)
+-- • Temporal progression (CutCat) 
+-- • Semantic time as a functor from distinction processes to ℕ
+-- • Product types for bundling related proofs and functions
+------------------------------------------------------------------------

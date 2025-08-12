@@ -216,7 +216,7 @@ example-2d-drift = record
   vertex-closure-proof (.v₁ , .v₂ ⟹ .v₃) .v₁ here = here
   vertex-closure-proof (.v₁ , .v₂ ⟹ .v₃) .v₂ (there here) = there here
   vertex-closure-proof (.v₁ , .v₂ ⟹ .v₃) .v₃ (there (there here)) = there (there here)
-  vertex-closure-proof (.v₁ , .v₂ ⟹ .v�3) _ (there (there (there ())))
+  vertex-closure-proof (.v₁ , .v₂ ⟹ .v₃) _ (there (there (there ())))
   
   temporal-order-proof : ∀ (e : DriftEvent) → 
                         τ-func (parent₁ e) < τ-func (child e) × 

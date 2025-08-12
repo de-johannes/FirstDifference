@@ -1,9 +1,9 @@
 module Core.TokenPrinciple where
 
 open import Agda.Primitive using (Level; lsuc; _⊔_)
-open import Relation.Nullary using (Dec)
 
--- A clean, axioms-free interface for the Token Principle.
+-- Clean, axioms-free interface for the Token Principle
+-- Any material token instantiates the First Difference D0
 record TokenPrinciple (ℓ₁ ℓ₂ : Level) : Set (lsuc (ℓ₁ ⊔ ℓ₂)) where
   field
     D0       : Set ℓ₁          -- the First Difference as a type

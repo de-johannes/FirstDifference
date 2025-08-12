@@ -2,8 +2,8 @@ module Structures.SemanticFunctor where
 
 open import Agda.Primitive using (lzero)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong; sym; trans)
-open import Data.Nat using (ℕ; zero; suc; _+_; _≤_)
-open import Data.Nat.Properties using (+-assoc; +-identityˡ; +-suc; ≤-refl; ≤-trans; ≤-irrelevant)
+open import Data.Nat using (ℕ; zero; suc; _+_; _≤_; _∸_)
+open import Data.Nat.Properties using (+-assoc; +-identityˡ; ≤-refl; ≤-trans; m+n∸n≡m; m≤n⇒m+n∸m≡n; ∸-+-assoc)
 
 -- Import our enhanced structures with consistent Data.Nat.≤ usage
 open import Structures.CutCat using (Category; CutCat)
@@ -15,32 +15,36 @@ open HomAlg     public
 
 ------------------------------------------------------------------------
 -- Semantic Time Functor: CutCat → DistOpAlg
--- Now using standard Data.Nat.≤ throughout - no conversion needed!
+-- Using natural subtraction for simplicity
 ------------------------------------------------------------------------
 
--- Difference function: extracts temporal progression amount from ≤ proof
+-- Difference function: simple natural subtraction
 diff : ∀ {m n} → m ≤ n → ℕ
-diff {zero}   {n}     _  = n         -- zero ≤ n gives difference n
-diff {suc m}  {zero}  () 
-diff {suc m}  {suc n} p  = diff (Data.Nat.Properties.≤-pred p)
+diff {m} {n} _ = n ∸ m
 
 -- Key lemma: diff of reflexivity is always zero
 diff-refl : ∀ m → diff (≤-refl {m}) ≡ zero
-diff-refl zero    = refl
-diff-refl (suc m) = diff-refl m
+diff-refl m = m+n∸n≡m m 0
 
--- Semantic interpretation: temporal progression ≤ proof gives arithmetic gap
+-- Semantic interpretation: temporal progression gives arithmetic gap
 end-eq : ∀ {b c} (g : b ≤ c) → b + diff g ≡ c
-end-eq {zero}   {c}     _  = +-identityˡ c
-end-eq {suc b}  {zero}  ()
-end-eq {suc b}  {suc c} p  = cong suc (end-eq (Data.Nat.Properties.≤-pred p))
+end-eq {b} {c} p = m≤n⇒m+n∸m≡n p
 
 -- Composition preserves temporal arithmetic
 diff-∙ : ∀ {a b c} (f : a ≤ b) (g : b ≤ c) → diff (≤-trans f g) ≡ diff f + diff g
-diff-∙ {zero}   {b} {c}  _ g = trans refl (sym (end-eq g))
-diff-∙ {suc a}  {zero}  () _
-diff-∙ {suc a}  {suc b} {zero}  _ ()
-diff-∙ {suc a}  {suc b} {suc c} f g = diff-∙ (Data.Nat.Properties.≤-pred f) (Data.Nat.Properties.≤-pred g)
+diff-∙ {a} {b} {c} f g = 
+  begin
+    c ∸ a
+  ≡⟨ sym (∸-+-assoc c (b ∸ a) a (≤-trans (Data.Nat.Properties.n∸m≤n b a) f)) ⟩
+    (c + (b ∸ a)) ∸ (a + (b ∸ a))
+  ≡⟨ cong (λ x → (c + (b ∸ a)) ∸ x) (sym (end-eq f)) ⟩
+    (c + (b ∸ a)) ∸ b
+  ≡⟨ cong (λ x → x ∸ b) (Data.Nat.Properties.+-comm c (b ∸ a)) ⟩
+    ((b ∸ a) + c) ∸ b
+  ≡⟨ ∸-+-assoc (b ∸ a) c b g ⟩
+    (b ∸ a) + (c ∸ b)
+  ∎
+  where open ≡-Reasoning
 
 ------------------------------------------------------------------------
 -- Semantic Time Functor: The conceptual bridge
@@ -74,5 +78,5 @@ F-comp f g n
         | sym (diff-∙ f g) = refl
 
 ------------------------------------------------------------------------
--- Beautiful: No type conversions, everything uses Data.Nat.≤ consistently!
+-- Clean solution: diff as natural subtraction, proven properties from stdlib
 ------------------------------------------------------------------------

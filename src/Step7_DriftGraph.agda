@@ -1,6 +1,6 @@
 {-# OPTIONS --safe #-}
 
-module Step7_DriftGraph_Revised where
+module Step7_DriftGraph where
 
 open import Data.Nat using (ℕ; zero; suc; _≤_; _<_; z≤n; s≤s; _≟_)
 open import Data.Nat.Properties using (<-trans; <-irrefl; m<n⇒m≤n)

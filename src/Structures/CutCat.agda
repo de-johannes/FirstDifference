@@ -2,65 +2,72 @@ module Structures.CutCat where
 
 open import Agda.Primitive using (Level; lzero; lsuc)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
-open import Data.Unit using (⊤; tt)
 open import Data.Nat using (ℕ; zero; suc)
 
--- A custom inductive ≤ to keep definitional control (thin, skeletal).
+------------------------------------------------------------------------
+-- A thin, skeletal category on ℕ with morphisms given by ≤-proofs.
+------------------------------------------------------------------------
+
 infix 4 _≤_
 data _≤_ : ℕ → ℕ → Set where
-  z≤n : ∀ {n}               → zero ≤ n
-  s≤s : ∀ {m n} → m ≤ n     → suc m ≤ suc n
+  z≤n : ∀ {n} → zero ≤ n
+  s≤s : ∀ {m n} → m ≤ n → suc m ≤ suc n
 
 -- Reflexivity
 refl≤ : ∀ n → n ≤ n
 refl≤ zero    = z≤n
 refl≤ (suc n) = s≤s (refl≤ n)
 
--- Transitivity (written as _∙_ to use as categorical composition)
+-- Composition (transitivity). We write it as _∙_.
 infixl 5 _∙_
 _∙_ : ∀ {i j k} → i ≤ j → j ≤ k → i ≤ k
 z≤n       ∙ _          = z≤n
 s≤s p     ∙ s≤s q      = s≤s (p ∙ q)
 
--- Left/right identity w.r.t reflexivity
+-- Right identity: f ∙ refl = f
 idʳ-lemma : ∀ {m n} (f : m ≤ n) → f ∙ refl≤ n ≡ f
-idʳ-lemma z≤n       = refl
-idʳ-lemma (s≤s f)   = cong s≤s (idʳ-lemma f)
+idʳ-lemma z≤n     = refl
+idʳ-lemma (s≤s f) = cong s≤s (idʳ-lemma f)
 
+-- Left identity: refl ∙ f = f
 idˡ-lemma : ∀ {m n} (f : m ≤ n) → refl≤ m ∙ f ≡ f
-idˡ-lemma z≤n       = refl
-idˡ-lemma (s≤s f)   = cong s≤s (idˡ-lemma f)
+idˡ-lemma z≤n     = refl
+idˡ-lemma (s≤s f) = cong s≤s (idˡ-lemma f)
 
--- Associativity
-assoc-lemma
-  : ∀ {a b c d} (h : c ≤ d) (g : b ≤ c) (f : a ≤ b)
-  → h ∙ (g ∙ f) ≡ (h ∙ g) ∙ f
-assoc-lemma z≤n       _          _        = refl
-assoc-lemma (s≤s h) (s≤s g) (s≤s f) = cong s≤s (assoc-lemma h g f)
+-- Associativity for _∙_
+assoc-∙
+  : ∀ {a b c d} (f : a ≤ b) (g : b ≤ c) (h : c ≤ d)
+  → (f ∙ g) ∙ h ≡ f ∙ (g ∙ h)
+assoc-∙ f g z≤n       = refl
+assoc-∙ (s≤s f) (s≤s g) (s≤s h) = cong s≤s (assoc-∙ f g h)
 
--- A tiny category record sufficient for CutCat.
+------------------------------------------------------------------------
+-- Minimal category record (sufficient for our purposes).
+------------------------------------------------------------------------
+
 record Category (ℓ : Level) : Set (lsuc ℓ) where
   field
     Obj   : Set ℓ
     Hom   : Obj → Obj → Set ℓ
     id    : ∀ A → Hom A A
-    _∘_   : ∀ {A B C} → Hom B C → Hom A B → Hom A C
-    idˡ   : ∀ {A B} (f : Hom A B) → _∘_ (id B) f ≡ f
-    idʳ   : ∀ {A B} (f : Hom A B) → _∘_ f (id A) ≡ f
-    assoc : ∀ {A B C D} (h : Hom C D) (g : Hom B C) (f : Hom A B)
-             → _∘_ h (_∘_ g f) ≡ _∘_ (_∘_ h g) f
+    _∘_   : ∀ {A B C} → Hom A B → Hom B C → Hom A C
+    idˡ   : ∀ {A B} (f : Hom A B) → id A ∘ f ≡ f
+    idʳ   : ∀ {A B} (f : Hom A B) → f ∘ id B ≡ f
+    assoc : ∀ {A B C D} (f : Hom A B) (g : Hom B C) (h : Hom C D)
+             → (f ∘ g) ∘ h ≡ f ∘ (g ∘ h)
 
 open Category public
 
--- CutCat: objects are ℕ, morphisms are ≤ proofs (thin).
-CutCat : Category lzero
-CutCat .Obj       = ℕ
-CutCat .Hom m n   = m ≤ n
-CutCat .id n      = refl≤ n
-CutCat ._∘_ g f   = g ∙ f
-CutCat .idˡ f     = idʳ-lemma f
-CutCat .idʳ f     = idˡ-lemma f
-CutCat .assoc h g f = assoc-lemma h g f
+------------------------------------------------------------------------
+-- CutCat : objects are ℕ, morphisms are ≤ proofs (thin category).
+-- Composition direction: first f : A→B, then g : B→C  (usual categorical).
+------------------------------------------------------------------------
 
--- Optional: explicit isomorphism of thin categories with (ℕ, ≤).
--- TODO: If you later add a Poset→ThinCat functor, show it’s on-the-nose equal.
+CutCat : Category lzero
+CutCat .Obj         = ℕ
+CutCat .Hom m n     = m ≤ n
+CutCat .id n        = refl≤ n
+CutCat ._∘_ f g     = f ∙ g
+CutCat .idˡ f       = idˡ-lemma f
+CutCat .idʳ f       = idʳ-lemma f
+CutCat .assoc f g h = assoc-∙ f g h

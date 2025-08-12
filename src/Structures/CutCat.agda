@@ -1,81 +1,66 @@
 module Structures.CutCat where
 
-open import Agda.Primitive using (Level; lzero; lsuc; _⊔_)
-open import Data.Nat using (ℕ; zero; suc)
-open import Data.Nat.Base using (_≤_; z≤n; s≤s)
+open import Agda.Primitive using (Level; lzero)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
+open import Data.Unit using (⊤; tt)
+open import Data.Nat using (ℕ; zero; suc)
 
--- A tiny category record (thin, enough for the ledger order demo).
-record Category (ℓ₁ ℓ₂ : Level) : Set (lsuc (ℓ₁ ⊔ ℓ₂)) where
-  field
-    Obj      : Set ℓ₁
-    Hom      : Obj → Obj → Set ℓ₂
-    id       : (A : Obj) → Hom A A
-    _∘_      : {A B C : Obj} → Hom B C → Hom A B → Hom A C
-    id-left  : {A B : Obj} (f : Hom A B) → _∘_ (id B) f ≡ f
-    id-right : {A B : Obj} (f : Hom A B) → _∘_ f (id A) ≡ f
-    assoc    : {A B C D : Obj}
-               (h : Hom C D) (g : Hom B C) (f : Hom A B)
-               → _∘_ h (_∘_ g f) ≡ _∘_ (_∘_ h g) f
+-- A custom inductive ≤ to keep definitional control (thin, skeletal).
+infix 4 _≤_
+data _≤_ : ℕ → ℕ → Set where
+  z≤n : ∀ {n}               → zero ≤ n
+  s≤s : ∀ {m n} → m ≤ n     → suc m ≤ suc n
 
-open Category public
-
--- ≤ on ℕ as a thin category (CutCat).
+-- Reflexivity
 refl≤ : ∀ n → n ≤ n
 refl≤ zero    = z≤n
 refl≤ (suc n) = s≤s (refl≤ n)
 
-≤-trans : ∀ {i j k} → i ≤ j → j ≤ k → i ≤ k
-≤-trans z≤n       _        = z≤n
-≤-trans (s≤s p)  (s≤s q)   = s≤s (≤-trans p q)
+-- Transitivity (written as _∙_ to use as categorical composition)
+infixl 5 _∙_
+_∙_ : ∀ {i j k} → i ≤ j → j ≤ k → i ≤ k
+z≤n       ∙ _          = z≤n
+s≤s p     ∙ s≤s q      = s≤s (p ∙ q)
 
-≤-id-left  : ∀ {m n} (p : m ≤ n) → ≤-trans p (refl≤ n) ≡ p
-≤-id-left  z≤n     = refl
-≤-id-left  (s≤s p) = cong s≤s (≤-id-left p)
+-- Left/right identity w.r.t reflexivity
+idʳ-lemma : ∀ {m n} (f : m ≤ n) → f ∙ refl≤ n ≡ f
+idʳ-lemma z≤n       = refl
+idʳ-lemma (s≤s f)   = cong s≤s (idʳ-lemma f)
 
-≤-id-right : ∀ {m n} (p : m ≤ n) → ≤-trans (refl≤ m) p ≡ p
-≤-id-right z≤n     = refl
-≤-id-right (s≤s p) = cong s≤s (≤-id-right p)
+idˡ-lemma : ∀ {m n} (f : m ≤ n) → refl≤ m ∙ f ≡ f
+idˡ-lemma z≤n       = refl
+idˡ-lemma (s≤s f)   = cong s≤s (idˡ-lemma f)
 
-trans-assoc
-  : ∀ {A B C D}
-    (f : A ≤ B) (g : B ≤ C) (h : C ≤ D)
-    → ≤-trans (≤-trans f g) h ≡ ≤-trans f (≤-trans g h)
-trans-assoc z≤n      _         _         = refl
-trans-assoc (s≤s p) (s≤s q) (s≤s r) = cong s≤s (trans-assoc p q r)
+-- Associativity
+assoc-lemma
+  : ∀ {a b c d} (h : c ≤ d) (g : b ≤ c) (f : a ≤ b)
+  → h ∙ (g ∙ f) ≡ (h ∙ g) ∙ f
+assoc-lemma z≤n       _          _        = refl
+assoc-lemma (s≤s h) (s≤s g) (s≤s f) = cong s≤s (assoc-lemma h g f)
 
-CutCat : Category lzero lzero
-CutCat = record
-  { Obj      = ℕ
-  ; Hom      = _≤_
-  ; id       = refl≤
-  ; _∘_      = λ {A}{B}{C} g f → ≤-trans f g
-  ; id-left  = λ {A}{B} f → ≤-id-left f
-  ; id-right = λ {A}{B} f → ≤-id-right f
-  ; assoc    = λ {A}{B}{C}{D} h g f → trans-assoc f g h
-  }
+-- A tiny category record sufficient for CutCat.
+record Category (ℓ : Level) : Set (lsuc ℓ) where
+  field
+    Obj   : Set ℓ
+    Hom   : Obj → Obj → Set ℓ
+    id    : ∀ A → Hom A A
+    _∘_   : ∀ {A B C} → Hom B C → Hom A B → Hom A C
+    idˡ   : ∀ {A B} (f : Hom A B) → _∘_ (id B) f ≡ f
+    idʳ   : ∀ {A B} (f : Hom A B) → _∘_ f (id A) ≡ f
+    assoc : ∀ {A B C D} (h : Hom C D) (g : Hom B C) (f : Hom A B)
+             → _∘_ h (_∘_ g f) ≡ _∘_ (_∘_ h g) f
 
--- A toy "ledger cut" embedding ℕ ↦ nested marks.
-data Cut : Set where
-  ◇    : Cut
-  mark : Cut → Cut
+open Category public
 
-depth : Cut → ℕ
-depth ◇        = zero
-depth (mark c) = suc (depth c)
+-- CutCat: objects are ℕ, morphisms are ≤ proofs (thin).
+CutCat : Category lzero
+CutCat .Obj       = ℕ
+CutCat .Hom m n   = m ≤ n
+CutCat .id n      = refl≤ n
+CutCat ._∘_ g f   = g ∙ f
+CutCat .idˡ f     = idʳ-lemma f
+CutCat .idʳ f     = idˡ-lemma f
+CutCat .assoc h g f = assoc-lemma h g f
 
-neg : Cut → Cut
-neg ◇        = mark ◇
-neg (mark _) = ◇
-
-ledgerCut : ℕ → Cut
-ledgerCut zero    = ◇
-ledgerCut (suc n) = mark (ledgerCut n)
-
-depth-lemma : ∀ n → depth (ledgerCut n) ≡ n
-depth-lemma zero    = refl
-depth-lemma (suc n) = cong suc (depth-lemma n)
-
-FunctorHom :
-  ∀ (m n : ℕ) → m ≤ n → depth (ledgerCut m) ≤ depth (ledgerCut n)
-FunctorHom m n p rewrite depth-lemma m | depth-lemma n = p
+-- Optional: explicit isomorphism of thin categories with (ℕ, ≤).
+-- TODO: If you later add a Poset→ThinCat functor, show it’s on-the-nose equal.

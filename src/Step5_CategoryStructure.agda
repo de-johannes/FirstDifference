@@ -121,7 +121,10 @@ category-structure-proven : ∀ {l m n} (φ : DriftMorphism m n) (ψ : DriftMorp
     DriftMorphism.f (composeDrift (composeDrift φ ψ) χ) x ≡ 
     DriftMorphism.f (composeDrift φ (composeDrift ψ χ)) x)
 category-structure-proven φ ψ = 
-  (drift-cat-idˡ φ , drift-cat-idʳ φ , drift-cat-assoc ψ φ)
+  ( drift-cat-idˡ φ
+  , drift-cat-idʳ φ
+  , λ {k} χ x → drift-cat-assoc χ ψ φ x
+  )
 
 -- Core properties
 identity-neutral : ∀ {n} (d : Dist n) → DriftMorphism.f idDrift d ≡ d

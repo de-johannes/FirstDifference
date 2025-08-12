@@ -17,6 +17,7 @@ open import Step3_AlgebraLaws public
 open import Step4_PartialOrder public
 open import Step5_CategoryStructure public
 open import Step6_SemanticTimeFunctor public
+open import Step7_DriftGraph public
 
 ------------------------------------------------------------------------
 -- Optional: Examples and demonstrations

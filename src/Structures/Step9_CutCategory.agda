@@ -4,8 +4,9 @@ module Structures.Step9_CutCategory where
 
 open import Data.Nat using (ℕ; zero; suc; _≤_; _<_; z≤n; s≤s)
 open import Data.Nat.Properties using (≤-refl; ≤-trans; ≤-antisym; <-trans; 
-                                       ≤-irrelevant; ≤-reflexive)
+                                       ≤-irrelevant; ≤-reflexive; ≤-step)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong)
+open import Data.Product using (∃; _,_; _×_)
 
 ------------------------------------------------------------------------
 -- 1. TEMPORAL ORDERING CATEGORY STRUCTURE
@@ -97,12 +98,7 @@ stage n = tt
 -- | If m < n, then there exists a non-identity morphism m → n
 temporal-strict : ∀ {m n : ℕ} → m < n → 
                   ∃[ p ∈ TemporalCategory.Hom CutCat m n ] ⊤
-  where
-    open import Data.Product using (∃; _,_)
 temporal-strict {m} {n} m<n = (≤-step ≤-refl , tt)
-  where
-    open import Data.Nat.Properties using (≤-step)
-    -- m < n implies suc m ≤ n, hence m ≤ n
 
 -- | Theorem: Temporal ordering is antisymmetric  
 -- | If we have morphisms m → n and n → m, then m ≡ n
@@ -123,8 +119,6 @@ temporal-compose p q = TemporalCategory._∘_ CutCat q p
 ------------------------------------------------------------------------
 -- 6. VERIFICATION AND TESTING SUITE
 ------------------------------------------------------------------------
-
-open import Data.Product using (_×_; _,_)
 
 -- | Test: Temporal progression morphism construction
 test-progression : TemporalCategory.Hom CutCat 0 3
@@ -165,9 +159,7 @@ test-associativity f g h = TemporalCategory.assoc CutCat f g h
 -- | Function: Temporal distance calculation
 -- | Computes the discrete temporal distance between ordered stages
 temporal-distance : ∀ m n → m ≤ n → ℕ
-temporal-distance m n _ = n ∸ m
-  where
-    open import Data.Nat using (_∸_)
+temporal-distance m n _ = n Data.Nat.∸ m
 
 -- | Type: Temporal window specification
 -- | Represents a bounded temporal interval [start, end]

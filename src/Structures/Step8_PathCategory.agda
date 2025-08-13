@@ -7,8 +7,8 @@ open import Data.List using (List; []; _∷_; _++_)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
 open import Data.Product using (_×_; _,_)
 
--- Wir importieren deinen verifizierten Graphen als Grundlage.
-open import Structures.Step7_DriftGraph_Final as DG
+-- 🔧 FIX: Korrigierter Import (nicht _Final)
+open import Structures.Step7_DriftGraph as DG
 
 ------------------------------------------------------------------------
 -- 1. Definition eines Kategoriellen Pfades
@@ -27,7 +27,6 @@ infixr 5 _∷-path_
 ------------------------------------------------------------------------
 
 -- Die Komposition von Pfaden ist die intelligente Verkettung der Listen.
--- KORRIGIERT: {G} als implizites Argument hinzugefügt.
 _++-path_ : ∀ {G u v w} → Path G u v → Path G v w → Path G u w
 refl-path      ++-path q = q
 (e ∷-path p) ++-path q = e ∷-path (p ++-path q)
@@ -45,12 +44,10 @@ path-assoc refl-path      q r = refl
 path-assoc (e ∷-path p) q r = cong (e ∷-path_) (path-assoc p q r)
 
 -- Linke Identität: Ein leerer Pfad am Anfang ändert nichts.
--- KORRIGIERT: {G} als implizites Argument hinzugefügt.
 path-idˡ : ∀ {G u v} (p : Path G u v) → refl-path ++-path p ≡ p
 path-idˡ p = refl
 
 -- Rechte Identität: Ein leerer Pfad am Ende ändert nichts.
--- KORRIGIERT: {G} als implizites Argument hinzugefügt.
 path-idʳ : ∀ {G u v} (p : Path G u v) → p ++-path refl-path ≡ p
 path-idʳ refl-path      = refl
 path-idʳ (e ∷-path p) = cong (e ∷-path_) (path-idʳ p)
@@ -66,8 +63,8 @@ record Category (Obj : Set) (Hom : Obj → Obj → Set) : Set₁ where
     _∘_   : ∀ {A B C} → Hom A B → Hom B C → Hom A C -- Standardreihenfolge: f, dann g
 
     -- Gesetze
-    idˡ   : ∀ {A B} (f : Hom A B) → id ∘ f ≡ f
-    idʳ   : ∀ {A B} (f : Hom A B) → f ∘ id ≡ f
+    idˡ   : ∀ {A B} (f : Hom A B) → id A ∘ f ≡ f
+    idʳ   : ∀ {A B} (f : Hom A B) → f ∘ id B ≡ f  
     assoc : ∀ {A B C D} (f : Hom A B) (g : Hom B C) (h : Hom C D)
           → (f ∘ g) ∘ h ≡ f ∘ (g ∘ h)
 
@@ -80,3 +77,19 @@ DriftPathCategory G = record
   ; idʳ   = path-idʳ
   ; assoc = path-assoc
   }
+
+------------------------------------------------------------------------
+-- 5. TESTS -
+------------------------------------------------------------------------
+
+-- Test: Pfadkonstruktion
+test-single-path : ∀ {G u v} → (e : u DG.—→ v within G) → Path G u v
+test-single-path e = e ∷-path refl-path
+
+-- Test: Identität
+test-identity : ∀ {G u} → Path G u u  
+test-identity = Category.id (DriftPathCategory _) _
+
+-- Test: Komposition
+test-composition : ∀ {G u v w} → Path G u v → Path G v w → Path G u w
+test-composition p q = Category._∘_ (DriftPathCategory _) p q

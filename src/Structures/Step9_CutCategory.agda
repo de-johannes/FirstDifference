@@ -2,11 +2,12 @@
 
 module Structures.Step9_CutCategory where
 
-open import Data.Nat using (ℕ; zero; suc; _≤_; _<_; z≤n; s≤s)
+open import Data.Nat using (ℕ; zero; suc; _≤_; _<_; z≤n; s≤s; _∸_)
 open import Data.Nat.Properties using (≤-refl; ≤-trans; ≤-antisym; <-trans; 
                                        ≤-irrelevant; ≤-reflexive; ≤-step)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong)
 open import Data.Product using (∃; _,_; _×_)
+open import Data.Unit using (⊤; tt)
 
 ------------------------------------------------------------------------
 -- 1. TEMPORAL ORDERING CATEGORY STRUCTURE
@@ -77,9 +78,6 @@ CutCat = record
 -- | Each stage represents a discrete time point in the evolution
 Stage : ℕ → Set
 Stage n = ⊤  -- Each stage is a singleton type
-  where 
-    data ⊤ : Set where
-      tt : ⊤
 
 -- | Constructor: Temporal progression morphism
 -- | Given a proof of temporal ordering, construct the corresponding morphism
@@ -159,7 +157,7 @@ test-associativity f g h = TemporalCategory.assoc CutCat f g h
 -- | Function: Temporal distance calculation
 -- | Computes the discrete temporal distance between ordered stages
 temporal-distance : ∀ m n → m ≤ n → ℕ
-temporal-distance m n _ = n Data.Nat.∸ m
+temporal-distance m n _ = n ∸ m
 
 -- | Type: Temporal window specification
 -- | Represents a bounded temporal interval [start, end]

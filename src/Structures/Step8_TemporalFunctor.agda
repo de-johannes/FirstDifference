@@ -41,9 +41,9 @@ record Functor {ObjC ObjD : Set} {HomC : ObjC → ObjC → Set} {HomD : ObjD →
 π-obj = id
 
 -- | Morphism mapping: Path to temporal ordering proof
-π-hom : ∀ {G : DriftGraph} {u v : NodeId} → Path G u v → π-obj u ≤ π-obj v
-π-hom refl-path = ≤-refl
-π-hom (e ∷-path p) = ≤-trans (<⇒≤ (edge-increases-time _ _ _ e)) (π-hom p)
+π-hom : ∀ (G : DriftGraph) {u v : NodeId} → Path G u v → π-obj u ≤ π-obj v
+π-hom G refl-path = ≤-refl
+π-hom G (e ∷-path p) = ≤-trans (<⇒≤ (edge-increases-time _ _ G e)) (π-hom G p)
 
 ------------------------------------------------------------------------
 -- 3. HELPER LEMMAS FOR TEMPORAL ORDERING
@@ -59,18 +59,18 @@ private
 ------------------------------------------------------------------------
 
 -- | Identity preservation: Direct by definition
-π-preserves-id : ∀ {G : DriftGraph} {u : NodeId} → 
-                 π-hom (Category.id (DriftPathCategory G) u) ≡ 
+π-preserves-id : ∀ (G : DriftGraph) {u : NodeId} → 
+                 π-hom G (Category.id (DriftPathCategory G) u) ≡ 
                  Category.id TC.CutCat (π-obj u)
-π-preserves-id = refl
+π-preserves-id G = refl
 
 -- | Composition preservation: Key insight - use ≤-irrelevant!
 -- | Since CutCat is thin, all parallel arrows are equal
-π-preserves-comp : ∀ {G : DriftGraph} {u v w : NodeId} 
+π-preserves-comp : ∀ (G : DriftGraph) {u v w : NodeId} 
                    (p : Path G u v) (q : Path G v w) →
-                   π-hom (Category._∘_ (DriftPathCategory G) p q) ≡ 
-                   Category._∘_ TC.CutCat (π-hom p) (π-hom q)
-π-preserves-comp p q = ≤-irrelevant _ _
+                   π-hom G (Category._∘_ (DriftPathCategory G) p q) ≡ 
+                   Category._∘_ TC.CutCat (π-hom G p) (π-hom G q)
+π-preserves-comp G p q = ≤-irrelevant _ _
   -- Both sides have type (π-obj u ≤ π-obj w), and CutCat is thin!
 
 ------------------------------------------------------------------------
@@ -82,9 +82,9 @@ TemporalProjection : (G : DriftGraph) →
                      Functor (DriftPathCategory G) TC.CutCat
 TemporalProjection G = record
   { F₀ = π-obj
-  ; F₁ = π-hom  
-  ; preserves-id = π-preserves-id
-  ; preserves-comp = π-preserves-comp
+  ; F₁ = π-hom G  
+  ; preserves-id = π-preserves-id G
+  ; preserves-comp = π-preserves-comp G
   }
 
 ------------------------------------------------------------------------
@@ -92,37 +92,35 @@ TemporalProjection G = record
 ------------------------------------------------------------------------
 
 -- | Test: Identity preservation
-temporal-test-identity : ∀ {G : DriftGraph} {u : NodeId} →
+temporal-test-identity : ∀ (G : DriftGraph) {u : NodeId} →
                          Functor.F₁ (TemporalProjection G) (refl-path {G} {u}) ≡ ≤-refl
-temporal-test-identity = refl
+temporal-test-identity G = refl
 
--- | Test: Single edge mapping (now with correct proof)
-temporal-test-edge : ∀ {G : DriftGraph} {u v : NodeId} (e : u DG.—→ v within G) →
+-- | Test: Single edge mapping (now with explicit parameters)
+temporal-test-edge : ∀ (G : DriftGraph) {u v : NodeId} (e : u DG.—→ v within G) →
                      Functor.F₁ (TemporalProjection G) (e ∷-path refl-path) ≡
                      <⇒≤ (edge-increases-time u v G e)
-temporal-test-edge e = ≤-idʳ (<⇒≤ (edge-increases-time _ _ _ e))
-  -- π-hom (e ∷-path refl-path) = ≤-trans (<⇒≤ (edge-increases-time _ _ _ e)) ≤-refl
-  -- By ≤-idʳ, this equals <⇒≤ (edge-increases-time _ _ _ e)
+temporal-test-edge G e = ≤-idʳ (<⇒≤ (edge-increases-time _ _ G e))
 
 -- | The profound insight: Causal paths project to temporal ordering
-causal-to-temporal : ∀ {G : DriftGraph} {u v : NodeId} →
+causal-to-temporal : ∀ (G : DriftGraph) {u v : NodeId} →
                      Path G u v → (u ≤ v)
-causal-to-temporal {G} path = Functor.F₁ (TemporalProjection G) path
+causal-to-temporal G path = Functor.F₁ (TemporalProjection G) path
 
 -- | Test: Composition preservation verification
-temporal-test-composition : ∀ {G : DriftGraph} {u v w : NodeId}
+temporal-test-composition : ∀ (G : DriftGraph) {u v w : NodeId}
                             (p : Path G u v) (q : Path G v w) →
                             Functor.F₁ (TemporalProjection G) (p PC.++-path q) ≡
                             Category._∘_ TC.CutCat 
                               (Functor.F₁ (TemporalProjection G) p)
                               (Functor.F₁ (TemporalProjection G) q)
-temporal-test-composition p q = Functor.preserves-comp (TemporalProjection _) p q
+temporal-test-composition G p q = Functor.preserves-comp (TemporalProjection G) p q
 
 -- | Test: Path length and temporal distance correlation
-temporal-distance-preservation : ∀ {G : DriftGraph} {u v : NodeId}
+temporal-distance-preservation : ∀ (G : DriftGraph) {u v : NodeId}
                                   (path : Path G u v) →
                                   u ≤ v
-temporal-distance-preservation path = causal-to-temporal path
+temporal-distance-preservation G path = causal-to-temporal G path
 
 ------------------------------------------------------------------------
 -- RESULT: The mathematical bridge between causality and temporality

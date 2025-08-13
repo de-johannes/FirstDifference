@@ -74,26 +74,31 @@ edges (add-node G _) = edges G
 edges (add-edge G p₁ p₂ c _ _) = (nodeId p₁ , nodeId c) ∷ (nodeId p₂ , nodeId c) ∷ edges G
 
 ------------------------------------------------------------------------
--- 5. Erreichbarkeit und Azyklizität
+-- 5. Erreichbarkeit und Azyklizität - MIT TERNARY MIXFIX OPERATOR
 ------------------------------------------------------------------------
 
-_—→_ : DriftGraph → NodeId → NodeId → Set
-_—→_ G u v = (u , v) ∈ edges G
+-- Direkte Kante (binary operator)
+_—→_in_ : NodeId → NodeId → DriftGraph → Set
+u —→ v in G = (u , v) ∈ edges G
 
-infix 4 _—→_
+infixl 4 _—→_in_
 
--- KORRIGIERT: Explizite Definition ohne problematische infix-Syntax
+-- Ternary mixfix operator für Erreichbarkeit (nach den Suchresultaten)
 data Reachable (G : DriftGraph) : NodeId → NodeId → Set where
-  direct  : ∀ {u v} → G —→ u v → Reachable G u v
+  direct  : ∀ {u v} → u —→ v in G → Reachable G u v
   compose : ∀ {u v w} → Reachable G u v → Reachable G v w → Reachable G u w
 
--- Infix-Wrapper für saubere Syntax
-_—↠_ : DriftGraph → NodeId → NodeId → Set
-G —↠ u v = Reachable G u v
+-- Sauberer ternary mixfix operator
+_can-reach_in_ : NodeId → NodeId → DriftGraph → Set
+u can-reach v in G = Reachable G u v
 
-infix 4 _—↠_
+infixl 4 _can-reach_in_
 
-edge-increases-time : ∀ G u v → G —→ u v → u < v
+------------------------------------------------------------------------
+-- 6. Haupttheoreme mit dem neuen Operator
+------------------------------------------------------------------------
+
+edge-increases-time : ∀ G u v → u —→ v in G → u < v
 edge-increases-time empty u v ()
 edge-increases-time (add-node G _) u v edge = edge-increases-time G u v edge
 edge-increases-time (add-edge G p₁ p₂ c p₁<c p₂<c) u v here = p₁<c
@@ -101,16 +106,16 @@ edge-increases-time (add-edge G p₁ p₂ c p₁<c p₂<c) u v (there here) = p�
 edge-increases-time (add-edge G p₁ p₂ c p₁<c p₂<c) u v (there (there edge)) =
   edge-increases-time G u v edge
 
-reachability-increases-time : ∀ G u w → G —↠ u w → u < w
+reachability-increases-time : ∀ G u w → u can-reach w in G → u < w
 reachability-increases-time G u w (direct edge) = edge-increases-time G u w edge
 reachability-increases-time G u w (compose u↠v v↠w) =
   <-trans (reachability-increases-time G u _ u↠v) (reachability-increases-time G _ w v↠w)
 
-theorem-acyclic : ∀ G v → ¬ (G —↠ v v)
+theorem-acyclic : ∀ G v → ¬ (v can-reach v in G)
 theorem-acyclic G v cycle = <-irrefl (reachability-increases-time G v v cycle)
 
 ------------------------------------------------------------------------
--- 6. Graphen-Operationen
+-- 7. Graphen-Operationen
 ------------------------------------------------------------------------
 
 find-node : DriftGraph → NodeId → Maybe Node
@@ -131,7 +136,7 @@ extract-drift-result (add-edge G parent₁ parent₂ child _ _) p₁ p₂
 ...   | false = extract-drift-result G p₁ p₂
 
 ------------------------------------------------------------------------
--- 7. Beispiel-Konstruktion und Tests
+-- 8. Beispiele und Tests
 ------------------------------------------------------------------------
 
 node₀ : Node
@@ -156,17 +161,23 @@ example-graph =
            proof-0<2
            proof-1<2
 
--- Tests, die Agda beim Laden prüft
+-- Tests mit der neuen sauberen Syntax
 _ : nodes example-graph ≡ node₂ ∷ node₁ ∷ node₀ ∷ []
 _ = refl
 
 _ : edges example-graph ≡ (0 , 2) ∷ (1 , 2) ∷ []
 _ = refl
 
-_ : example-graph —↠ 0 2
+-- Direkte Kante testen
+_ : 0 —→ 2 in example-graph
+_ = here
+
+-- Erreichbarkeit testen  
+_ : 0 can-reach 2 in example-graph
 _ = direct here
 
-_ : ¬ (example-graph —↠ 2 2)
+-- Azyklizität testen
+_ : ¬ (2 can-reach 2 in example-graph)
 _ = theorem-acyclic example-graph 2
 
 _ : find-node example-graph 1 ≡ just node₁
@@ -179,10 +190,10 @@ _ : extract-drift-result example-graph 1 0 ≡ just node₂
 _ = refl
 
 ------------------------------------------------------------------------
--- FINALE VERSION MIT KORREKTER TYPINFERENZ!
--- • Saubere Trennung von Datentyp-Definition und infix-Syntax
+-- FINALE VERSION MIT ECHTEN TERNARY MIXFIX OPERATOREN!
+-- • Saubere ternary Syntax: "u can-reach v in G" 
 -- • Konstruktive Azyklizität durch Zeitordnung
 -- • Kommutative Drift-Operationen 
--- • Automatische Verifikation aller Tests
--- • Robuste Typinferenz ohne Agda-Parser-Probleme
+-- • Lesbare, natürliche Operator-Syntax
+-- • Vollständige Agda mixfix operator Unterstützung
 ------------------------------------------------------------------------

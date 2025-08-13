@@ -12,7 +12,7 @@
 
 module Structures.Step8_CategoricalBackbone where
 
-open import Level using (Level; 0ℓ; suc) renaming (zero to lzero; suc to lsuc)
+open import Level using (Level; 0ℓ) renaming (zero to lzero; suc to lsuc)
 open import Data.Nat using (ℕ; zero; suc; _≤_; _<_; z≤n; s≤s)
 open import Data.Nat.Properties using (≤-refl; ≤-trans; ≤-antisym; <-trans)
 open import Data.Bool using (Bool; true; false; _∧_; _∨_; not)

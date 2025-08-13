@@ -2,7 +2,7 @@
 
 -- | Step 6: Semantic Time Functor
 -- | Building temporal structure from distinction sequences
-module Step6_SemanticTimeFunctor where
+module Structures.Step6_SemanticTimeFunctor where
 
 open import Data.Bool using (Bool; true; false; _∧_; _∨_; not)
 open import Data.Nat using (ℕ; zero; suc)

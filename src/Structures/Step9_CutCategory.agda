@@ -1,10 +1,9 @@
 {-# OPTIONS --safe #-}
 
-module Structures.Step9_CutCategory where
+module Structures.Step8_CutCategory where
 
 open import Data.Nat using (ℕ; zero; suc; _≤_; _<_; z≤n; s≤s)
-open import Data.Nat.Properties using (≤-refl; ≤-trans; ≤-antisym; ≤-irrelevant; 
-                                       m<1+n⇒m≤n)
+open import Data.Nat.Properties using (≤-refl; ≤-trans; ≤-antisym; ≤-irrelevant)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import Data.Product using (Σ; _,_)
 open import Data.Unit using (⊤; tt)
@@ -30,9 +29,10 @@ private
   ≤-assoc p q r = ≤-irrelevant (≤-trans (≤-trans p q) r) (≤-trans p (≤-trans q r))
 
 -- | Helper: Convert strict inequality to non-strict inequality
--- | Since m < n is defined as suc m ≤ n, we need to prove m ≤ n
+-- | Since m < n is defined as suc m ≤ n, we prove m ≤ n by induction
 <⇒≤ : ∀ {m n} → m < n → m ≤ n
-<⇒≤ {m} {suc n} m<sn = m<1+n⇒m≤n m<sn
+<⇒≤ {zero} {suc n} _ = z≤n
+<⇒≤ {suc m} {suc n} (s≤s m<n) = s≤s (<⇒≤ m<n)
 
 ------------------------------------------------------------------------
 -- 2. CUTCAT: THE CANONICAL TEMPORAL CATEGORY

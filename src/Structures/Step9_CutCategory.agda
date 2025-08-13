@@ -45,7 +45,7 @@ private
 CutCat : Category ℕ _≤_
 CutCat = record
   { id    = λ A → ≤-refl              -- Identity: reflexivity function
-  ; _∘_   = λ g f → ≤-trans f g       -- Composition: f then g via transitivity
+  ; _∘_   = λ f g → ≤-trans f g       -- Composition: f : A→B, g : B→C gives A→C
   ; idˡ   = ≤-idˡ                     -- Left identity law
   ; idʳ   = ≤-idʳ                     -- Right identity law  
   ; assoc = λ f g h → ≤-assoc f g h   -- Associativity law
@@ -86,20 +86,20 @@ test-composition = let
 
     arrow-5-7 : 5 ≤ 7
     arrow-5-7 = s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))))
-  in Category._∘_ CutCat arrow-5-7 arrow-2-5
+  in Category._∘_ CutCat arrow-2-5 arrow-5-7
 
 -- | Verification: Category laws preserved
 test-left-identity : ∀ {m n : ℕ} (f : m ≤ n) →
-                     Category._∘_ CutCat (Category.id CutCat n) f ≡ f
+                     Category._∘_ CutCat (Category.id CutCat m) f ≡ f
 test-left-identity f = Category.idˡ CutCat f
 
 test-right-identity : ∀ {m n : ℕ} (f : m ≤ n) →
-                      Category._∘_ CutCat f (Category.id CutCat m) ≡ f  
+                      Category._∘_ CutCat f (Category.id CutCat n) ≡ f  
 test-right-identity f = Category.idʳ CutCat f
 
 test-associativity : ∀ {m n k l : ℕ} (f : m ≤ n) (g : n ≤ k) (h : k ≤ l) →
-                     Category._∘_ CutCat (Category._∘_ CutCat h g) f 
-                     ≡ Category._∘_ CutCat h (Category._∘_ CutCat g f)
+                     Category._∘_ CutCat (Category._∘_ CutCat f g) h 
+                     ≡ Category._∘_ CutCat f (Category._∘_ CutCat g h)
 test-associativity f g h = Category.assoc CutCat f g h
 
 ------------------------------------------------------------------------

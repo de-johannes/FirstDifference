@@ -187,7 +187,12 @@ No. The proof doesn’t assume D₀; it shows that attempting to deny D₀ perfo
 
 ## On the Shoulders of Giants
 
-Spencer-Brown (mark/distinction), Luhmann (operational distinction in social systems), von Foerster–Maturana–Varela (observation, autopoiesis), Günther (polycontextural logic). This project transposes those insights into an explicit, minimal, machine-verifiable kernel and then builds a clean mathematical spine on top.
+- Spencer-Brown (mark/distinction)
+- Luhmann (operational distinction in social systems)
+- von Foerster–Maturana–Varela (observation, autopoiesis)
+- Günther (polycontextural logic)
+
+This project transposes those insights into an explicit, minimal, machine-verifiable kernel and then builds a clean mathematical spine on top.
 
 ---
 

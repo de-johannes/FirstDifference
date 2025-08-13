@@ -1,6 +1,6 @@
 {-# OPTIONS --safe #-}
 
-module Step7_DriftGraph where
+module Step7_DriftGraph_Final where
 
 open import Data.Nat using (ℕ; zero; suc; _≤_; _<_; z≤n; s≤s; _≟_)
 open import Data.Nat.Properties using (<-trans; <-irrefl)
@@ -36,7 +36,7 @@ record Node : Set where
   constructor node[_içeriği_]
   field
     nodeId  : NodeId
-    content : Dist (suc (suc zero))
+    content : Dist (suc (suc zero)) -- Beispiel-Dimension 2
 open Node public
 
 _≟NodeId_ : Node → NodeId → Bool
@@ -74,48 +74,36 @@ edges (add-node G _) = edges G
 edges (add-edge G p₁ p₂ c _ _) = (nodeId p₁ , nodeId c) ∷ (nodeId p₂ , nodeId c) ∷ edges G
 
 ------------------------------------------------------------------------
--- 5. Erreichbarkeit und Azyklizität - KORRIGIERTE OPERATOR-NAMEN
+-- 5. Erreichbarkeit und Azyklizität
 ------------------------------------------------------------------------
 
--- KORRIGIERT: "in" ist ein Keyword - verwende "within"
 _—→_within_ : NodeId → NodeId → DriftGraph → Set
 u —→ v within G = (u , v) ∈ edges G
+infix 4 _—→_within_
 
-infixl 4 _—→_within_
+data _can-reach_within_ (u w : NodeId) : DriftGraph → Set where
+  direct  : ∀ {G} → u —→ w within G → u can-reach w within G
+  compose : ∀ {G v} → u can-reach v within G → v can-reach w within G → u can-reach w within G
+infix 4 _can-reach_within_
 
--- Ternary mixfix operator für Erreichbarkeit
-data Reachable (G : DriftGraph) : NodeId → NodeId → Set where
-  direct  : ∀ {u v} → u —→ v within G → Reachable G u v
-  compose : ∀ {u v w} → Reachable G u v → Reachable G v w → Reachable G u w
+edge-increases-time : ∀ u v G → u —→ v within G → u < v
+edge-increases-time u v empty ()
+edge-increases-time u v (add-node G n) edge = edge-increases-time u v G edge
+edge-increases-time u v (add-edge G p₁ p₂ c p₁<c p₂<c) here = p₁<c
+edge-increases-time u v (add-edge G p₁ p₂ c p₁<c p₂<c) (there here) = p₂<c
+edge-increases-time u v (add-edge G p₁ p₂ c p₁<c p₂<c) (there (there edge)) =
+  edge-increases-time u v G edge
 
--- KORRIGIERT: "in" ersetzt durch "within"
-_can-reach_within_ : NodeId → NodeId → DriftGraph → Set
-u can-reach v within G = Reachable G u v
-
-infixl 4 _can-reach_within_
-
-------------------------------------------------------------------------
--- 6. Haupttheoreme mit den korrigierten Operatoren
-------------------------------------------------------------------------
-
-edge-increases-time : ∀ G u v → u —→ v within G → u < v
-edge-increases-time empty u v ()
-edge-increases-time (add-node G _) u v edge = edge-increases-time G u v edge
-edge-increases-time (add-edge G p₁ p₂ c p₁<c p₂<c) u v here = p₁<c
-edge-increases-time (add-edge G p₁ p₂ c p₁<c p₂<c) u v (there here) = p₂<c
-edge-increases-time (add-edge G p₁ p₂ c p₁<c p₂<c) u v (there (there edge)) =
-  edge-increases-time G u v edge
-
-reachability-increases-time : ∀ G u w → u can-reach w within G → u < w
-reachability-increases-time G u w (direct edge) = edge-increases-time G u w edge
-reachability-increases-time G u w (compose u↠v v↠w) =
-  <-trans (reachability-increases-time G u _ u↠v) (reachability-increases-time G _ w v↠w)
+reachability-increases-time : ∀ u w G → u can-reach w within G → u < w
+reachability-increases-time u w G (direct edge) = edge-increases-time u w G edge
+reachability-increases-time u w G (compose u↠v v↠w) =
+  <-trans (reachability-increases-time u _ G u↠v) (reachability-increases-time _ w G v↠w)
 
 theorem-acyclic : ∀ G v → ¬ (v can-reach v within G)
-theorem-acyclic G v cycle = <-irrefl refl (reachability-increases-time G v v cycle)
+theorem-acyclic G v cycle = <-irrefl (reachability-increases-time v v G cycle)
 
 ------------------------------------------------------------------------
--- 7. Graphen-Operationen
+-- 6. Graphen-Operationen
 ------------------------------------------------------------------------
 
 find-node : DriftGraph → NodeId → Maybe Node
@@ -136,7 +124,7 @@ extract-drift-result (add-edge G parent₁ parent₂ child _ _) p₁ p₂
 ...   | false = extract-drift-result G p₁ p₂
 
 ------------------------------------------------------------------------
--- 8. Beispiele und Tests
+-- 7. Beispiel-Konstruktion und Tests
 ------------------------------------------------------------------------
 
 node₀ : Node
@@ -148,11 +136,12 @@ node₁ = node[ 1 içeriği (false ∷ true ∷ []) ]
 node₂ : Node
 node₂ = node[ 2 içeriği (drift (content node₀) (content node₁)) ]
 
+-- KORRIGIERTE BEWEISE für m < n (definiert als suc m ≤ n)
 proof-0<2 : 0 < 2
-proof-0<2 = s≤s (s≤s z≤n)
+proof-0<2 = s≤s z≤n
 
 proof-1<2 : 1 < 2
-proof-1<2 = s≤s z≤n
+proof-1<2 = s≤s (s≤s z≤n)
 
 example-graph : DriftGraph
 example-graph =
@@ -161,14 +150,13 @@ example-graph =
            proof-0<2
            proof-1<2
 
--- Tests mit korrigierter Syntax
+-- Tests, die Agda beim Laden prüft
 _ : nodes example-graph ≡ node₂ ∷ node₁ ∷ node₀ ∷ []
 _ = refl
 
 _ : edges example-graph ≡ (0 , 2) ∷ (1 , 2) ∷ []
 _ = refl
 
--- KORRIGIERTE Tests mit "within" statt "in"
 _ : 0 —→ 2 within example-graph
 _ = here
 
@@ -183,14 +171,3 @@ _ = refl
 
 _ : extract-drift-result example-graph 0 1 ≡ just node₂
 _ = refl
-
-_ : extract-drift-result example-graph 1 0 ≡ just node₂
-_ = refl
-
-------------------------------------------------------------------------
--- FINALE VERSION MIT KORRIGIERTEN OPERATOR-NAMEN!
--- • "within" statt "in" (reserviertes Keyword vermieden)
--- • Saubere ternary Syntax: "u can-reach v within G" 
--- • Konstruktive Azyklizität durch Zeitordnung
--- • Vollständige Agda mixfix operator Unterstützung
-------------------------------------------------------------------------

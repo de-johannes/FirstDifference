@@ -7,7 +7,7 @@ on:
     branches: [ main, master ]
 
 permissions:
-  contents: write  # notwendig, um Tags/Releases zu erstellen
+  contents: write
 
 jobs:
   check:
@@ -26,12 +26,10 @@ jobs:
           agda -l standard-library --safe --without-K -i . All.agda
 
   release:
-    name: Create release on success
+    name: Create release on success (main only)
     needs: check
     runs-on: ubuntu-latest
-    if: >
-      github.event_name == 'push' &&
-      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
 

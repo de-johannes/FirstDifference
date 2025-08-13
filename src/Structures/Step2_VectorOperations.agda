@@ -3,7 +3,7 @@
 
 -- | Step 2: Boolean Vectors with Component-wise Operations  
 -- | Building multi-dimensional Boolean spaces
-module Step2_VectorOperations where
+module Structures.Step2_VectorOperations where
 
 open import Data.Bool using (Bool; true; false; _∧_; _∨_; not)
 open import Data.Nat using (ℕ; zero; suc)

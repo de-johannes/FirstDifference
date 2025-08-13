@@ -70,22 +70,22 @@ temporal-antisym = ≤-antisym
 -- 4. VERIFICATION AND TESTING INTERFACE
 ------------------------------------------------------------------------
 
--- | Test: Temporal progression morphism construction
+-- | Test: Temporal progression morphism construction (2 ≤ 5)
 test-progression : 2 ≤ 5
-test-progression = s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))
+test-progression = s≤s (s≤s z≤n)      -- 2 ≤ 5: suc(suc(0)) ≤ 5, so 0 ≤ 3
 
 -- | Test: Identity morphism via category interface
 test-identity : 5 ≤ 5
 test-identity = Category.id CutCat 5
 
--- | Test: Morphism composition via category interface
+-- | Test: Morphism composition via category interface (2 ≤ 7)
 test-composition : 2 ≤ 7
 test-composition = let
     arrow-2-5 : 2 ≤ 5
     arrow-2-5 = test-progression
 
     arrow-5-7 : 5 ≤ 7
-    arrow-5-7 = s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))))
+    arrow-5-7 = s≤s (s≤s z≤n)         -- 5 ≤ 7: suc(suc(suc(suc(suc(0))))) ≤ 7, so 0 ≤ 2
   in Category._∘_ CutCat arrow-2-5 arrow-5-7
 
 -- | Verification: Category laws preserved

@@ -1,6 +1,6 @@
 {-# OPTIONS --safe #-}
 
-module Step8_CategoricalBackbone_Final where
+module Step8_ReachabilityCategory where
 
 open import Data.Nat using (ℕ)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; _≢_)

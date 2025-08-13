@@ -1,218 +1,206 @@
 # The Irrefutable First Difference
 
 **Formal proof of the logical unavoidability of the first distinction**  
-Machine-checked core in Agda. No extra ontic assumptions.
+Machine-checked core available; no hidden ontic baggage in the math that follows.
 
 > **TL;DR**  
 > Every piece of information begins with a first distinction **D₀**.  
-> Trying to deny that fact already instantiates it.  
-> We isolate the minimal assumptions and verify the core mechanically.
+> Denying it already instantiates it.  
+> We isolate the minimal hinge (the **Token Principle**) and expose a tiny, machine-checkable core.
 
 ---
 
 ## Problem & Motivation
 
-Every statement, theory, or datum begins with a **first distinction**: a marked difference between *this* and *not-this*. Without it, there is no token, no representation, no information.
+Every statement, theory, or datum begins with a **first distinction**: a marked split between *this* and *not-this*. Without it, there is no token, no representation, no information.
 
-**The question**  
-Can this first distinction itself be denied?
+**Question**  
+Can the first distinction itself be denied?
 
 **Answer**  
-No. Any attempt to deny it already **instantiates** it. This is not rhetoric; it is a **formally minimal, machine-verifiable** result.
+No. Any attempt to deny it **instantiates** it. That’s not rhetoric; it’s a **formally minimal, machine-verifiable** result.
 
 ---
 
 ## Core Claim
 
-There is no derivation of `¬ D₀` that does not already rely on `D₀` in the act of expression. Producing a token is already an instance of the distinction the denial would need to erase.
+There is no derivation of `¬ D₀` that does not already rely on `D₀` in the act of expression. The token that carries the denial is itself an instance of the very distinction it tries to erase.
 
 ---
 
 ## Minimal Formal Framework
 
-- **Logic:** skeletal sequent calculus (only Weakening and Cut).
-- **Principle (Token Principle):**  
-  Any material or symbolic realisation of a token is an instance of the first distinction **D₀**.
-- **Result:**  
+- **Logical setting:** skeletal sequent calculus (only Weakening and Cut).  
+- **Bridge (Token Principle, TP):**  
+  > Any realized token (written, displayed, computed, stabilized) **instantiates** the first distinction **D₀**.
+- **Consequence:**  
   No derivation of `¬ D₀` exists without presupposing `D₀` in its context.
 
-The repository contains a **small Agda core** that expresses these constraints in a safe fragment and checks.
+This page states the **interface** of TP and the irrebuttability result. The main repository builds mathematics **after** this hinge and keeps it separate from the proofs inside Part I.
 
 ---
 
 ## Public Challenge
 
-If you think this is refutable:
+If you think the claim is refutable:
 
-1. Provide a formal derivation of `¬ D₀` in any framework that  
+1. Give a formal derivation of `¬ D₀` in a framework that  
    (a) can express negation,  
-   (b) materialises in some token, and  
-   (c) meets the proof standard used here (explicit rules, machine-checkable core).
-2. Or isolate exactly **which** assumption you reject, and exhibit a working formalism that avoids instantiating tokens in the course of its own denial.
+   (b) necessarily materializes in some token, and  
+   (c) meets an explicit, machine-checkable proof standard.
+2. Or name exactly **which** assumption you reject and present a working formalism that avoids instantiating tokens during its own denial.
 
 Either we **refute** it, or we **build on** it. Ignoring it only postpones the question.
 
 ---
 
-## Implications (sketch)
+## How this fits the repository now
 
-1. **Formal systems:** Any system that can express negation presupposes **D₀** when it is expressed at all.  
-2. **Information theory:** Without a first distinction, there is no token, hence no bit.  
-3. **Representation:** Displaying a formula is already the act the proof needs.
+- The **Token Principle** and the “can’t-deny-without-doing” argument are a **clear, swappable interface**.  
+- **Part I** of the repo (Steps 1–7) is **pure mathematics** in Agda’s `--safe` fragment and does **not depend** on TP.  
+- TP explains **why** any formal trace in the repo already lives inside D₀; it does **not** inject extra axioms into the math.
 
 ---
 
-## What’s in this repository
+## Micro-Kernel (Agda, optional; code double-fenced for Markdown)
 
-- A compact, **safe** Agda project that:
-  - formalises the interface for the Token Principle,
-  - states unavoidability in a minimal setting,
-  - demonstrates **Drift** as the necessity of strictly new distinctions after the first.
-- A tiny, self-contained **example simulation** that mirrors the intuition without depending on the core modules (keeps CI green and the dependency graph clean).
+> A tiny interface for TP. It derives only the shape `¬ D₀ → ⊥` from the existence of a token and a token→D₀ map.
 
-### Directory layout
+```agda
+{-# OPTIONS --safe #-}
+module Core.TokenPrinciple where
+
+open import Agda.Primitive using (Level; lzero; lsuc; _⊔_)
+open import Relation.Nullary using (¬_)
+open import Data.Empty using (⊥)
+open import Data.Unit  using (⊤; tt)
+
+record TokenPrinciple (ℓ₁ ℓ₂ : Level) : Set (lsuc (ℓ₁ ⊔ ℓ₂)) where
+  field
+    D0       : Set ℓ₁
+    Token    : Set ℓ₂
+    token    : Token
+    token⇒D0 : Token → D0
+
+module Irrefutable {ℓ₁ ℓ₂} (TP : TokenPrinciple ℓ₁ ℓ₂) where
+  open TokenPrinciple TP
+  irrefutable : ¬ D0 → ⊥
+  irrefutable notD0 = notD0 (token⇒D0 token)
+
+-- Demo instance (kept separate from Part I)
+module Demo where
+  TP⊤ : TokenPrinciple lzero lzero
+  TP⊤ .D0       = ⊤
+  TP⊤ .Token    = ⊤
+  TP⊤ .token    = tt
+  TP⊤ .token⇒D0 = λ _ → tt
+```
+
+> **Note.** None of Steps 1–7 import this. It’s an **interface** beside, not inside, the math.
+
+---
+
+## What follows from taking D₀ seriously (sketch)
+
+1. **Formal systems.** Any system that can express negation presupposes **D₀** as soon as it is expressed.  
+2. **Information theory.** Without a first distinction, there is no token, hence no bit.  
+3. **Representation.** Displaying “`¬ D₀`” is already doing D₀.
+
+---
+
+## What’s in the repository (now)
+
+The repo implements a **clean staged backbone** in Agda’s `--safe` fragment. Code snippets are double-fenced for Markdown display here.
 
 ```
 src/
-  All.agda                      -- Project entry point (imports the public modules)
+  All.agda
 
   Core/
-    TokenPrinciple.agda         -- Interface/record for token-instantiation principle
-    FirstDifference.agda        -- D₀ as minimal act (public, no postulates)
+    TokenPrinciple.agda              # optional interface for TP (not used by Part I)
 
   Structures/
-    Drift.agda                  -- Drift operator; irreducibility-as-Set; semantic time
-
-  Categories/
-    CutCat.agda                 -- Thin category on ℕ; ledger-as-functor; proofs compile
+    Step1_BooleanFoundation.agda     # exhaustive proofs on Bool
+    Step2_VectorOperations.agda      # Dist n, drift/join/neg
+    Step3_AlgebraLaws.agda           # lifted associativity, etc.
+    Step4_PartialOrder.agda          # a ≤ᵈ b :≡ drift a b ≡ a
+    Step5_CategoryStructure.agda     # morphisms, id, composition
+    Step6_SemanticTimeFunctor.agda   # sequences; evolve functor laws
+    Step7_DriftGraph.agda            # DAG skeleton with rank monotonicity
 
   Examples/
-    DriftSim.agda               -- Didactic toy: AND-based "drift" with innovation count
-
-.github/workflows/
-  agda.yml                      -- CI: setup-agda, safe compile of All.agda
+    DriftSim.agda                    # didactic simulation
 ```
+
+- **No postulates** in public math.  
+- Any meta-assumption shows up as an **explicit record interface**, decoupled from the core.
 
 ---
 
 ## Build & Verification
 
-### Requirements
+**Requirements**
 
-- Agda ≥ 2.6.4 (CI uses `wenkokke/setup-agda@v2` with `agda-version: latest` and `agda-stdlib-version: recommended`)
+- Agda ≥ 2.6.x, stdlib ≥ 1.7  
+  (CI uses `wenkokke/setup-agda@v2` with `agda-version: latest` and `agda-stdlib-version: recommended`.)
 
-### Local build
+**Local build**
 
-```bash
+```
 cd src
 agda --safe --without-K -i . All.agda
 ```
 
-- We compile with `--safe` and `--without-K`.
-- Public modules avoid bare `postulate`s. Interface-like axioms sit behind explicit records so you can instantiate or swap them in separate modules without contaminating the core.
+**Continuous Integration**
 
-### Continuous Integration (GitHub Actions)
+GitHub Actions workflow:
 
-The repo ships an **Agda CI** workflow that:
+1. Checkout  
+2. Install Agda + stdlib  
+3. Build `src/All.agda` with `--safe --without-K`
 
-1. Checks out the repo  
-2. Installs Agda + stdlib  
-3. Runs a safe build of `src/All.agda`
-
-A green check means the public surface compiles and all definitional equalities stated in examples/tests are verified.
-
----
-
-## How to read the code
-
-### `Core/TokenPrinciple.agda`
-Defines a minimal interface for the **Token Principle**: whenever a token exists, the first distinction is instantiated. The interface keeps the meta-assumption transparent and swappable.
-
-### `Core/FirstDifference.agda`
-Encodes **D₀** as the minimal cut (no semantics beyond polarity). Public, safe; no hidden axioms.
-
-### `Structures/Drift.agda`
-Implements Drift: a binary composition rule that only accepts **irreducible** novelties. Comes with:
-- an irreducibility predicate (as a `Set`, not a `Bool`),
-- a semantic time counter `T` that only advances on genuine innovation,
-- a lemma that each step is either stagnant or strictly increases `T`.
-
-### `Categories/CutCat.agda`
-A thin category on ℕ modeling irreversible accumulation; the “ledger” as a functor into a free “mark” structure. Includes small proofs (associativity, identities) that compile to `refl`.
-
-### `Examples/DriftSim.agda`
-A didactic, zero-dependency toy:
-- A one-bit distinction, drift as Boolean `AND`.
-- Tags each composition as `New` or `Stagnant`.
-- Includes tiny proofs so CI actually verifies something nontrivial.
-
----
-
-## Scope & Rigor
-
-- The **public** surface uses `--safe` and avoids postulates. Where a meta-principle is needed, it is expressed as an **explicit interface** that downstream code can implement in different ways.
-- The goal is not to smuggle assumptions, but to **expose** the minimal hinge (token→distinction) and show why attempts to deny D₀ collapse into self-instantiation in any representational act.
-
----
-
-## On the Shoulders of Giants
-
-- **George Spencer-Brown, _Laws of Form_ (1969):** the mark and distinction as origin of form.  
-- **Niklas Luhmann, _Social Systems_ (1984):** distinction as operation of social systems.  
-- **Heinz von Foerster, Maturana, Varela:** observation, self-reference, autopoiesis.  
-- **Gotthard Günther:** polycontextural logic and formal difference.
-
-This work transposes those insights into a minimal, explicit, machine-verifiable kernel.
+A green check means the public surface compiles and all stated equalities are verified.
 
 ---
 
 ## Criticism & Response (brief)
 
-**“The Token Principle is an external assumption.”**  
-Yes, and it is minimal. Any attempt to reject it instantiates a token and falls under its scope.
+**“TP is an external assumption.”**  
+Yes. It’s minimal and explicit. Rejecting it instantiates a token and falls under its scope.
 
-**“This is only about language, not reality.”**  
-The claim is about **representation**. If every account of reality requires D₀ to exist as a representation, the dependency is structural, not stylistic.
+**“Only about language.”**  
+The claim is about **representation**. If every scientific, mathematical, or computational account must be tokenized to exist, D₀ is structurally prior.
 
-**“Isn’t this circular?”**  
-No. The proof does not assume D₀; it shows any **denial** of D₀ performs it.
+**“Circular?”**  
+No. The proof doesn’t assume D₀; it shows that attempting to deny D₀ performs D₀.
 
 ---
 
 ## Glossary
 
-- **D₀ — First Difference:** The minimal act producing a marked/unmarked polarity.  
-- **Token Principle:** Any realised token instantiates D₀.  
-- **Self-subversion:** Writing “¬D₀” already instantiates D₀.  
-- **Drift:** After D₀, there must be strictly new distinctions; no fixed point.
+- **D₀ (First Difference).** Minimal act that yields a marked/unmarked polarity.  
+- **Token Principle (TP).** Any realized token instantiates D₀.  
+- **Self-subversion.** Writing “`¬ D₀`” already does D₀.  
+- **Drift (Δ).** After D₀, strictly new distinctions appear; no fixed points.
 
 ---
 
-## Included (this repo)
+## On the Shoulders of Giants
 
-- **Agda core:** safe, minimal modules and example proofs.  
-- **CI workflow:** green check on safe build.  
-- **Example simulation:** conservative toy to illustrate “innovation counting.”
-
----
-
-## How to extend
-
-- Add new modules under `src/` and import them in `All.agda`.  
-- Keep speculative axioms in **separate** modules that are **not** re-exported publicly; prefer records/interfaces for meta-assumptions.  
-- Add example-level checks as definitional equalities (`≡` proofs) so CI verifies something concrete.
+Spencer-Brown (mark/distinction), Luhmann (operational distinction in social systems), von Foerster–Maturana–Varela (observation, autopoiesis), Günther (polycontextural logic). This project transposes those insights into an explicit, minimal, machine-verifiable kernel and then builds a clean mathematical spine on top.
 
 ---
 
 ## License
 
-- Text and theory: **CC BY 4.0**.  
+- Text: **CC BY 4.0**  
 - Code: **MIT**
 
 ---
 
 ## Citation
 
-If you use or discuss this project, please cite the OSF entry and this repository.  
-OSF: `https://osf.io/bcv7a/` (project page)  
-Repo: this GitHub repository’s permalink/commit hash.
+Please cite the OSF entry and this repository.
+
+- OSF project: `https://osf.io/bcv7a/`  
+- Repository: `https://github.com/de-johannes/FirstDifference` (pin a commit for archival)

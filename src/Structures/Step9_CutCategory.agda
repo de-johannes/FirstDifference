@@ -6,7 +6,7 @@ open import Data.Nat using (ℕ; zero; suc; _≤_; _<_; z≤n; s≤s; _∸_)
 open import Data.Nat.Properties using (≤-refl; ≤-trans; ≤-antisym; <-trans; 
                                        ≤-irrelevant; ≤-reflexive; ≤-step)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong)
-open import Data.Product using (∃; _,_; _×_)
+open import Data.Product using (∃; ∃-syntax; _,_; _×_)
 open import Data.Unit using (⊤; tt)
 
 ------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 {-# OPTIONS --safe #-}
 
-module Step7_DriftGraph where
+module Step7_DriftGraph_Polished where
 
 open import Data.Nat using (ℕ; zero; suc; _≤_; _<_; z≤n; s≤s; _≟_)
 open import Data.Nat.Properties using (<-trans; <-irrefl)
@@ -74,31 +74,31 @@ edges (add-node G _) = edges G
 edges (add-edge G p₁ p₂ c _ _) = (nodeId p₁ , nodeId c) ∷ (nodeId p₂ , nodeId c) ∷ edges G
 
 ------------------------------------------------------------------------
--- 5. Erreichbarkeit und Azyklizität - MIT TERNARY MIXFIX OPERATOR
+-- 5. Erreichbarkeit und Azyklizität - KORRIGIERTE OPERATOR-NAMEN
 ------------------------------------------------------------------------
 
--- Direkte Kante (binary operator)
-_—→_in_ : NodeId → NodeId → DriftGraph → Set
-u —→ v in G = (u , v) ∈ edges G
+-- KORRIGIERT: "in" ist ein Keyword - verwende "within"
+_—→_within_ : NodeId → NodeId → DriftGraph → Set
+u —→ v within G = (u , v) ∈ edges G
 
-infixl 4 _—→_in_
+infixl 4 _—→_within_
 
--- Ternary mixfix operator für Erreichbarkeit (nach den Suchresultaten)
+-- Ternary mixfix operator für Erreichbarkeit
 data Reachable (G : DriftGraph) : NodeId → NodeId → Set where
-  direct  : ∀ {u v} → u —→ v in G → Reachable G u v
+  direct  : ∀ {u v} → u —→ v within G → Reachable G u v
   compose : ∀ {u v w} → Reachable G u v → Reachable G v w → Reachable G u w
 
--- Sauberer ternary mixfix operator
-_can-reach_in_ : NodeId → NodeId → DriftGraph → Set
-u can-reach v in G = Reachable G u v
+-- KORRIGIERT: "in" ersetzt durch "within"
+_can-reach_within_ : NodeId → NodeId → DriftGraph → Set
+u can-reach v within G = Reachable G u v
 
-infixl 4 _can-reach_in_
+infixl 4 _can-reach_within_
 
 ------------------------------------------------------------------------
--- 6. Haupttheoreme mit dem neuen Operator
+-- 6. Haupttheoreme mit den korrigierten Operatoren
 ------------------------------------------------------------------------
 
-edge-increases-time : ∀ G u v → u —→ v in G → u < v
+edge-increases-time : ∀ G u v → u —→ v within G → u < v
 edge-increases-time empty u v ()
 edge-increases-time (add-node G _) u v edge = edge-increases-time G u v edge
 edge-increases-time (add-edge G p₁ p₂ c p₁<c p₂<c) u v here = p₁<c
@@ -106,12 +106,12 @@ edge-increases-time (add-edge G p₁ p₂ c p₁<c p₂<c) u v (there here) = p�
 edge-increases-time (add-edge G p₁ p₂ c p₁<c p₂<c) u v (there (there edge)) =
   edge-increases-time G u v edge
 
-reachability-increases-time : ∀ G u w → u can-reach w in G → u < w
+reachability-increases-time : ∀ G u w → u can-reach w within G → u < w
 reachability-increases-time G u w (direct edge) = edge-increases-time G u w edge
 reachability-increases-time G u w (compose u↠v v↠w) =
   <-trans (reachability-increases-time G u _ u↠v) (reachability-increases-time G _ w v↠w)
 
-theorem-acyclic : ∀ G v → ¬ (v can-reach v in G)
+theorem-acyclic : ∀ G v → ¬ (v can-reach v within G)
 theorem-acyclic G v cycle = <-irrefl (reachability-increases-time G v v cycle)
 
 ------------------------------------------------------------------------
@@ -161,23 +161,21 @@ example-graph =
            proof-0<2
            proof-1<2
 
--- Tests mit der neuen sauberen Syntax
+-- Tests mit korrigierter Syntax
 _ : nodes example-graph ≡ node₂ ∷ node₁ ∷ node₀ ∷ []
 _ = refl
 
 _ : edges example-graph ≡ (0 , 2) ∷ (1 , 2) ∷ []
 _ = refl
 
--- Direkte Kante testen
-_ : 0 —→ 2 in example-graph
+-- KORRIGIERTE Tests mit "within" statt "in"
+_ : 0 —→ 2 within example-graph
 _ = here
 
--- Erreichbarkeit testen  
-_ : 0 can-reach 2 in example-graph
+_ : 0 can-reach 2 within example-graph
 _ = direct here
 
--- Azyklizität testen
-_ : ¬ (2 can-reach 2 in example-graph)
+_ : ¬ (2 can-reach 2 within example-graph)
 _ = theorem-acyclic example-graph 2
 
 _ : find-node example-graph 1 ≡ just node₁
@@ -190,10 +188,9 @@ _ : extract-drift-result example-graph 1 0 ≡ just node₂
 _ = refl
 
 ------------------------------------------------------------------------
--- FINALE VERSION MIT ECHTEN TERNARY MIXFIX OPERATOREN!
--- • Saubere ternary Syntax: "u can-reach v in G" 
+-- FINALE VERSION MIT KORRIGIERTEN OPERATOR-NAMEN!
+-- • "within" statt "in" (reserviertes Keyword vermieden)
+-- • Saubere ternary Syntax: "u can-reach v within G" 
 -- • Konstruktive Azyklizität durch Zeitordnung
--- • Kommutative Drift-Operationen 
--- • Lesbare, natürliche Operator-Syntax
 -- • Vollständige Agda mixfix operator Unterstützung
 ------------------------------------------------------------------------

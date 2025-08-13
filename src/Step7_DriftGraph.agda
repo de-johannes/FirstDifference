@@ -1,6 +1,6 @@
 {-# OPTIONS --safe #-}
 
-module Step7_DriftGraph where
+module Step7_DriftGraph_Polished where
 
 open import Data.Nat using (ℕ; zero; suc; _≤_; _<_; z≤n; s≤s; _≟_)
 open import Data.Nat.Properties using (<-trans; <-irrefl)
@@ -32,7 +32,6 @@ data _∈_ {A : Set} (x : A) : List A → Set where
 NodeId : Set
 NodeId = ℕ
 
--- KORRIGIERT: Einfacher Konstruktor-Name ohne Komma-Konflikt
 record Node : Set where
   constructor node[_içeriği_]
   field
@@ -83,9 +82,14 @@ _—→_ G u v = (u , v) ∈ edges G
 
 infix 4 _—→_
 
-data _—↠_ (G : DriftGraph) : NodeId → NodeId → Set where
-  direct  : ∀ {u v} → G —→ u v → G —↠ u v
-  compose : ∀ {u v w} → G —↠ u v → G —↠ v w → G —↠ u w
+-- KORRIGIERT: Explizite Definition ohne problematische infix-Syntax
+data Reachable (G : DriftGraph) : NodeId → NodeId → Set where
+  direct  : ∀ {u v} → G —→ u v → Reachable G u v
+  compose : ∀ {u v w} → Reachable G u v → Reachable G v w → Reachable G u w
+
+-- Infix-Wrapper für saubere Syntax
+_—↠_ : DriftGraph → NodeId → NodeId → Set
+G —↠ u v = Reachable G u v
 
 infix 4 _—↠_
 
@@ -130,7 +134,6 @@ extract-drift-result (add-edge G parent₁ parent₂ child _ _) p₁ p₂
 -- 7. Beispiel-Konstruktion und Tests
 ------------------------------------------------------------------------
 
--- KORRIGIERT: Neue saubere Konstruktor-Syntax
 node₀ : Node
 node₀ = node[ 0 içeriği (true ∷ false ∷ []) ]
 
@@ -176,10 +179,10 @@ _ : extract-drift-result example-graph 1 0 ≡ just node₂
 _ = refl
 
 ------------------------------------------------------------------------
--- FINALE POLIERTE VERSION! 
--- • Saubere Konstruktor-Syntax ohne Parser-Konflikte
+-- FINALE VERSION MIT KORREKTER TYPINFERENZ!
+-- • Saubere Trennung von Datentyp-Definition und infix-Syntax
 -- • Konstruktive Azyklizität durch Zeitordnung
 -- • Kommutative Drift-Operationen 
 -- • Automatische Verifikation aller Tests
--- • Vollständige semantische Integration
+-- • Robuste Typinferenz ohne Agda-Parser-Probleme
 ------------------------------------------------------------------------

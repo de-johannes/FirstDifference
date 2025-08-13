@@ -71,22 +71,22 @@ temporal-antisym = ≤-antisym
 ------------------------------------------------------------------------
 
 -- | Test: Temporal progression morphism construction (2 ≤ 5)
+-- | Proof: 2 = suc(suc(0)), 5 = suc^5(0), so we need 0 ≤ 3 + 2 s≤s applications
 test-progression : 2 ≤ 5
-test-progression = s≤s (s≤s z≤n)      -- 2 ≤ 5: suc(suc(0)) ≤ 5, so 0 ≤ 3
+test-progression = s≤s (s≤s z≤n)    -- z≤n : 0 ≤ 3, then 1 ≤ 4, then 2 ≤ 5
 
 -- | Test: Identity morphism via category interface
 test-identity : 5 ≤ 5
 test-identity = Category.id CutCat 5
 
+-- | Test: Another temporal progression (5 ≤ 7)
+-- | Proof: 5 = suc^5(0), 7 = suc^7(0), so we need 0 ≤ 2 + 5 s≤s applications  
+test-progression-2 : 5 ≤ 7
+test-progression-2 = s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))  -- 0≤2, 1≤3, 2≤4, 3≤5, 4≤6, 5≤7
+
 -- | Test: Morphism composition via category interface (2 ≤ 7)
 test-composition : 2 ≤ 7
-test-composition = let
-    arrow-2-5 : 2 ≤ 5
-    arrow-2-5 = test-progression
-
-    arrow-5-7 : 5 ≤ 7
-    arrow-5-7 = s≤s (s≤s z≤n)         -- 5 ≤ 7: suc(suc(suc(suc(suc(0))))) ≤ 7, so 0 ≤ 2
-  in Category._∘_ CutCat arrow-2-5 arrow-5-7
+test-composition = Category._∘_ CutCat test-progression test-progression-2
 
 -- | Verification: Category laws preserved
 test-left-identity : ∀ {m n : ℕ} (f : m ≤ n) →

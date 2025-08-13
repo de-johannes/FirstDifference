@@ -44,8 +44,8 @@ private
 -- | This demonstrates modular categorical construction
 CutCat : Category ℕ _≤_
 CutCat = record
-  { id    = ≤-refl                    -- Identity: reflexivity of ≤
-  ; _∘_   = λ g f → ≤-trans f g      -- Composition: f then g via transitivity
+  { id    = λ A → ≤-refl              -- Identity: reflexivity function
+  ; _∘_   = λ g f → ≤-trans f g       -- Composition: f then g via transitivity
   ; idˡ   = ≤-idˡ                     -- Left identity law
   ; idʳ   = ≤-idʳ                     -- Right identity law  
   ; assoc = λ f g h → ≤-assoc f g h   -- Associativity law

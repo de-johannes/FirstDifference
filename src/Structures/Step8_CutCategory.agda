@@ -1,6 +1,6 @@
 {-# OPTIONS --safe #-}
 
-module Structures.Step9_CutCategory where
+module Structures.Step8_CutCategory where
 
 open import Data.Nat using (ℕ; zero; suc; _≤_; _<_; z≤n; s≤s)
 open import Data.Nat.Properties using (≤-refl; ≤-trans; ≤-antisym; ≤-irrelevant)

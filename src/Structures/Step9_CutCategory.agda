@@ -72,35 +72,35 @@ temporal-antisym = ≤-antisym
 
 -- | Test: Temporal progression morphism construction (2 ≤ 5)
 -- | Proof: 2 = suc(suc(0)), 5 = suc^5(0), so we need 0 ≤ 3 + 2 s≤s applications
-test-progression : 2 ≤ 5
-test-progression = s≤s (s≤s z≤n)    -- z≤n : 0 ≤ 3, then 1 ≤ 4, then 2 ≤ 5
+temporal-test-progression : 2 ≤ 5
+temporal-test-progression = s≤s (s≤s z≤n)    -- z≤n : 0 ≤ 3, then 1 ≤ 4, then 2 ≤ 5
 
 -- | Test: Identity morphism via category interface
-test-identity : 5 ≤ 5
-test-identity = Category.id CutCat 5
+temporal-test-identity : 5 ≤ 5
+temporal-test-identity = Category.id CutCat 5
 
 -- | Test: Another temporal progression (5 ≤ 7)
 -- | Proof: 5 = suc^5(0), 7 = suc^7(0), so we need 0 ≤ 2 + 5 s≤s applications  
-test-progression-2 : 5 ≤ 7
-test-progression-2 = s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))  -- 0≤2, 1≤3, 2≤4, 3≤5, 4≤6, 5≤7
+temporal-test-progression-2 : 5 ≤ 7
+temporal-test-progression-2 = s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))  -- 0≤2, 1≤3, 2≤4, 3≤5, 4≤6, 5≤7
 
--- | Test: Morphism composition via category interface (2 ≤ 7)
-test-composition : 2 ≤ 7
-test-composition = Category._∘_ CutCat test-progression test-progression-2
+-- | Test: Temporal morphism composition via category interface (2 ≤ 7)
+temporal-test-composition : 2 ≤ 7
+temporal-test-composition = Category._∘_ CutCat temporal-test-progression temporal-test-progression-2
 
--- | Verification: Category laws preserved
-test-left-identity : ∀ {m n : ℕ} (f : m ≤ n) →
-                     Category._∘_ CutCat (Category.id CutCat m) f ≡ f
-test-left-identity f = Category.idˡ CutCat f
+-- | Verification: Category laws preserved for temporal morphisms
+temporal-test-left-identity : ∀ {m n : ℕ} (f : m ≤ n) →
+                              Category._∘_ CutCat (Category.id CutCat m) f ≡ f
+temporal-test-left-identity f = Category.idˡ CutCat f
 
-test-right-identity : ∀ {m n : ℕ} (f : m ≤ n) →
-                      Category._∘_ CutCat f (Category.id CutCat n) ≡ f  
-test-right-identity f = Category.idʳ CutCat f
+temporal-test-right-identity : ∀ {m n : ℕ} (f : m ≤ n) →
+                               Category._∘_ CutCat f (Category.id CutCat n) ≡ f  
+temporal-test-right-identity f = Category.idʳ CutCat f
 
-test-associativity : ∀ {m n k l : ℕ} (f : m ≤ n) (g : n ≤ k) (h : k ≤ l) →
-                     Category._∘_ CutCat (Category._∘_ CutCat f g) h 
-                     ≡ Category._∘_ CutCat f (Category._∘_ CutCat g h)
-test-associativity f g h = Category.assoc CutCat f g h
+temporal-test-associativity : ∀ {m n k l : ℕ} (f : m ≤ n) (g : n ≤ k) (h : k ≤ l) →
+                              Category._∘_ CutCat (Category._∘_ CutCat f g) h 
+                              ≡ Category._∘_ CutCat f (Category._∘_ CutCat g h)
+temporal-test-associativity f g h = Category.assoc CutCat f g h
 
 ------------------------------------------------------------------------
 -- RESULT: Modular temporal category construction with rigorous verification

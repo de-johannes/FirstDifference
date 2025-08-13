@@ -88,42 +88,48 @@ TemporalProjection G = record
   }
 
 ------------------------------------------------------------------------
--- 6. MATHEMATICAL SIGNIFICANCE AND TESTS
+-- 6. FUNCTORIAL VERIFICATION AND EXAMPLES
 ------------------------------------------------------------------------
 
--- | Test: Identity preservation
-temporal-test-identity : ∀ (G : DriftGraph) {u : NodeId} →
-                         Functor.F₁ (TemporalProjection G) (refl-path {G} {u}) ≡ ≤-refl
-temporal-test-identity G = refl
+-- | Test: Functor preserves identity morphisms
+functor-test-identity : ∀ (G : DriftGraph) {u : NodeId} →
+                        Functor.F₁ (TemporalProjection G) (refl-path {G} {u}) ≡ ≤-refl
+functor-test-identity G = refl
 
--- | Test: Single edge mapping (now with explicit parameters)
-temporal-test-edge : ∀ (G : DriftGraph) {u v : NodeId} (e : u DG.—→ v within G) →
-                     Functor.F₁ (TemporalProjection G) (e ∷-path refl-path) ≡
-                     <⇒≤ (edge-increases-time u v G e)
-temporal-test-edge G e = ≤-idʳ (<⇒≤ (edge-increases-time _ _ G e))
+-- | Test: Single edge projection to temporal ordering
+functor-test-edge : ∀ (G : DriftGraph) {u v : NodeId} (e : u DG.—→ v within G) →
+                    Functor.F₁ (TemporalProjection G) (e ∷-path refl-path) ≡
+                    <⇒≤ (edge-increases-time u v G e)
+functor-test-edge G e = ≤-idʳ (<⇒≤ (edge-increases-time _ _ G e))
 
 -- | The profound insight: Causal paths project to temporal ordering
 causal-to-temporal : ∀ (G : DriftGraph) {u v : NodeId} →
                      Path G u v → (u ≤ v)
 causal-to-temporal G path = Functor.F₁ (TemporalProjection G) path
 
--- | Test: Composition preservation verification
-temporal-test-composition : ∀ (G : DriftGraph) {u v w : NodeId}
-                            (p : Path G u v) (q : Path G v w) →
-                            Functor.F₁ (TemporalProjection G) (p PC.++-path q) ≡
-                            Category._∘_ TC.CutCat 
-                              (Functor.F₁ (TemporalProjection G) p)
-                              (Functor.F₁ (TemporalProjection G) q)
-temporal-test-composition G p q = Functor.preserves-comp (TemporalProjection G) p q
+-- | Test: Functor preserves composition of morphisms
+functor-test-composition : ∀ (G : DriftGraph) {u v w : NodeId}
+                           (p : Path G u v) (q : Path G v w) →
+                           Functor.F₁ (TemporalProjection G) (p PC.++-path q) ≡
+                           Category._∘_ TC.CutCat 
+                             (Functor.F₁ (TemporalProjection G) p)
+                             (Functor.F₁ (TemporalProjection G) q)
+functor-test-composition G p q = Functor.preserves-comp (TemporalProjection G) p q
 
--- | Test: Path length and temporal distance correlation
-temporal-distance-preservation : ∀ (G : DriftGraph) {u v : NodeId}
-                                  (path : Path G u v) →
-                                  u ≤ v
-temporal-distance-preservation G path = causal-to-temporal G path
+-- | Test: Temporal projection preserves reachability relationships
+projection-preserves-reachability : ∀ (G : DriftGraph) {u v : NodeId}
+                                     (path : Path G u v) →
+                                     u ≤ v
+projection-preserves-reachability G path = causal-to-temporal G path
+
+-- | Property: Functor maps graph structure to temporal structure
+functor-structural-property : ∀ (G : DriftGraph) →
+                              ∀ {u v : NodeId} (path : Path G u v) →
+                              π-obj u ≤ π-obj v
+functor-structural-property G path = Functor.F₁ (TemporalProjection G) path
 
 ------------------------------------------------------------------------
--- RESULT: The mathematical bridge between causality and temporality
--- Complete functor with rigorous proofs using thin category properties
--- Demonstrates how causal graph structure projects onto temporal ordering
+-- RESULT: Complete temporal projection functor with rigorous verification
+-- Demonstrates the mathematical bridge between causal graph structure and temporal ordering
+-- All functor laws proven using thin category properties and propositional irrelevance
 ------------------------------------------------------------------------

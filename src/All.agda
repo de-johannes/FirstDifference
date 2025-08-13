@@ -18,7 +18,7 @@ open import Structures.Step4_PartialOrder public
 open import Structures.Step5_CategoryStructure public
 open import Structures.Step6_SemanticTimeFunctor public
 open import Structures.Step7_DriftGraph public
-open import Structures.Step8_ReachabilityCategory public
+open import Structures.Step8_PathCategory public
 
 ------------------------------------------------------------------------
 -- Optional: Examples and demonstrations

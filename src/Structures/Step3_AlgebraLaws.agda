@@ -7,8 +7,8 @@ module Structures.Step3_AlgebraLaws where
 
 open import Data.Vec using (Vec; []; _∷_)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong₂)
-open import Step1_BooleanFoundation
-open import Step2_VectorOperations
+open import Structures.Step1_BooleanFoundation
+open import Structures.Step2_VectorOperations
 
 ------------------------------------------------------------------------
 -- LIFTING STRATEGY: Boolean laws → Vector laws

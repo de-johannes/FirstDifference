@@ -1,6 +1,6 @@
 {-# OPTIONS --safe #-}
 
-module Structures.Step8_PathCategory where
+module Step8_PathCategory where
 
 open import Data.Nat using (ℕ)
 open import Data.List using (List; []; _∷_; _++_)
@@ -9,11 +9,10 @@ open import Data.Product using (_×_; _,_)
 
 -- Wir importieren deinen verifizierten Graphen als Grundlage.
 -- Wichtig: Der Dateiname muss exakt stimmen.
-open import Structures.Step7_DriftGraph as DG
+open import Step7_DriftGraph_Final as DG
 
 ------------------------------------------------------------------------
 -- 1. Definition eines Kategoriellen Pfades
---    Dieser Datentyp ist NEU und nur für Step 8. Er fügt die Identität hinzu.
 ------------------------------------------------------------------------
 
 -- Ein Pfad von u nach w ist entweder der Identitäts-Pfad (Länge 0)
@@ -29,7 +28,8 @@ infixr 5 _∷-path_
 ------------------------------------------------------------------------
 
 -- Die Komposition von Pfaden ist die intelligente Verkettung der Listen.
-_++-path_ : ∀ {u v w} → Path G u v → Path G v w → Path G u w
+-- KORRIGIERT: {G} als implizites Argument hinzugefügt.
+_++-path_ : ∀ {G u v w} → Path G u v → Path G v w → Path G u w
 refl-path      ++-path q = q
 (e ∷-path p) ++-path q = e ∷-path (p ++-path q)
 
@@ -40,17 +40,20 @@ infixr 5 _++-path_
 ------------------------------------------------------------------------
 
 -- Assoziativität der Pfad-Komposition
-path-assoc : ∀ {a b c d} (p : Path G a b) (q : Path G b c) (r : Path G c d) →
+-- KORRIGIERT: {G} als implizites Argument hinzugefügt.
+path-assoc : ∀ {G a b c d} (p : Path G a b) (q : Path G b c) (r : Path G c d) →
              (p ++-path q) ++-path r ≡ p ++-path (q ++-path r)
 path-assoc refl-path      q r = refl
 path-assoc (e ∷-path p) q r = cong (e ∷-path_) (path-assoc p q r)
 
 -- Linke Identität: Ein leerer Pfad am Anfang ändert nichts.
-path-idˡ : ∀ {u v} (p : Path G u v) → refl-path ++-path p ≡ p
+-- KORRIGIERT: {G} als implizites Argument hinzugefügt.
+path-idˡ : ∀ {G u v} (p : Path G u v) → refl-path ++-path p ≡ p
 path-idˡ p = refl
 
 -- Rechte Identität: Ein leerer Pfad am Ende ändert nichts.
-path-idʳ : ∀ {u v} (p : Path G u v) → p ++-path refl-path ≡ p
+-- KORRIGIERT: {G} als implizites Argument hinzugefügt.
+path-idʳ : ∀ {G u v} (p : Path G u v) → p ++-path refl-path ≡ p
 path-idʳ refl-path      = refl
 path-idʳ (e ∷-path p) = cong (e ∷-path_) (path-idʳ p)
 
@@ -58,12 +61,11 @@ path-idʳ (e ∷-path p) = cong (e ∷-path_) (path-idʳ p)
 -- 4. Die formale Kategorie der Pfade im DriftGraph
 ------------------------------------------------------------------------
 
-record PathCategory (G : DG.DriftGraph) : Set₁ where
+-- Der Record für eine Kategorie ist jetzt lokal, da wir ihn nur hier brauchen.
+record Category (Obj : Set) (Hom : Obj → Obj → Set) : Set₁ where
   field
-    Obj : Set
-    Hom : Obj → Obj → Set
-    id  : ∀ A → Hom A A
-    _∘_ : ∀ {A B C} → Hom A B → Hom B C → Hom A C -- Standardreihenfolge f, dann g
+    id    : ∀ A → Hom A A
+    _∘_   : ∀ {A B C} → Hom A B → Hom B C → Hom A C -- Standardreihenfolge: f, dann g
 
     -- Gesetze
     idˡ   : ∀ {A B} (f : Hom A B) → id ∘ f ≡ f
@@ -71,12 +73,10 @@ record PathCategory (G : DG.DriftGraph) : Set₁ where
     assoc : ∀ {A B C D} (f : Hom A B) (g : Hom B C) (h : Hom C D)
           → (f ∘ g) ∘ h ≡ f ∘ (g ∘ h)
 
--- Instanziierung der Kategorie
-DriftPathCategory : (G : DG.DriftGraph) → PathCategory G
+-- Instanziierung der Kategorie für einen gegebenen DriftGraph
+DriftPathCategory : (G : DG.DriftGraph) → Category (DG.NodeId) (Path G)
 DriftPathCategory G = record
-  { Obj   = DG.NodeId
-  ; Hom   = Path G
-  ; id    = refl-path
+  { id    = refl-path
   ; _∘_   = _++-path_
   ; idˡ   = path-idˡ
   ; idʳ   = path-idʳ

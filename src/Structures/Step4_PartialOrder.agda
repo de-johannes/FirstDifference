@@ -5,9 +5,9 @@
 -- | Order relation: a ≤ b iff drift a b ≡ a
 module Structures.Step4_PartialOrder where
 
-open import Step1_BooleanFoundation
-open import Step2_VectorOperations  
-open import Step3_AlgebraLaws
+open import Structures.Step1_BooleanFoundation
+open import Structures.Step2_VectorOperations  
+open import Structures.Step3_AlgebraLaws
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong)
 
 ------------------------------------------------------------------------

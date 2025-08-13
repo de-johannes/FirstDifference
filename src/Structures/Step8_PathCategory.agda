@@ -1,6 +1,6 @@
 {-# OPTIONS --safe #-}
 
-module Step8_PathCategory where
+module Structures.Step8_PathCategory where
 
 open import Data.Nat using (ℕ)
 open import Data.List using (List; []; _∷_; _++_)

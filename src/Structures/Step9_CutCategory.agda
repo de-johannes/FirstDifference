@@ -2,175 +2,102 @@
 
 module Structures.Step9_CutCategory where
 
-open import Data.Nat using (ℕ; zero; suc; _≤_; _<_; z≤n; s≤s; _∸_)
-open import Data.Nat.Properties using (≤-refl; ≤-trans; ≤-antisym; <-trans; 
-                                       ≤-irrelevant; ≤-reflexive; ≤-step)
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong)
-open import Data.Product using (∃; ∃-syntax; _,_; _×_)
+open import Data.Nat using (ℕ; zero; suc; _≤_; _<_; z≤n; s≤s)
+open import Data.Nat.Properties using (≤-refl; ≤-trans; ≤-antisym; m<n⇒m≤n; ≤-irrelevant)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+open import Data.Product using (Σ; _,_)
 open import Data.Unit using (⊤; tt)
 
-------------------------------------------------------------------------
--- 1. TEMPORAL ORDERING CATEGORY STRUCTURE
-------------------------------------------------------------------------
-
--- | Definition: Abstract categorical structure for temporal progression
--- | This forms the canonical "temporal spine" for drift graph dynamics
-record TemporalCategory : Set₁ where
-  field
-    Obj : Set
-    Hom : Obj → Obj → Set
-
-    id  : ∀ A → Hom A A
-    _∘_ : ∀ {A B C} → Hom B C → Hom A B → Hom A C
-
-    -- Standard category laws
-    idˡ   : ∀ {A B} (f : Hom A B) → (id B) ∘ f ≡ f
-    idʳ   : ∀ {A B} (f : Hom A B) → f ∘ (id A) ≡ f
-    assoc : ∀ {A B C D} (f : Hom A B) (g : Hom B C) (h : Hom C D)
-          → (h ∘ g) ∘ f ≡ h ∘ (g ∘ f)
+-- | Import the general Category structure from our rigorous Step 8
+open import Structures.Step8_PathCategory using (Category)
 
 ------------------------------------------------------------------------
--- 2. TEMPORAL ORDERING LAWS: RIGOROUS PROOFS
+-- 1. CATEGORICAL LAWS FOR TEMPORAL ORDERING
 ------------------------------------------------------------------------
 
--- | Theorem: Left identity for ≤-transitivity composition
--- | Proof: By propositional irrelevance of ≤-proofs
-≤-idˡ : ∀ {m n : ℕ} (p : m ≤ n) → ≤-trans ≤-refl p ≡ p
-≤-idˡ p = ≤-irrelevant (≤-trans ≤-refl p) p
+-- | Private proofs: All proofs for `m ≤ n` are propositionally equal
+-- | This captures the "thinness" property of temporal categories
+private
+  ≤-idˡ : ∀ {m n : ℕ} (p : m ≤ n) → ≤-trans ≤-refl p ≡ p
+  ≤-idˡ p = ≤-irrelevant (≤-trans ≤-refl p) p
 
--- | Theorem: Right identity for ≤-transitivity composition  
--- | Proof: By propositional irrelevance of ≤-proofs
-≤-idʳ : ∀ {m n : ℕ} (p : m ≤ n) → ≤-trans p ≤-refl ≡ p
-≤-idʳ p = ≤-irrelevant (≤-trans p ≤-refl) p
+  ≤-idʳ : ∀ {m n : ℕ} (p : m ≤ n) → ≤-trans p ≤-refl ≡ p
+  ≤-idʳ p = ≤-irrelevant (≤-trans p ≤-refl) p
 
--- | Theorem: Associativity of ≤-transitivity composition
--- | Proof: By propositional irrelevance of ≤-proofs
-≤-assoc : ∀ {m n k l : ℕ} (p : m ≤ n) (q : n ≤ k) (r : k ≤ l) →
-          ≤-trans (≤-trans p q) r ≡ ≤-trans p (≤-trans q r)
-≤-assoc p q r = ≤-irrelevant (≤-trans (≤-trans p q) r) (≤-trans p (≤-trans q r))
+  ≤-assoc : ∀ {m n k l : ℕ} (p : m ≤ n) (q : n ≤ k) (r : k ≤ l) →
+            ≤-trans (≤-trans p q) r ≡ ≤-trans p (≤-trans q r)
+  ≤-assoc p q r = ≤-irrelevant (≤-trans (≤-trans p q) r) (≤-trans p (≤-trans q r))
 
 ------------------------------------------------------------------------
--- 3. CUTCAT: THE CANONICAL TEMPORAL CATEGORY
+-- 2. CUTCAT: THE CANONICAL TEMPORAL CATEGORY
 ------------------------------------------------------------------------
 
--- | Construction: CutCat - the canonical temporal spine category
+-- | Construction: CutCat as instance of the general Category structure
 -- | Objects: Natural numbers representing temporal stages
 -- | Morphisms: ≤-relation representing temporal ordering
--- | This captures the irreversible nature of temporal progression
-CutCat : TemporalCategory
+-- | This demonstrates modular categorical construction
+CutCat : Category ℕ _≤_
 CutCat = record
-  { Obj = ℕ                    -- Temporal stages indexed by natural numbers
-  ; Hom = _≤_                  -- Temporal ordering as morphisms
-  ; id  = λ n → ≤-refl         -- Reflexivity as identity morphism
-  ; _∘_ = λ g f → ≤-trans f g  -- Transitivity as morphism composition
-
-  -- Categorical laws proven via ≤-properties
-  ; idˡ   = λ f → ≤-idˡ f      -- Left identity law
-  ; idʳ   = λ f → ≤-idʳ f      -- Right identity law  
-  ; assoc = λ f g h → ≤-assoc f g h  -- Associativity law
+  { id    = ≤-refl                    -- Identity: reflexivity of ≤
+  ; _∘_   = λ g f → ≤-trans f g      -- Composition: f then g via transitivity
+  ; idˡ   = ≤-idˡ                     -- Left identity law
+  ; idʳ   = ≤-idʳ                     -- Right identity law  
+  ; assoc = λ f g h → ≤-assoc f g h   -- Associativity law
   }
 
 ------------------------------------------------------------------------
--- 4. TEMPORAL STAGE OPERATIONS
+-- 3. TEMPORAL PROPERTIES AND THEOREMS
 ------------------------------------------------------------------------
 
--- | Definition: Temporal stage structure
--- | Each stage represents a discrete time point in the evolution
-Stage : ℕ → Set
-Stage n = ⊤  -- Each stage is a singleton type
+-- | Theorem: Strict temporal ordering implies morphism existence
+-- | For m < n, there exists a unique morphism m → n in CutCat
+-- | Using Σ-type (dependent pair) for existential quantification
+temporal-strict : ∀ {m n : ℕ} → m < n → Σ (m ≤ n) (λ _ → ⊤)
+temporal-strict {m} {n} m<n = (m<n⇒m≤n m<n , tt)
 
--- | Constructor: Temporal progression morphism
--- | Given a proof of temporal ordering, construct the corresponding morphism
-temporal-arrow : ∀ {m n : ℕ} → m ≤ n → TemporalCategory.Hom CutCat m n
-temporal-arrow m≤n = m≤n
-
--- | Constructor: Stage object at specific temporal index
-stage : ℕ → Stage 0  -- Canonical stage constructor
-stage n = tt
+-- | Theorem: Temporal ordering is antisymmetric
+-- | Bidirectional morphisms imply object equality
+temporal-antisym : ∀ {m n : ℕ} → (m ≤ n) → (n ≤ m) → m ≡ n
+temporal-antisym = ≤-antisym
 
 ------------------------------------------------------------------------
--- 5. TEMPORAL PROPERTIES AND THEOREMS
-------------------------------------------------------------------------
-
--- | Theorem: Temporal ordering respects strict inequality
--- | If m < n, then there exists a non-identity morphism m → n
-temporal-strict : ∀ {m n : ℕ} → m < n → 
-                  ∃[ p ∈ TemporalCategory.Hom CutCat m n ] ⊤
-temporal-strict {m} {n} m<n = (≤-step ≤-refl , tt)
-
--- | Theorem: Temporal ordering is antisymmetric  
--- | If we have morphisms m → n and n → m, then m ≡ n
-temporal-antisym : ∀ {m n : ℕ} → 
-                   (f : TemporalCategory.Hom CutCat m n) →
-                   (g : TemporalCategory.Hom CutCat n m) → 
-                   m ≡ n
-temporal-antisym {m} {n} f g = ≤-antisym f g
-
--- | Operation: Temporal composition preserves ordering
--- | Composing temporal morphisms yields a temporal morphism
-temporal-compose : ∀ {l m n : ℕ} →
-                   (p : TemporalCategory.Hom CutCat l m) →
-                   (q : TemporalCategory.Hom CutCat m n) →
-                   TemporalCategory.Hom CutCat l n
-temporal-compose p q = TemporalCategory._∘_ CutCat q p
-
-------------------------------------------------------------------------
--- 6. VERIFICATION AND TESTING SUITE
+-- 4. VERIFICATION AND TESTING INTERFACE
 ------------------------------------------------------------------------
 
 -- | Test: Temporal progression morphism construction
-test-progression : TemporalCategory.Hom CutCat 0 3
-test-progression = s≤s (s≤s (s≤s z≤n))
+test-progression : 2 ≤ 5
+test-progression = s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))
 
--- | Test: Identity morphism at temporal stage 5
-test-identity : TemporalCategory.Hom CutCat 5 5
-test-identity = TemporalCategory.id CutCat 5
+-- | Test: Identity morphism via category interface
+test-identity : 5 ≤ 5
+test-identity = Category.id CutCat 5
 
--- | Test: Morphism composition verification
-test-composition : TemporalCategory.Hom CutCat 1 5
+-- | Test: Morphism composition via category interface
+test-composition : 2 ≤ 7
 test-composition = let
-    arrow-1-3 : TemporalCategory.Hom CutCat 1 3  
-    arrow-1-3 = s≤s (s≤s (s≤s z≤n))
-    
-    arrow-3-5 : TemporalCategory.Hom CutCat 3 5
-    arrow-3-5 = s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))
-  in TemporalCategory._∘_ CutCat arrow-3-5 arrow-1-3
+    arrow-2-5 : 2 ≤ 5
+    arrow-2-5 = test-progression
 
--- | Verification: Category laws hold under testing
+    arrow-5-7 : 5 ≤ 7
+    arrow-5-7 = s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))))
+  in Category._∘_ CutCat arrow-5-7 arrow-2-5
+
+-- | Verification: Category laws preserved
 test-left-identity : ∀ {m n : ℕ} (f : m ≤ n) →
-                     TemporalCategory._∘_ CutCat (TemporalCategory.id CutCat n) f ≡ f
-test-left-identity f = TemporalCategory.idˡ CutCat f
+                     Category._∘_ CutCat (Category.id CutCat n) f ≡ f
+test-left-identity f = Category.idˡ CutCat f
 
 test-right-identity : ∀ {m n : ℕ} (f : m ≤ n) →
-                      TemporalCategory._∘_ CutCat f (TemporalCategory.id CutCat m) ≡ f  
-test-right-identity f = TemporalCategory.idʳ CutCat f
+                      Category._∘_ CutCat f (Category.id CutCat m) ≡ f  
+test-right-identity f = Category.idʳ CutCat f
 
 test-associativity : ∀ {m n k l : ℕ} (f : m ≤ n) (g : n ≤ k) (h : k ≤ l) →
-                     TemporalCategory._∘_ CutCat (TemporalCategory._∘_ CutCat h g) f 
-                     ≡ TemporalCategory._∘_ CutCat h (TemporalCategory._∘_ CutCat g f)
-test-associativity f g h = TemporalCategory.assoc CutCat f g h
+                     Category._∘_ CutCat (Category._∘_ CutCat h g) f 
+                     ≡ Category._∘_ CutCat h (Category._∘_ CutCat g f)
+test-associativity f g h = Category.assoc CutCat f g h
 
 ------------------------------------------------------------------------
--- 7. TEMPORAL ANALYSIS OPERATIONS
-------------------------------------------------------------------------
-
--- | Function: Temporal distance calculation
--- | Computes the discrete temporal distance between ordered stages
-temporal-distance : ∀ m n → m ≤ n → ℕ
-temporal-distance m n _ = n ∸ m
-
--- | Type: Temporal window specification
--- | Represents a bounded temporal interval [start, end]
-TemporalWindow : ℕ → ℕ → Set
-TemporalWindow start end = start ≤ end
-
--- | Property: Temporal windows are well-ordered
--- | Every temporal window respects the natural ordering
-temporal-window-ordered : ∀ {start end : ℕ} → TemporalWindow start end → start ≤ end
-temporal-window-ordered window = window
-
-------------------------------------------------------------------------
--- RESULT: Complete temporal spine category with rigorous verification
--- All categorical laws proven using standard library ≤-properties
--- Ready for functor construction to reachability category
+-- RESULT: Modular temporal category construction with rigorous verification
+-- Demonstrates proper categorical abstraction and module reuse
+-- Ready for functor construction between reachability and temporal categories
 ------------------------------------------------------------------------

@@ -3,7 +3,7 @@
 
 -- | Step 3: Vector Algebra Laws via Boolean Property Lifting
 -- | Proof: n-dimensional Boolean algebra from 1-dimensional laws
-module Step3_AlgebraLaws where
+module Structures.Step3_AlgebraLaws where
 
 open import Data.Vec using (Vec; []; _∷_)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong₂)

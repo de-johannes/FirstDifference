@@ -46,7 +46,16 @@ record Functor {ObjC ObjD : Set} {HomC : ObjC → ObjC → Set} {HomD : ObjD →
 π-hom (e ∷-path p) = ≤-trans (<⇒≤ (edge-increases-time _ _ _ e)) (π-hom p)
 
 ------------------------------------------------------------------------
--- 3. FUNCTOR LAW PROOFS: LEVERAGING THINNESS
+-- 3. HELPER LEMMAS FOR TEMPORAL ORDERING
+------------------------------------------------------------------------
+
+-- | Right identity for ≤-trans (we need this for proofs)
+private
+  ≤-idʳ : ∀ {m n : ℕ} (p : m ≤ n) → ≤-trans p ≤-refl ≡ p
+  ≤-idʳ p = ≤-irrelevant (≤-trans p ≤-refl) p
+
+------------------------------------------------------------------------
+-- 4. FUNCTOR LAW PROOFS: LEVERAGING THINNESS
 ------------------------------------------------------------------------
 
 -- | Identity preservation: Direct by definition
@@ -65,7 +74,7 @@ record Functor {ObjC ObjD : Set} {HomC : ObjC → ObjC → Set} {HomD : ObjD →
   -- Both sides have type (π-obj u ≤ π-obj w), and CutCat is thin!
 
 ------------------------------------------------------------------------
--- 4. THE TEMPORAL PROJECTION FUNCTOR
+-- 5. THE TEMPORAL PROJECTION FUNCTOR
 ------------------------------------------------------------------------
 
 -- | The bridge between causal structure and temporal ordering
@@ -79,7 +88,7 @@ TemporalProjection G = record
   }
 
 ------------------------------------------------------------------------
--- 5. MATHEMATICAL SIGNIFICANCE AND TESTS
+-- 6. MATHEMATICAL SIGNIFICANCE AND TESTS
 ------------------------------------------------------------------------
 
 -- | Test: Identity preservation
@@ -87,11 +96,13 @@ temporal-test-identity : ∀ {G : DriftGraph} {u : NodeId} →
                          Functor.F₁ (TemporalProjection G) (refl-path {G} {u}) ≡ ≤-refl
 temporal-test-identity = refl
 
--- | Test: Single edge mapping
+-- | Test: Single edge mapping (now with correct proof)
 temporal-test-edge : ∀ {G : DriftGraph} {u v : NodeId} (e : u DG.—→ v within G) →
                      Functor.F₁ (TemporalProjection G) (e ∷-path refl-path) ≡
                      <⇒≤ (edge-increases-time u v G e)
-temporal-test-edge e = refl
+temporal-test-edge e = ≤-idʳ (<⇒≤ (edge-increases-time _ _ _ e))
+  -- π-hom (e ∷-path refl-path) = ≤-trans (<⇒≤ (edge-increases-time _ _ _ e)) ≤-refl
+  -- By ≤-idʳ, this equals <⇒≤ (edge-increases-time _ _ _ e)
 
 -- | The profound insight: Causal paths project to temporal ordering
 causal-to-temporal : ∀ {G : DriftGraph} {u v : NodeId} →
@@ -107,8 +118,14 @@ temporal-test-composition : ∀ {G : DriftGraph} {u v w : NodeId}
                               (Functor.F₁ (TemporalProjection G) q)
 temporal-test-composition p q = Functor.preserves-comp (TemporalProjection _) p q
 
+-- | Test: Path length and temporal distance correlation
+temporal-distance-preservation : ∀ {G : DriftGraph} {u v : NodeId}
+                                  (path : Path G u v) →
+                                  u ≤ v
+temporal-distance-preservation path = causal-to-temporal path
+
 ------------------------------------------------------------------------
 -- RESULT: The mathematical bridge between causality and temporality
--- Rigorous functor with elegant proofs using thin category properties
--- Foundation for understanding how complex causal structures project onto linear time
+-- Complete functor with rigorous proofs using thin category properties
+-- Demonstrates how causal graph structure projects onto temporal ordering
 ------------------------------------------------------------------------

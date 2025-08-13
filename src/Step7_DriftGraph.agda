@@ -112,7 +112,7 @@ reachability-increases-time G u w (compose u↠v v↠w) =
   <-trans (reachability-increases-time G u _ u↠v) (reachability-increases-time G _ w v↠w)
 
 theorem-acyclic : ∀ G v → ¬ (v can-reach v within G)
-theorem-acyclic G v cycle = <-irrefl (reachability-increases-time G v v cycle)
+theorem-acyclic G v cycle = <-irrefl refl (reachability-increases-time G v v cycle)
 
 ------------------------------------------------------------------------
 -- 7. Graphen-Operationen

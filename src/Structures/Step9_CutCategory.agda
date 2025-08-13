@@ -3,7 +3,8 @@
 module Structures.Step9_CutCategory where
 
 open import Data.Nat using (ℕ; zero; suc; _≤_; _<_; z≤n; s≤s)
-open import Data.Nat.Properties using (≤-refl; ≤-trans; ≤-antisym; m<n⇒m≤n; ≤-irrelevant)
+open import Data.Nat.Properties using (≤-refl; ≤-trans; ≤-antisym; ≤-irrelevant; 
+                                       m<1+n⇒m≤n)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import Data.Product using (Σ; _,_)
 open import Data.Unit using (⊤; tt)
@@ -27,6 +28,11 @@ private
   ≤-assoc : ∀ {m n k l : ℕ} (p : m ≤ n) (q : n ≤ k) (r : k ≤ l) →
             ≤-trans (≤-trans p q) r ≡ ≤-trans p (≤-trans q r)
   ≤-assoc p q r = ≤-irrelevant (≤-trans (≤-trans p q) r) (≤-trans p (≤-trans q r))
+
+-- | Helper: Convert strict inequality to non-strict inequality
+-- | Since m < n is defined as suc m ≤ n, we need to prove m ≤ n
+<⇒≤ : ∀ {m n} → m < n → m ≤ n
+<⇒≤ {m} {suc n} m<sn = m<1+n⇒m≤n m<sn
 
 ------------------------------------------------------------------------
 -- 2. CUTCAT: THE CANONICAL TEMPORAL CATEGORY
@@ -53,7 +59,7 @@ CutCat = record
 -- | For m < n, there exists a unique morphism m → n in CutCat
 -- | Using Σ-type (dependent pair) for existential quantification
 temporal-strict : ∀ {m n : ℕ} → m < n → Σ (m ≤ n) (λ _ → ⊤)
-temporal-strict {m} {n} m<n = (m<n⇒m≤n m<n , tt)
+temporal-strict {m} {n} m<n = (<⇒≤ m<n , tt)
 
 -- | Theorem: Temporal ordering is antisymmetric
 -- | Bidirectional morphisms imply object equality

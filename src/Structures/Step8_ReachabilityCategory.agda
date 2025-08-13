@@ -6,7 +6,6 @@ open import Data.Nat using (ℕ)
 open import Data.Product using (_×_; _,_)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong; cong₂)
 open import Data.List using (List; []; _∷_)
-open import Function using (id)
 
 -- Wir importieren den sauberen, funktionierenden DriftGraph
 open import Structures.Step7_DriftGraph as DG using (DriftGraph; Node; NodeId; _—→_within_)

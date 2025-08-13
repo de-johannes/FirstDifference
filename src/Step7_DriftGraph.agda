@@ -3,7 +3,7 @@
 module Step7_DriftGraph where
 
 open import Data.Nat using (ℕ; zero; suc; _≤_; _<_; z≤n; s≤s; _≟_)
-open import Data.Nat.Properties using (<-trans; <-irrefl)
+open import Data.Nat.Properties using (<-trans)
 open import Data.Vec using (Vec; []; _∷_)
 open import Data.List using (List; []; _∷_)
 open import Data.Product using (_×_; _,_)
@@ -99,8 +99,13 @@ reachability-increases-time u w G (direct edge) = edge-increases-time u w G edge
 reachability-increases-time u w G (compose u↠v v↠w) =
   <-trans (reachability-increases-time u _ G u↠v) (reachability-increases-time _ w G v↠w)
 
+-- Hilfsfunktion: Zeigt, dass suc v ≤ v unmöglich ist
+suc≤v→⊥ : ∀ v → suc v ≤ v → ⊥
+suc≤v→⊥ zero ()
+suc≤v→⊥ (suc v) (s≤s p) = suc≤v→⊥ v p
+
 theorem-acyclic : ∀ G v → ¬ (v can-reach v within G)
-theorem-acyclic G v cycle = <-irrefl (reachability-increases-time v v G cycle)
+theorem-acyclic G v cycle = suc≤v→⊥ v (reachability-increases-time v v G cycle)
 
 ------------------------------------------------------------------------
 -- 6. Graphen-Operationen

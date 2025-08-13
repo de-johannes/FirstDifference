@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ main, master ]
 
+permissions:
+  contents: write  # notwendig, um Tags/Releases zu erstellen
+
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -21,3 +24,31 @@ jobs:
         working-directory: src
         run: |
           agda -l standard-library --safe --without-K -i . All.agda
+
+  release:
+    name: Create release on success
+    needs: check
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'push' &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set SHORT_SHA
+        run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Create source archive
+        run: |
+          git archive -o drife-${SHORT_SHA}.zip HEAD
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}
+          name: Release v${{ github.run_number }}
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+          files: |
+            drife-${{ env.SHORT_SHA }}.zip

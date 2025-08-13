@@ -1,7 +1,7 @@
 {-# OPTIONS --safe #-}
 
 -- | Step 5: Category of Drift-Preserving Morphisms (CORRECT PROOFS)
-module Step5_CategoryStructure where
+module Structures.Step5_CategoryStructure where
 
 open import Data.Bool using (Bool; true; false; _∧_; _∨_; not)
 open import Data.Nat using (ℕ; zero; suc)

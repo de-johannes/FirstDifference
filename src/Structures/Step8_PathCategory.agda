@@ -8,8 +8,7 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
 open import Data.Product using (_×_; _,_)
 
 -- Wir importieren deinen verifizierten Graphen als Grundlage.
--- Wichtig: Der Dateiname muss exakt stimmen.
-open import Step7_DriftGraph_Final as DG
+open import Structures.Step7_DriftGraph_Final as DG
 
 ------------------------------------------------------------------------
 -- 1. Definition eines Kategoriellen Pfades
@@ -40,7 +39,6 @@ infixr 5 _++-path_
 ------------------------------------------------------------------------
 
 -- Assoziativität der Pfad-Komposition
--- KORRIGIERT: {G} als implizites Argument hinzugefügt.
 path-assoc : ∀ {G a b c d} (p : Path G a b) (q : Path G b c) (r : Path G c d) →
              (p ++-path q) ++-path r ≡ p ++-path (q ++-path r)
 path-assoc refl-path      q r = refl

@@ -11,7 +11,7 @@ open import Data.Bool using (Bool; true; false; _∧_)
 open import Data.Maybe using (Maybe; just; nothing)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong)
 open import Relation.Nullary using (¬_; Dec; yes; no)
-open import Data.Empty using (⊥-elim)
+open import Data.Empty using (⊥; ⊥-elim)
 open import Function using (id; _∘_)
 
 -- Import aus vorherigen Schritten

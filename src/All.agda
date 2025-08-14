@@ -26,6 +26,6 @@ open import Structures.Step8_TemporalFunctor public
 -- Examples and demonstrations
 ------------------------------------------------------------------------
 
-open import Examples.DriftWithTPProof public
+import Examples.DriftWithTPProof as DriftTP
 -- open import Core.Demo          public
 -- open import Examples.DriftSim  public

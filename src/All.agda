@@ -23,9 +23,9 @@ open import Structures.Step8_CutCategory public
 open import Structures.Step8_TemporalFunctor public
 
 ------------------------------------------------------------------------
--- Optional: Examples and demonstrations
+-- Examples and demonstrations
 ------------------------------------------------------------------------
 
--- Keep existing demos if they still compile
+open import Examples.DriftWithTPProof public
 -- open import Core.Demo          public
 -- open import Examples.DriftSim  public

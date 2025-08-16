@@ -1,6 +1,6 @@
 {-# OPTIONS --safe #-}
 
-module code where
+module Examples.DriftWithTPProof where
 
 ------------------------------------------------------------------------
 -- FOUNDATIONAL MATHEMATICAL PRIMITIVES

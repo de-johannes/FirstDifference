@@ -259,3 +259,67 @@ drift-mono {suc n} {x₁ ∷ xs₁} {x₂ ∷ xs₂} {y₁ ∷ ys₁} {y₂ ∷ 
 -- it gives rise to Boolean algebra, vector operations, partial orders,
 -- and monotonicity properties.
 ------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+-- Constants: ⊥ᴰ (all false) and ⊤ᴰ (all true)
+------------------------------------------------------------------------
+
+replicate : ∀ {A : Set}{n : ℕ} → A → Vec A n
+replicate {n = zero}  a = []
+replicate {n = suc n} a = a ∷ replicate a
+
+⊥ᴰ : ∀ n → Dist n
+⊥ᴰ n = replicate false
+
+⊤ᴰ : ∀ n → Dist n
+⊤ᴰ n = replicate true
+
+------------------------------------------------------------------------
+-- Absorption/Identity of drift
+------------------------------------------------------------------------
+
+drift-bottom-right : ∀ {n} (x : Dist n) → drift x (⊥ᴰ n) ≡ ⊥ᴰ n
+drift-bottom-right {zero}  []        = refl
+drift-bottom-right {suc n} (true  ∷ xs) = cong₂ _∷_ refl (drift-bottom-right xs)
+drift-bottom-right {suc n} (false ∷ xs) = cong₂ _∷_ refl (drift-bottom-right xs)
+
+drift-bottom-left : ∀ {n} (x : Dist n) → drift (⊥ᴰ n) x ≡ (⊥ᴰ n)
+drift-bottom-left {zero}  []        = refl
+drift-bottom-left {suc n} (_ ∷ xs)  = cong₂ _∷_ refl (drift-bottom-left xs)
+
+drift-top-right : ∀ {n} (x : Dist n) → drift x (⊤ᴰ n) ≡ x
+drift-top-right {zero}  []        = refl
+drift-top-right {suc n} (true  ∷ xs) = cong₂ _∷_ refl (drift-top-right xs)
+drift-top-right {suc n} (false ∷ xs) = cong₂ _∷_ refl (drift-top-right xs)
+
+drift-top-left : ∀ {n} (x : Dist n) → drift (⊤ᴰ n) x ≡ x
+drift-top-left {zero}  []        = refl
+drift-top-left {suc n} (_ ∷ xs)  = cong₂ _∷_ refl (drift-top-left xs)
+
+------------------------------------------------------------------------
+-- Order statements: ⊥ᴰ is the least, ⊤ᴰ the greatest element
+------------------------------------------------------------------------
+
+bottom-least : ∀ {n} (x : Dist n) → (⊥ᴰ n) ≤ᴰ x
+bottom-least x = drift-bottom-left x  -- drift (⊥) x ≡ ⊥
+
+top-greatest : ∀ {n} (x : Dist n) → x ≤ᴰ (⊤ᴰ n)
+top-greatest x = drift-top-right x     -- drift x (⊤) ≡ x
+
+------------------------------------------------------------------------
+-- "No illogic": Drift is always ≤ its parents (monotone descent)
+------------------------------------------------------------------------
+
+drift≤left : ∀ {n} (x y : Dist n) → drift x y ≤ᴰ x
+drift≤left x y =
+  -- (x ∧ y) ∧ x ≡ x ∧ y
+  trans (sym (drift-assoc x y x))
+       (trans (cong (drift x) (drift-comm y x))
+              (trans (drift-assoc x x y)
+                     (cong (λ v → drift v y) (drift-idem x))))
+
+drift≤right : ∀ {n} (x y : Dist n) → drift x y ≤ᴰ y
+drift≤right x y =
+  -- (x ∧ y) ∧ y ≡ x ∧ (y ∧ y) ≡ x ∧ y
+  trans (sym (drift-assoc x y y))
+       (cong (drift x) (drift-idem y))

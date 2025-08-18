@@ -4,7 +4,7 @@
 -- Step 10a : Constructive Fold-Map  (rank-preserving quotient)
 --            * reiner Listen-DFS
 --            * keine Postulate / kein if-Sugar
---            * hängt nur von Steps 1,2,7,9 ab
+--            * kompatibel mit Stdlib, in der Data.List.filter Dec erwartet
 ------------------------------------------------------------------------
 
 module Structures.Step10_FoldMap where
@@ -12,7 +12,7 @@ module Structures.Step10_FoldMap where
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import Relation.Nullary                      using (Dec; yes; no)
 open import Data.Nat                              using (ℕ; _≟_; zero; suc)
-open import Data.List                             using (List; []; _∷_; map; _++_; filter)
+open import Data.List                             using (List; []; _∷_; map; _++_)
 open import Data.Bool                             using (Bool; true; false; not; _∨_)
 open import Data.Product                          using (_×_; _,_)
 open import Data.Maybe                            using (Maybe; just; nothing)
@@ -40,7 +40,7 @@ nodesEqᵇ : Node → Node → Bool
 nodesEqᵇ a b = (nodeId a) ==ᴮ (nodeId b)
 
 ------------------------------------------------------------------------
--- 1.   Listen-Utilities (mit Bool-Comparator)
+-- 1.   Listen-Utilities (Bool-Variante, stdlib-frei)
 ------------------------------------------------------------------------
 
 elemBy : {A : Set} → (A → A → Bool) → A → List A → Bool
@@ -69,6 +69,13 @@ concat : {A : Set} → List (List A) → List A
 concat []         = []
 concat (xs ∷ xss) = xs ++ concat xss
 
+-- Eigene Bool-basierte filter-Variante
+filterBy : {A : Set} → (A → Bool) → List A → List A
+filterBy p []       = []
+filterBy p (x ∷ xs) with p x
+... | true  = x ∷ filterBy p xs
+... | false =     filterBy p xs
+
 ------------------------------------------------------------------------
 -- 2.   Symmetrisierte Nachbarschaft + DFS
 ------------------------------------------------------------------------
@@ -79,7 +86,7 @@ relatedᵇ a b =
   are-spatially-related d₁ d₂ ∨ are-spatially-related d₂ d₁
 
 nbrs : List Node → Node → List Node
-nbrs slice n = filter (λ m → relatedᵇ n m) slice
+nbrs slice n = filterBy (λ m → relatedᵇ n m) slice
 
 dfs : List Node → List Node → List Node → List Node
 dfs slice []       vis = vis

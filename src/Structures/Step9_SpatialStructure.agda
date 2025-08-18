@@ -14,9 +14,9 @@ open import Structures.Step8_PathCategory using (Path; DriftPathCategory)
 -- Standard library
 open import Data.Nat using (ℕ; zero; suc; _≟_)
 open import Data.List using (List; []; _∷_; map; _++_)
-open import Data.Bool using (Bool; true; false; _∧_; not; if_then_else_)
+open import Data.Bool using (Bool; true; false; _∧_; _∨_; not; if_then_else_)
 open import Data.Product using (_×_; _,_)
-open import Data.Vec using (Vec; zipWith)
+open import Data.Vec using (Vec; []; _∷_) -- Vec constructors
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import Relation.Nullary using (Dec; yes; no)
 
@@ -33,8 +33,8 @@ bool-filter p (x ∷ xs) = if p x then x ∷ bool-filter p xs else bool-filter p
 ------------------------------------------------------------------------
 
 -- | A spatial slice: 2D distinctions at the same temporal rank
-SpatialSlice : ℕ → Set  -- Removed the second parameter since we're fixing dimension
-SpatialSlice rank = List (Dist (suc (suc zero)))  -- Fixed to dimension 2
+SpatialSlice : ℕ → Set
+SpatialSlice rank = List (Dist (suc (suc zero)))
 
 -- | Extract nodes of same rank from DriftGraph
 same-rank-nodes : DriftGraph → ℕ → List Node
@@ -46,24 +46,22 @@ same-rank-nodes G target-rank =
     ... | yes _ = true
     ... | no  _ = false
 
--- | Convert Node content to Dist - now matches the actual Node type
+-- | Convert Node content to Dist
 node-to-dist : Node → Dist (suc (suc zero))
 node-to-dist node = content node
 
 -- | Build spatial slice using your existing structures
-build-spatial-slice : DriftGraph → ℕ → SpatialSlice 0  -- Fixed to match type
+build-spatial-slice : DriftGraph → ℕ → SpatialSlice 0
 build-spatial-slice G rank = 
   map node-to-dist (same-rank-nodes G rank)
 
 ------------------------------------------------------------------------
--- SPATIAL MORPHISMS: Fixed to dimension 2
+-- SPATIAL MORPHISMS: Fixed Vec pattern matching
 ------------------------------------------------------------------------
 
--- | Check if a 2D Dist has any true components
+-- | Check if a 2D Dist has any true components (correct Vec patterns)
 has-true : Dist (suc (suc zero)) → Bool
-has-true [] = false
-has-true (true ∷ xs) = true
-has-true (false ∷ xs) = has-true xs
+has-true (x ∷ y ∷ []) = x ∨ y  -- For Vec Bool 2, pattern match exactly 2 elements
 
 -- | Check if two 2D distinctions are spatially related via drift
 are-spatially-related : Dist (suc (suc zero)) → Dist (suc (suc zero)) → Bool
@@ -116,3 +114,13 @@ example-spatial-slice = (true ∷ false ∷ []) ∷
 -- | Test: Check spatial relationships
 test-spatial-relation : Bool
 test-spatial-relation = are-spatially-related (true ∷ false ∷ []) (false ∷ true ∷ [])
+
+-- | Verification: Test has-true function
+test-has-true-1 : Bool
+test-has-true-1 = has-true (true ∷ false ∷ [])   -- Should be true
+
+test-has-true-2 : Bool  
+test-has-true-2 = has-true (false ∷ false ∷ [])  -- Should be false
+
+test-has-true-3 : Bool
+test-has-true-3 = has-true (false ∷ true ∷ [])   -- Should be true

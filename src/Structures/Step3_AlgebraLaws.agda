@@ -51,28 +51,11 @@ drift-absorbing (x ∷ xs) =
 ------------------------------------------------------------------------
 
 -- Ergänzungen für Join (∨) und Distributivität
-open import Data.Bool using (Bool; true; false; _∧_; _∨_)
+open import Data.Bool using (_∨_)
 open import Structures.Step2_VectorOperations using (Dist; drift; join)
 
--- Bool-Grundlemmas für ∨ und Distributivität (lokal definiert)
-∨-assoc : ∀ (x y z : Bool) → (x ∨ y) ∨ z ≡ x ∨ (y ∨ z)
-∨-assoc false y z = refl
-∨-assoc true  y z = refl
-
-∨-comm  : ∀ (x y : Bool) → x ∨ y ≡ y ∨ x
-∨-comm  false y = refl
-∨-comm  true  y = refl
-
-∨-idem  : ∀ (x : Bool) → x ∨ x ≡ x
-∨-idem false = refl
-∨-idem true  = refl
-
--- (x ∨ y) ∧ z ≡ (x ∧ z) ∨ (y ∧ z)
-∧-dist-∨ʳ : ∀ (x y z : Bool) → (x ∨ y) ∧ z ≡ (x ∧ z) ∨ (y ∧ z)
-∧-dist-∨ʳ false y z = refl
-∧-dist-∨ʳ true  y z = refl
-
--- Lifts auf Dist
+-- Wir verwenden die Bool-Lemmas aus Step1_BooleanFoundation:
+--   ∨-assoc, ∨-comm, ∨-idem, ∧-dist-∨ʳ
 
 -- join: Assoziativität
 join-assoc : ∀ {n} (a b c : Dist n) → join (join a b) c ≡ join a (join b c)

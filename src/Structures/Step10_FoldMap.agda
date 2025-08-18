@@ -116,7 +116,7 @@ record Cell : Set where
   field repr : NodeId
 
 cellEqᵇ : Cell → Cell → Bool
-cellEqᵇ c₁ c₂ = (repr c₁) ==ᴮ (repr c₂)
+cellEqᵇ c₁ c₂ = (Cell.repr c₁) ==ᴮ (Cell.repr c₂)
 
 record FoldedGraph : Set where
   constructor mkFolded
@@ -156,7 +156,7 @@ buildFold G rank = mkFoldMap π (mkFolded cells uEdges)
     ... | nothing = mkCell (nodeId n)
       where
         findComp : Node → List (List Node) → Maybe (List Node)
-        findComp n [] = nothing
+        findComp n []       = nothing
         findComp n (c ∷ cs) with (_∈_ nodesEqᵇ n c)
         ... | true  = just c
         ... | false = findComp n cs

@@ -11,10 +11,10 @@ open import Structures.Step6_SemanticTimeFunctor using (Sequence; evolve; TimeFu
 open import Structures.Step7_DriftGraph using (DriftGraph; Node; NodeId; nodes; edges; nodeId; content)
 open import Structures.Step8_PathCategory using (Path; DriftPathCategory)
 
--- Standard library - FIXED IMPORTS
+-- Standard library
 open import Data.Nat using (ℕ; zero; suc; _≟_)
-open import Data.List using (List; []; _∷_; filter; map; _++_)  -- Added _++_
-open import Data.Bool using (Bool; true; false; _∧_; not; if_then_else_)  -- Added 'not'
+open import Data.List using (List; []; _∷_; filter; map; _++_)
+open import Data.Bool using (Bool; true; false; _∧_; not; if_then_else_)
 open import Data.Product using (_×_; _,_)
 open import Data.Vec using (Vec; zipWith)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
@@ -48,27 +48,20 @@ build-spatial-slice {n} G rank =
   map node-to-dist (same-rank-nodes G rank)
 
 ------------------------------------------------------------------------
--- SPATIAL MORPHISMS: Use your existing DriftMorphism structure
+-- SPATIAL MORPHISMS: SIMPLIFIED IMPLEMENTATION
 ------------------------------------------------------------------------
+
+-- | Check if a Dist has any true components (simpler approach)
+has-true : ∀ {n} → Dist n → Bool
+has-true [] = false
+has-true (true ∷ xs) = true
+has-true (false ∷ xs) = has-true xs
 
 -- | Check if two distinctions are spatially related via drift
 are-spatially-related : ∀ {n} → Dist n → Dist n → Bool
-are-spatially-related d₁ d₂ = 
-  not-all-false (drift d₁ d₂)
-  where
-    not-all-false : ∀ {n} → Dist n → Bool
-    not-all-false d = not (dist-equals d (all-false _))
-    
-    dist-equals : ∀ {n} → Dist n → Dist n → Bool
-    dist-equals [] [] = true
-    dist-equals (x ∷ xs) (y ∷ ys) = if (x ≡ᵇ y) then (dist-equals xs ys) else false
-      where
-        _≡ᵇ_ : Bool → Bool → Bool
-        true  ≡ᵇ true  = true
-        false ≡ᵇ false = true
-        _     ≡ᵇ _     = false
+are-spatially-related d₁ d₂ = has-true (drift d₁ d₂)
 
--- | Spatial adjacency using your drift-based partial order from Step 4
+-- | Spatial adjacency using your drift-based relationships
 spatial-adjacency : ∀ {n} → SpatialSlice n 0 → List (Dist n × Dist n)
 spatial-adjacency slice = build-pairs slice slice
   where

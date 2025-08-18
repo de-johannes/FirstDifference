@@ -2,10 +2,9 @@
 
 ------------------------------------------------------------------------
 -- Step 10a : Constructive Fold-Map  (rank-preserving quotient)
-------------------------------------------------------------------------
---  * reiner Listen-DFS
---  * keine Postulate / kein if-Sugar
---  * hängt nur von Steps 1,2,7,9 ab
+--            * reiner Listen-DFS
+--            * keine Postulate / kein if-Sugar
+--            * hängt nur von Steps 1,2,7,9 ab
 ------------------------------------------------------------------------
 
 module Structures.Step10_FoldMap where
@@ -13,7 +12,7 @@ module Structures.Step10_FoldMap where
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import Relation.Nullary                      using (Dec; yes; no)
 open import Data.Nat                              using (ℕ; _≟_; zero; suc)
-open import Data.List                             using (List; []; _∷_; map; _++_; filter; null)
+open import Data.List                             using (List; []; _∷_; map; _++_; filter)
 open import Data.Bool                             using (Bool; true; false; not; _∨_)
 open import Data.Product                          using (_×_; _,_)
 open import Data.Maybe                            using (Maybe; just; nothing)
@@ -41,14 +40,14 @@ nodesEqᵇ : Node → Node → Bool
 nodesEqᵇ a b = (nodeId a) ==ᴮ (nodeId b)
 
 ------------------------------------------------------------------------
--- 1.   Listen-Utilities (Mit Bool-Comparator)
+-- 1.   Listen-Utilities (mit Bool-Comparator)
 ------------------------------------------------------------------------
 
-_∈_ : {A : Set} → (A → A → Bool) → A → List A → Bool
-_∈_ _≈_ x []       = false
-_∈_ _≈_ x (y ∷ ys) with _≈_ x y
+elemBy : {A : Set} → (A → A → Bool) → A → List A → Bool
+elemBy _≈_ x []       = false
+elemBy _≈_ x (y ∷ ys) with _≈_ x y
 ... | true  = true
-... | false = _∈_ _≈_ x ys
+... | false = elemBy _≈_ x ys
 
 remove1By : {A : Set} → (A → A → Bool) → A → List A → List A
 remove1By _≈_ x []       = []
@@ -84,7 +83,7 @@ nbrs slice n = filter (λ m → relatedᵇ n m) slice
 
 dfs : List Node → List Node → List Node → List Node
 dfs slice []       vis = vis
-dfs slice (s ∷ st) vis with (_∈_ nodesEqᵇ s vis)
+dfs slice (s ∷ st) vis with elemBy nodesEqᵇ s vis
 ... | true  = dfs slice st vis
 ... | false = dfs slice (nbrs slice s ++ st) (s ∷ vis)
 
@@ -100,7 +99,7 @@ componentsFrom slice = loop slice []
   where
     loop : List Node → List (List Node) → List (List Node)
     loop []         acc = acc
-    loop (u ∷ rest) acc with (_∈_ nodesEqᵇ u (concat acc))
+    loop (u ∷ rest) acc with elemBy nodesEqᵇ u (concat acc)
     ... | true  = loop rest acc
     ... | false =
       let comp  = connectedComponent slice u
@@ -150,20 +149,17 @@ buildFold G rank = mkFoldMap π (mkFolded cells uEdges)
     cells : List Cell
     cells = map toCell comps
 
-    -- **findComp jetzt HIER definiert (sichtbar für π)**
     findComp : Node → List (List Node) → Maybe (List Node)
     findComp n []       = nothing
-    findComp n (c ∷ cs) with (_∈_ nodesEqᵇ n c)
+    findComp n (c ∷ cs) with elemBy nodesEqᵇ n c
     ... | true  = just c
     ... | false = findComp n cs
 
-    -- π : Node → Cell
     π : Node → Cell
     π n with findComp n comps
     ... | just c  = toCell c
     ... | nothing = mkCell (nodeId n)
 
-    -- Prüft, ob zwei Komponenten benachbart sind
     compsRelatedᵇ : List Node → List Node → Bool
     compsRelatedᵇ []       _  = false
     compsRelatedᵇ (a ∷ as) bs = anyRelated a bs ∨ compsRelatedᵇ as bs

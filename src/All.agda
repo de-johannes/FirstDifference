@@ -6,7 +6,7 @@ module All where
 
 -- The Token Principle and irrefutability theorems
 open import Core.TokenPrinciple public
-open import Core.Irrefutable   public
+open import Core.Irrefutable public
 
 ------------------------------------------------------------------------
 
@@ -21,6 +21,7 @@ open import Structures.Step7_DriftGraph public
 open import Structures.Step8_PathCategory public
 open import Structures.Step8_CutCategory public
 open import Structures.Step8_TemporalFunctor public
+open import Structures.Step9_SpatialStructure public
 
 ------------------------------------------------------------------------
 -- Examples and demonstrations

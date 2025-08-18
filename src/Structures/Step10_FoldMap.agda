@@ -2,17 +2,17 @@
 
 ------------------------------------------------------------------------
 -- Step 10a : Constructive Fold-Map  (rank-preserving quotient)
---            * reiner Listen-DFS
---            * keine Postulate / kein if-Sugar
---            * kompatibel mit Stdlib, in der Data.List.filter Dec erwartet
+--  * terminierend (Fuel-Parameter)
+--  * reiner Listen-DFS, keine Postulate / kein if-Sugar
+--  * kompatibel mit Stdlib, in der Data.List.filter Dec erwartet
 ------------------------------------------------------------------------
 
 module Structures.Step10_FoldMap where
 
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import Relation.Nullary                      using (Dec; yes; no)
-open import Data.Nat                              using (ℕ; _≟_; zero; suc)
-open import Data.List                             using (List; []; _∷_; map; _++_)
+open import Data.Nat                              using (ℕ; _≟_; zero; suc; _+_; _≤?_)
+open import Data.List                             using (List; []; _∷_; map; _++_; length)
 open import Data.Bool                             using (Bool; true; false; not; _∨_)
 open import Data.Product                          using (_×_; _,_)
 open import Data.Maybe                            using (Maybe; just; nothing)
@@ -26,7 +26,7 @@ open import Structures.Step9_SpatialStructure      using
   ( same-rank-nodes ; node-to-dist ; are-spatially-related )
 
 ------------------------------------------------------------------------
--- 0.   Hilfsfunktionen: Dec → Bool  & Nat-/Node-Vergleich
+-- 0.   Dec → Bool  & Nat-/Node-Vergleich
 ------------------------------------------------------------------------
 
 decToBool : {A : Set} → Dec A → Bool
@@ -40,7 +40,7 @@ nodesEqᵇ : Node → Node → Bool
 nodesEqᵇ a b = (nodeId a) ==ᴮ (nodeId b)
 
 ------------------------------------------------------------------------
--- 1.   Listen-Utilities (Bool-Variante, stdlib-frei)
+-- 1.   Listen-Utilities (Bool-Variante)
 ------------------------------------------------------------------------
 
 elemBy : {A : Set} → (A → A → Bool) → A → List A → Bool
@@ -69,7 +69,6 @@ concat : {A : Set} → List (List A) → List A
 concat []         = []
 concat (xs ∷ xss) = xs ++ concat xss
 
--- Eigene Bool-basierte filter-Variante
 filterBy : {A : Set} → (A → Bool) → List A → List A
 filterBy p []       = []
 filterBy p (x ∷ xs) with p x
@@ -77,7 +76,7 @@ filterBy p (x ∷ xs) with p x
 ... | false =     filterBy p xs
 
 ------------------------------------------------------------------------
--- 2.   Symmetrisierte Nachbarschaft + DFS
+-- 2.   Symmetrisierte Nachbarschaft
 ------------------------------------------------------------------------
 
 relatedᵇ : Node → Node → Bool
@@ -88,33 +87,42 @@ relatedᵇ a b =
 nbrs : List Node → Node → List Node
 nbrs slice n = filterBy (λ m → relatedᵇ n m) slice
 
-dfs : List Node → List Node → List Node → List Node
-dfs slice []       vis = vis
-dfs slice (s ∷ st) vis with elemBy nodesEqᵇ s vis
-... | true  = dfs slice st vis
-... | false = dfs slice (nbrs slice s ++ st) (s ∷ vis)
+------------------------------------------------------------------------
+-- 3.   DFS mit Fuel (terminierend)
+------------------------------------------------------------------------
+
+dfsFuel : List Node → List Node → List Node → ℕ → List Node
+dfsFuel slice stack visited zero    = visited
+dfsFuel slice []    visited (suc f) = visited
+dfsFuel slice (s ∷ st) visited (suc f) with elemBy nodesEqᵇ s visited
+... | true  = dfsFuel slice st visited f
+... | false = dfsFuel slice (nbrs slice s ++ st) (s ∷ visited) f
 
 connectedComponent : List Node → Node → List Node
-connectedComponent slice seed = dfs slice (seed ∷ []) []
+connectedComponent slice seed =
+  dfsFuel slice (seed ∷ []) [] (length slice + 1)
 
 ------------------------------------------------------------------------
--- 3.   Partition des Slices in Komponenten
+-- 4.   Partition des Slices in Komponenten (mit Fuel)
 ------------------------------------------------------------------------
+
+componentsFromFuel : List Node → List (List Node) → ℕ → List (List Node)
+componentsFromFuel slice acc zero       = acc
+componentsFromFuel slice acc (suc fuel) with slice
+... | []         = acc
+... | (u ∷ rest) with elemBy nodesEqᵇ u (concat acc)
+... | true  = componentsFromFuel rest acc fuel
+... | false =
+  let comp   = connectedComponent (u ∷ rest) u
+      rest'  = removeAllBy nodesEqᵇ comp rest
+      acc'   = comp ∷ acc
+  in  componentsFromFuel rest' acc' fuel
 
 componentsFrom : List Node → List (List Node)
-componentsFrom slice = loop slice []
-  where
-    loop : List Node → List (List Node) → List (List Node)
-    loop []         acc = acc
-    loop (u ∷ rest) acc with elemBy nodesEqᵇ u (concat acc)
-    ... | true  = loop rest acc
-    ... | false =
-      let comp  = connectedComponent slice u
-          rest' = removeAllBy nodesEqᵇ comp rest
-      in  loop rest' (comp ∷ acc)
+componentsFrom slice = componentsFromFuel slice [] (length slice)
 
 ------------------------------------------------------------------------
--- 4.   Datentypen für Cells & FoldedGraph
+-- 5.   Datentypen für Cells & FoldedGraph
 ------------------------------------------------------------------------
 
 record Cell : Set where
@@ -131,7 +139,7 @@ record FoldedGraph : Set where
     uEdges : List (Cell × Cell)
 
 ------------------------------------------------------------------------
--- 5.   Fold-Map  (π + gefalteter Raum)
+-- 6.   Fold-Map  (π + gefalteter Raum)
 ------------------------------------------------------------------------
 
 record FoldMap (G : DriftGraph) (rank : ℕ) : Set where

@@ -7,7 +7,10 @@ module Structures.Step4_PartialOrder where
 
 open import Structures.Step1_BooleanFoundation
 open import Structures.Step2_VectorOperations using (Dist; drift; all-true; all-false; join; neg)
-open import Structures.Step3_AlgebraLaws      using (drift-idempotent; drift-comm; drift-assoc)
+open import Structures.Step3_AlgebraLaws
+  using (drift-idempotent; drift-comm; drift-assoc
+       ; join-comm; join-assoc; join-idempotent
+       ; drift-join-distrib-right)
 
 open import Data.Vec                          using (Vec; []; _∷_; zipWith)
 open import Data.Bool                         using (Bool; true; false; not; _∧_; _∨_)
@@ -250,6 +253,29 @@ deMorgan₂ : ∀ {n} (a b : Dist n) → neg (join a b) ≡ drift (neg a) (neg b
 deMorgan₂ {zero} []       []       = refl
 deMorgan₂ {suc n} (x ∷ xs) (y ∷ ys) =
   cong₂ _∷_ (deMorgan₂ᵇ x y) (deMorgan₂ xs ys)
+
+------------------------------------------------------------------------
+-- LUB: join ist kleinste obere Schranke bzgl. ≤ᵈ
+------------------------------------------------------------------------
+
+open import Structures.Step2_VectorOperations using (join)
+
+-- obere Schranken: a ≤ a ∨ b  und  b ≤ a ∨ b
+ub-join₁ : ∀ {n} (a b : Dist n) → a ≤ᵈ join a b
+ub-join₁ a b = absorb-∧-∨ a b          -- drift a (join a b) ≡ a
+
+ub-join₂ : ∀ {n} (a b : Dist n) → b ≤ᵈ join a b
+ub-join₂ a b =
+  let s = cong (λ t → drift b t) (join-comm a b)
+  in trans s (absorb-∧-∨ b a)
+
+-- Kleinste obere Schranke:
+-- a ≤ c  ∧  b ≤ c   ⇒   a ∨ b ≤ c
+lub-≤ᵈ : ∀ {n} {a b c : Dist n} → a ≤ᵈ c → b ≤ᵈ c → join a b ≤ᵈ c
+lub-≤ᵈ {a = a} {b} {c} a≤c b≤c =
+  let d₁ = drift-join-distrib-right a b c
+      d₂ = cong₂ join a≤c b≤c
+  in trans d₁ d₂
 
 ------------------------------------------------------------------------
 -- Checks

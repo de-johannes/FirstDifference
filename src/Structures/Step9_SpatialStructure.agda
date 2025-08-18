@@ -13,12 +13,21 @@ open import Structures.Step8_PathCategory using (Path; DriftPathCategory)
 
 -- Standard library
 open import Data.Nat using (ℕ; zero; suc; _≟_)
-open import Data.List using (List; []; _∷_; filter; map; _++_)
+open import Data.List using (List; []; _∷_; map; _++_)  -- Removed filter
 open import Data.Bool using (Bool; true; false; _∧_; not; if_then_else_)
 open import Data.Product using (_×_; _,_)
 open import Data.Vec using (Vec; zipWith)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import Relation.Nullary using (Dec; yes; no)
+
+------------------------------------------------------------------------
+-- HELPER: Boolean Filter Function
+------------------------------------------------------------------------
+
+-- | Boolean filter function (since Data.List.filter expects Dec)
+bool-filter : ∀ {A : Set} → (A → Bool) → List A → List A
+bool-filter p [] = []
+bool-filter p (x ∷ xs) = if p x then x ∷ bool-filter p xs else bool-filter p xs
 
 ------------------------------------------------------------------------
 -- SPATIAL SLICES: Use your existing Dist structure  
@@ -31,7 +40,7 @@ SpatialSlice n rank = List (Dist n)
 -- | Extract nodes of same rank from DriftGraph
 same-rank-nodes : DriftGraph → ℕ → List Node
 same-rank-nodes G target-rank = 
-  filter (λ node → rank-matches (nodeId node) target-rank) (nodes G)
+  bool-filter (λ node → rank-matches (nodeId node) target-rank) (nodes G)
   where
     rank-matches : NodeId → ℕ → Bool
     rank-matches id target with id ≟ target
@@ -51,7 +60,7 @@ build-spatial-slice {n} G rank =
 -- SPATIAL MORPHISMS: SIMPLIFIED IMPLEMENTATION
 ------------------------------------------------------------------------
 
--- | Check if a Dist has any true components (simpler approach)
+-- | Check if a Dist has any true components
 has-true : ∀ {n} → Dist n → Bool
 has-true [] = false
 has-true (true ∷ xs) = true

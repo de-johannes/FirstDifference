@@ -1,100 +1,60 @@
 {-# OPTIONS --safe #-}
 
--- | Step 6: Semantic Time Functor
--- | Building temporal structure from distinction sequences
-module Structures.Step6_SemanticTimeFunctor where
+module Structures.Step9_SpatialStructure where
 
-open import Data.Bool using (Bool; true; false; _∧_; _∨_; not)
+-- Use YOUR existing foundation instead of recreating it
+open import Structures.Step2_VectorOperations using (Dist; drift; join; neg)
+open import Structures.Step5_CategoryStructure using (DriftMorphism; idDrift; composeDrift)
+open import Structures.Step6_SemanticTimeFunctor using (Sequence; evolve; TimeFunctor)
+open import Structures.Step7_DriftGraph using (DriftGraph; Node; NodeId; nodes; edges)
+open import Structures.Step8_PathCategory using (Path; DriftPathCategory)
+
+-- Standard library
 open import Data.Nat using (ℕ; zero; suc)
-open import Data.Vec using (Vec; []; _∷_)
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong)
-open import Function using (id; _∘_)
-open import Data.Product using (_×_; _,_)
-
--- Explizite Importe aller benötigten Module
-open import Structures.Step1_BooleanFoundation
-open import Structures.Step2_VectorOperations  
-open import Structures.Step3_AlgebraLaws
-open import Structures.Step4_PartialOrder
-open import Structures.Step5_CategoryStructure
+open import Data.List using (List; []; _∷_)
+open import Data.Bool using (Bool; true; false)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
 ------------------------------------------------------------------------
--- TEMPORAL SEQUENCE TYPE
+-- SPATIAL SLICES: Use your existing Dist structure  
 ------------------------------------------------------------------------
 
--- | A temporal sequence is a time-indexed sequence of distinctions
-Sequence : ℕ → ℕ → Set
-Sequence n t = Vec (Dist n) t
+-- | A spatial slice: distinctions at the same temporal rank
+-- | Uses your existing Dist type instead of inventing new structures
+SpatialSlice : ℕ → ℕ → Set
+SpatialSlice n rank = List (Dist n)  -- List of n-dimensional distinctions
 
--- | Temporal evolution: applying a morphism to each time step
-evolve : ∀ {m n t} → DriftMorphism m n → Sequence m t → Sequence n t
-evolve φ []       = []
-evolve φ (d ∷ ds) = DriftMorphism.f φ d ∷ evolve φ ds
+-- | Extract nodes of same rank from DriftGraph
+-- | This should integrate with your existing Node structure
+same-rank-nodes : DriftGraph → ℕ → List Node
+same-rank-nodes G target-rank = {! Use your existing node filtering !}
 
-------------------------------------------------------------------------
--- FUNCTOR LAWS FOR TEMPORAL EVOLUTION
-------------------------------------------------------------------------
+-- | Convert Node content to Dist (use your existing content field)
+node-to-dist : ∀ {n} → Node → Dist n  
+node-to-dist node = {! Extract content field from your Node record !}
 
--- | Identity preservation: evolving with identity does nothing
-evolve-id : ∀ {n t} (seq : Sequence n t) → evolve idDrift seq ≡ seq
-evolve-id []       = refl
-evolve-id (d ∷ ds) = cong (d ∷_) (evolve-id ds)
-
--- | Composition preservation: evolving with composition = composing evolutions
-evolve-comp : ∀ {l m n t} (φ : DriftMorphism m n) (ψ : DriftMorphism l m) 
-              (seq : Sequence l t) →
-              evolve (composeDrift φ ψ) seq ≡ evolve φ (evolve ψ seq)
-evolve-comp φ ψ []       = refl
-evolve-comp φ ψ (d ∷ ds) = cong (_ ∷_) (evolve-comp φ ψ ds)
+-- | Build spatial slice using your existing structures
+build-spatial-slice : ∀ {n} → DriftGraph → ℕ → SpatialSlice n 0  -- Fix size
+build-spatial-slice G rank = {! Use same-rank-nodes and node-to-dist !}
 
 ------------------------------------------------------------------------
--- SEMANTIC TIME STRUCTURE
+-- SPATIAL MORPHISMS: Use your existing DriftMorphism structure
 ------------------------------------------------------------------------
 
--- | Time functor: maps morphisms to sequence transformations
-record TimeFunctor : Set₁ where
-  field
-    -- Functor action on morphisms
-    F-mor : ∀ {m n t} → DriftMorphism m n → (Sequence m t → Sequence n t)
-    
-    -- Functor laws
-    F-id  : ∀ {n t} (seq : Sequence n t) → F-mor idDrift seq ≡ seq
-    F-comp : ∀ {l m n t} (φ : DriftMorphism m n) (ψ : DriftMorphism l m) 
-             (seq : Sequence l t) →
-             F-mor (composeDrift φ ψ) seq ≡ F-mor φ (F-mor ψ seq)
+-- | Spatial relations via your existing drift operation
+-- | Two distinctions are "spatially adjacent" if their drift is non-trivial
+are-spatially-related : ∀ {n} → Dist n → Dist n → Bool
+are-spatially-related d₁ d₂ = {! Use your existing drift operation !}
 
--- | The canonical time functor
-timeF : TimeFunctor
-timeF = record
-  { F-mor = evolve
-  ; F-id = evolve-id
-  ; F-comp = evolve-comp
-  }
+-- | Spatial adjacency using your drift-based partial order from Step 4
+spatial-adjacency : ∀ {n} → SpatialSlice n 0 → List (Dist n × Dist n)
+spatial-adjacency slice = {! Build adjacency using _≤ᵈ_ from Step 4 !}
 
 ------------------------------------------------------------------------
--- EXAMPLE: TEMPORAL SWAP
+-- INTEGRATION TEST: Does this work with your existing Steps?
 ------------------------------------------------------------------------
 
--- | Example sequence: alternating true/false pattern
-example-seq : Sequence (suc (suc zero)) (suc (suc (suc zero)))
-example-seq = (true ∷ false ∷ []) ∷ 
-              (false ∷ true ∷ []) ∷ 
-              (true ∷ true ∷ []) ∷ []
-
--- | Apply swap to the temporal sequence
-swapped-seq : Sequence (suc (suc zero)) (suc (suc (suc zero)))
-swapped-seq = TimeFunctor.F-mor timeF swap₀₁ example-seq
-
--- | The result: components are swapped at each time step
-swap-result : swapped-seq ≡ ((false ∷ true ∷ []) ∷ 
-                             (true ∷ false ∷ []) ∷ 
-                             (true ∷ true ∷ []) ∷ [])
-swap-result = refl
-
-------------------------------------------------------------------------
--- RESULT: Time as a functor!
--- • Temporal sequences form the objects
--- • Morphisms act uniformly across time
--- • Functor laws ensure coherent temporal evolution
--- • Foundation for process-based temporal logic
-------------------------------------------------------------------------
+-- | Test: Can we apply TimeFunctor to spatial sequences?
+test-spatial-temporal : ∀ {m n} → DriftMorphism m n → 
+                        SpatialSlice m 0 → SpatialSlice n 0  
+test-spatial-temporal φ slice = {! Apply your TimeFunctor structure !}

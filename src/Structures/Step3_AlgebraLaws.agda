@@ -65,8 +65,14 @@ open import Structures.Step2_VectorOperations using (Dist; drift; join)
 
 -- Distributivität: (x ∨ y) ∧ z ≡ (x ∧ z) ∨ (y ∧ z)
 ∧-dist-∨ʳ : ∀ (x y z : Bool) → (x ∨ y) ∧ z ≡ (x ∧ z) ∨ (y ∧ z)
-∧-dist-∨ʳ x y false = refl                          -- beide Seiten = false
-∧-dist-∨ʳ x y true  = refl                          -- beide Seiten = x ∨ y
+∧-dist-∨ʳ true  true  true  = refl
+∧-dist-∨ʳ true  true  false = refl
+∧-dist-∨ʳ true  false true  = refl
+∧-dist-∨ʳ true  false false = refl
+∧-dist-∨ʳ false true  true  = refl
+∧-dist-∨ʳ false true  false = refl
+∧-dist-∨ʳ false false true  = refl
+∧-dist-∨ʳ false false false = refl
 
 -- Lifts auf Dist (nutzen ∨-comm aus Step 1!)
 join-assoc : ∀ {n} (a b c : Dist n) → join (join a b) c ≡ join a (join b c)

@@ -150,7 +150,8 @@ buildFold G rank = mkFoldMap π (mkFolded cells uEdges)
     cells : List Cell
     cells = map toCell comps
 
-    -- π : Node → Cell
+    -- ⬇⬇⬇  **Type signature added here**  ⬇⬇⬇
+    π : Node → Cell
     π n with findComp n comps
     ... | just c  = toCell c
     ... | nothing = mkCell (nodeId n)

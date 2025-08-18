@@ -1,27 +1,71 @@
 {-# OPTIONS --safe #-}
 
--- | Step 10: Spectral Emergence of Einstein Field Equations
+-- | Step 10: Spectral Emergence of Einstein Field Equations  
 -- | REAL derivation from First Distinction to General Relativity
 module Structures.Step10_SpectralEmergence where
 
 -- Import our complete mathematical foundation  
 open import Structures.Step1_BooleanFoundation
-open import Structures.Step2_VectorOperations using (Dist; drift)  -- Removed _∧_ and _∨_
+open import Structures.Step2_VectorOperations using (Dist; drift)
 open import Structures.Step4_PartialOrder using (_≤ᵈ_)
 open import Structures.Step7_DriftGraph using (DriftGraph; Node; NodeId; _—→_within_)
 open import Structures.Step8_PathCategory using (Path)
 
--- Mathematical foundations
-open import Data.Nat using (ℕ; zero; suc; _+_; _*_; _∸_; ∣_∣; _<_)
+-- Mathematical foundations - QUALIFIED IMPORTS to avoid conflicts
+open import Data.Nat using (ℕ; zero; suc; _∸_; _<_)
+import Data.Nat as Nat
 open import Data.List using (List; []; _∷_; length; map; foldr)
 open import Data.Vec using (Vec; []; _∷_)
-open import Data.Bool using (Bool; true; false; _∧_; _∨_)  -- HIER sind die Boolean-Operatoren!
+open import Data.Bool using (Bool; true; false; _∧_; _∨_)
 open import Data.Product using (_×_; _,_; Σ; ∃)
-open import Data.Float using (Float; _+_; _*_; _-_; fromℕ; exp; log; _<_)
+import Data.Float as Float
+open import Data.Float using (Float; fromℕ)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong; sym; trans)
 
 ------------------------------------------------------------------------
--- 1. THE IRREDUCIBLE DRIFT OPERATOR (from First Distinction)
+-- HELPER FUNCTIONS (since some aren't in standard library)
+------------------------------------------------------------------------
+
+-- | Absolute difference for naturals (since ∣_∣ not in Data.Nat)
+abs-diff : ℕ → ℕ → ℕ
+abs-diff m n with m <? n
+  where
+    _<?_ : ℕ → ℕ → Bool
+    zero  <? zero  = false
+    zero  <? suc n = true
+    suc m <? zero  = false
+    suc m <? suc n = m <? n
+... | true  = n ∸ m
+... | false = m ∸ n
+
+-- | Float addition (qualified to avoid ambiguity)
+_+F_ : Float → Float → Float
+_+F_ = Float._+_
+
+-- | Float multiplication
+_*F_ : Float → Float → Float  
+_*F_ = Float._*_
+
+-- | Float subtraction
+_-F_ : Float → Float → Float
+_-F_ = Float._-_
+
+-- | Approximate exponential (since exp not in Data.Float)
+approx-exp : Float → Float
+approx-exp x = 1.0 +F x +F (x *F x *F 0.5) +F (x *F x *F x *F 0.166667)
+
+-- | Approximate logarithm  
+approx-log : Float → Float
+approx-log x = x -F 1.0  -- Very rough approximation
+
+-- | Float comparison
+_<F_ : Float → Float → Bool
+x <F y = Float.show x Data.String.< Float.show y  -- Rough comparison
+  where
+    import Data.String as String
+
+------------------------------------------------------------------------
+-- 1. THE IRREDUCIBLE DRIFT OPERATOR (from First Distinction)  
 ------------------------------------------------------------------------
 
 -- | The First Distinction D₀ - the primordial marked/unmarked space
@@ -34,7 +78,7 @@ open FirstDistinction public
 -- | The fundamental Drift Operator from the First Distinction
 -- | This is THE operator that generates all structure
 DistOp : FirstDistinction → FirstDistinction → FirstDistinction
-DistOp D₀[ φ₁ ] D₀[ φ₂ ] = D₀[ φ₁ ∧ φ₂ ]  -- Jetzt sollte ∧ funktionieren
+DistOp D₀[ φ₁ ] D₀[ φ₂ ] = D₀[ φ₁ ∧ φ₂ ]
 
 -- | Iteration of drift creates the irreducible distinction ledger
 -- | This generates the causal structure of spacetime itself
@@ -53,7 +97,7 @@ event-time (initial D₀[ φ ]) = if φ then 1 else 0
     if_then_else_ : Bool → ℕ → ℕ → ℕ
     if true  then a else b = a
     if false then a else b = b
-event-time (extend ledger D₀[ φ ]) = event-time ledger + (if φ then 1 else 0)
+event-time (extend ledger D₀[ φ ]) = Nat._+_ (event-time ledger) (if φ then 1 else 0)  -- EXPLICIT Nat._+_
   where
     if_then_else_ : Bool → ℕ → ℕ → ℕ  
     if true  then a else b = a

@@ -49,3 +49,33 @@ drift-absorbing (x ∷ xs) =
 -- MATHEMATICAL VICTORY: Vec Bool n forms Boolean Algebra!
 -- Component-wise operations preserve all algebraic structure
 ------------------------------------------------------------------------
+
+-- Ergänzungen für Join (∨) und Distributivität
+
+open import Data.Bool using (_∨_)            -- Operator-Name in den Scope
+open import Relation.Binary.PropositionalEquality using (cong₂)
+open import Structures.Step1_BooleanFoundation  -- liefert ∨-assoc, ∨-comm, ∨-idem, ∧-dist-∨ʳ
+open import Structures.Step2_VectorOperations using (Dist; drift; join)
+
+-- join: Assoziativität/Kommutativität/Idempotenz (Lift der Bool-Gesetze)
+join-assoc : ∀ {n} (a b c : Dist n) → join (join a b) c ≡ join a (join b c)
+join-assoc {zero} []       []       []       = refl
+join-assoc {suc n} (x ∷ xs) (y ∷ ys) (z ∷ zs) =
+  cong₂ _∷_ (∨-assoc x y z) (join-assoc xs ys zs)
+
+join-comm : ∀ {n} (a b : Dist n) → join a b ≡ join b a
+join-comm {zero} []       []       = refl
+join-comm {suc n} (x ∷ xs) (y ∷ ys) =
+  cong₂ _∷_ (∨-comm x y) (join-comm xs ys)
+
+join-idempotent : ∀ {n} (a : Dist n) → join a a ≡ a
+join-idempotent {zero} []       = refl
+join-idempotent {suc n} (x ∷ xs) =
+  cong₂ _∷_ (∨-idem x) (join-idempotent xs)
+
+-- Distributivität: drift (join a b) c  ≡  join (drift a c) (drift b c)
+drift-join-distrib-right : ∀ {n} (a b c : Dist n) →
+  drift (join a b) c ≡ join (drift a c) (drift b c)
+drift-join-distrib-right {zero} []       []       []       = refl
+drift-join-distrib-right {suc n} (x ∷ xs) (y ∷ ys) (z ∷ zs) =
+  cong₂ _∷_ (∧-dist-∨ʳ x y z) (drift-join-distrib-right xs ys zs)

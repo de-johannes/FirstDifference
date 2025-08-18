@@ -7,7 +7,7 @@ module Structures.Step4_PartialOrder where
 
 open import Structures.Step1_BooleanFoundation
 open import Structures.Step2_VectorOperations using (Dist; drift; all-true; all-false; join; neg)
-open import Structures.Step3_AlgebraLaws      using (drift-idempotent; drift-comm)
+open import Structures.Step3_AlgebraLaws      using (drift-idempotent; drift-comm; drift-assoc)
 
 open import Data.Vec                          using (Vec; []; _∷_; zipWith)
 open import Data.Bool                         using (Bool; true; false; not; _∧_; _∨_)
@@ -145,14 +145,7 @@ a ≤ᵈ b = drift a b ≡ a
 -- Meet-Struktur: drift ist größter unterer Schrankenoperator (GLB)
 ------------------------------------------------------------------------
 
--- Vektorielle Assoziativität für drift (zipWith _∧_)
--- nutzt ∧-assoc aus Step1_BooleanFoundation
-drift-assoc : ∀ {n} → (a b c : Dist n) → drift (drift a b) c ≡ drift a (drift b c)
-drift-assoc {zero} [] [] [] = refl
-drift-assoc {suc n} (x ∷ xs) (y ∷ ys) (z ∷ zs) =
-  cong₂ _∷_ (∧-assoc x y z) (drift-assoc xs ys zs)
-
--- Projektionen: a ∧ b ≤ a  und  a ∧ b ≤ b
+-- Projektion 1: a ∧ b ≤ a
 meet≤₁ : ∀ {n} (a b : Dist n) → drift a b ≤ᵈ a
 meet≤₁ a b =
   -- Ziel: drift (drift a b) a ≡ drift a b
@@ -177,8 +170,10 @@ meet≤₂ a b =
 -- Größter unterer Schranken:  c ≤ a  ∧  c ≤ b  ⇒  c ≤ (a ∧ b)
 glb-≤ᵈ : ∀ {n} {a b c : Dist n} → c ≤ᵈ a → c ≤ᵈ b → c ≤ᵈ drift a b
 glb-≤ᵈ {a = a} {b} {c} c≤a c≤b =
-  -- Ziel: drift c (drift a b) ≡ c
-  -- Umformen: ≡ (drift (drift c a) b)  ≡ (drift c b)  ≡ c
+  -- drift c (drift a b)
+  --   ≡ drift (drift c a) b    (sym drift-assoc)
+  --   ≡ drift c b              (cong mit c≤a)
+  --   ≡ c                      (c≤b)
   let t₁ = sym (drift-assoc c a b)
       t₂ = cong (λ t → drift t b) c≤a
       t₃ = c≤b

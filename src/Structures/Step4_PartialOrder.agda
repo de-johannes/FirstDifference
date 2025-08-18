@@ -126,7 +126,7 @@ a ≤ᵈ b = drift a b ≡ a
 ≤ᵈ? a b = ⌊ ≤ᵈ-dec a b ⌋
 
 ⊥ᵈ : ∀ {n} → Dist n
-⊥ᵈ = all-false _
+⊥ᵈ {n} = all-false {n}
 
 ⊥ᵈ-least : ∀ {n} (a : Dist n) → ⊥ᵈ ≤ᵈ a
 ⊥ᵈ-least {zero} [] = refl
@@ -134,7 +134,7 @@ a ≤ᵈ b = drift a b ≡ a
   cong₂ _∷_ (∧-falseˡ x) (⊥ᵈ-least xs)
 
 ⊤ᵈ : ∀ {n} → Dist n
-⊤ᵈ = all-true _
+⊤ᵈ {n} = all-true {n}
 
 ⊤ᵈ-greatest : ∀ {n} (a : Dist n) → a ≤ᵈ ⊤ᵈ
 ⊤ᵈ-greatest {zero} [] = refl

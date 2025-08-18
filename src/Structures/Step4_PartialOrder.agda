@@ -142,6 +142,57 @@ a ≤ᵈ b = drift a b ≡ a
   cong₂ _∷_ (∧-trueʳ x) (⊤ᵈ-greatest xs)
 
 ------------------------------------------------------------------------
+-- Meet-Struktur: drift ist größter unterer Schrankenoperator (GLB)
+------------------------------------------------------------------------
+
+-- Bool-assoziativ (komponentweise gebraucht)
+∧-assoc : ∀ (x y z : Bool) → (x ∧ y) ∧ z ≡ x ∧ (y ∧ z)
+∧-assoc false y z = refl
+∧-assoc true  y z = refl
+
+-- Vektorielle Assoziativität für drift (zipWith _∧_)
+drift-assoc : ∀ {n} → (a b c : Dist n) → drift (drift a b) c ≡ drift a (drift b c)
+drift-assoc {zero} [] [] [] = refl
+drift-assoc {suc n} (x ∷ xs) (y ∷ ys) (z ∷ zs) =
+  cong₂ _∷_ (∧-assoc x y z) (drift-assoc xs ys zs)
+
+-- Projektionen: a ∧ b ≤ a  und  a ∧ b ≤ b
+meet≤₁ : ∀ {n} (a b : Dist n) → drift a b ≤ᵈ a
+meet≤₁ a b =
+  -- Ziel: drift (drift a b) a ≡ drift a b
+  let s₁ = drift-assoc a b a
+      s₂ = cong (λ t → drift a t) (drift-comm b a)
+      s₃ = sym (drift-assoc a a b)
+      s₄ = cong (λ t → drift t b) (drift-idempotent a)
+  in trans s₁ (trans s₂ (trans s₃ s₄))
+
+meet≤₂ : ∀ {n} (a b : Dist n) → drift a b ≤ᵈ b
+meet≤₂ a b =
+  -- per Symmetrie (Kommutativität) auf meet≤₁ zurückführen
+  let step : drift a b ≤ᵈ b
+      step = begin
+                -- drift a b  ≡  drift b a
+                -- also genügt drift (drift b a) b ≡ drift b a
+             in
+             let s₁ = cong (λ t → drift t b) (drift-comm a b)
+                 s₂ = meet≤₁ b a
+                 s₃ = sym (drift-comm a b)
+             in trans s₁ (trans s₂ s₃)
+  in step
+  where
+    begin = λ x → x  -- nur Syntaxanker
+
+-- Größter unterer Schranken:  c ≤ a  ∧  c ≤ b  ⇒  c ≤ (a ∧ b)
+glb-≤ᵈ : ∀ {n} {a b c : Dist n} → c ≤ᵈ a → c ≤ᵈ b → c ≤ᵈ drift a b
+glb-≤ᵈ {a = a} {b} {c} c≤a c≤b =
+  -- Ziel: drift c (drift a b) ≡ c
+  -- Umformen: ≡ (drift (drift c a) b)  ≡ (drift c b)  ≡ c
+  let t₁ = sym (drift-assoc c a b)
+      t₂ = cong (λ t → drift t b) c≤a
+      t₃ = c≤b
+  in trans t₁ (trans t₂ t₃)
+
+------------------------------------------------------------------------
 -- Checks
 ------------------------------------------------------------------------
 

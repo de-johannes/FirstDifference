@@ -6,11 +6,11 @@
 module Structures.Step4_PartialOrder where
 
 open import Structures.Step1_BooleanFoundation
-open import Structures.Step2_VectorOperations using (Dist; drift; all-true; all-false)
-open import Structures.Step3_AlgebraLaws      using (drift-idempotent; drift-comm)
+open import Structures.Step2_VectorOperations using (Dist; drift; all-true; all-false; join; neg)
+open import Structures.Step3_AlgebraLaws      using (drift-idempotent; drift-comm; drift-assoc)
 
 open import Data.Vec                          using (Vec; []; _∷_; zipWith)
-open import Data.Bool                         using (Bool; true; false; _∧_)
+open import Data.Bool                         using (Bool; true; false; not; _∧_; _∨_)
 open import Data.Nat                          using (ℕ; zero; suc)
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans; cong; cong₂)
@@ -140,6 +140,116 @@ a ≤ᵈ b = drift a b ≡ a
 ⊤ᵈ-greatest {zero} [] = refl
 ⊤ᵈ-greatest {suc n} (x ∷ xs) =
   cong₂ _∷_ (∧-trueʳ x) (⊤ᵈ-greatest xs)
+
+------------------------------------------------------------------------
+-- Meet-Struktur: drift ist größter unterer Schrankenoperator (GLB)
+------------------------------------------------------------------------
+
+-- Projektion 1: a ∧ b ≤ a
+meet≤₁ : ∀ {n} (a b : Dist n) → drift a b ≤ᵈ a
+meet≤₁ a b =
+  -- Ziel: drift (drift a b) a ≡ drift a b
+  let s₁ = drift-assoc a b a
+      s₂ = cong (λ t → drift a t) (drift-comm b a)
+      s₃ = sym (drift-assoc a a b)
+      s₄ = cong (λ t → drift t b) (drift-idempotent a)
+  in trans s₁ (trans s₂ (trans s₃ s₄))
+
+-- Projektion 2: a ∧ b ≤ b
+meet≤₂ : ∀ {n} (a b : Dist n) → drift a b ≤ᵈ b
+meet≤₂ a b =
+  -- drift (drift a b) b
+  --   ≡ drift (drift b a) b           (cong mit drift-comm a b)
+  --   ≡ drift b a                     (meet≤₁ b a)
+  --   ≡ drift a b                     (sym (drift-comm a b))
+  let s₁ = cong (λ t → drift t b) (drift-comm a b)
+      s₂ = meet≤₁ b a
+      s₃ = sym (drift-comm a b)
+  in trans s₁ (trans s₂ s₃)
+
+-- Größter unterer Schranken:  c ≤ a  ∧  c ≤ b  ⇒  c ≤ (a ∧ b)
+glb-≤ᵈ : ∀ {n} {a b c : Dist n} → c ≤ᵈ a → c ≤ᵈ b → c ≤ᵈ drift a b
+glb-≤ᵈ {a = a} {b} {c} c≤a c≤b =
+  -- drift c (drift a b)
+  --   ≡ drift (drift c a) b    (sym drift-assoc)
+  --   ≡ drift c b              (cong mit c≤a)
+  --   ≡ c                      (c≤b)
+  let t₁ = sym (drift-assoc c a b)
+      t₂ = cong (λ t → drift t b) c≤a
+      t₃ = c≤b
+  in trans t₁ (trans t₂ t₃)
+
+------------------------------------------------------------------------
+-- Absorptionsgesetze:  a ∧ (a ∨ b) = a  und  a ∨ (a ∧ b) = a
+-- (komponentenweise; hier ∧ ≡ drift, ∨ ≡ join)
+------------------------------------------------------------------------
+
+open import Structures.Step2_VectorOperations using (join; neg)
+
+-- Bool-Absorption
+∨-absorb-∧ : ∀ (a b : Bool) → a ∨ (a ∧ b) ≡ a
+∨-absorb-∧ false b = refl
+∨-absorb-∧ true  b = refl
+
+∧-absorb-∨ : ∀ (a b : Bool) → a ∧ (a ∨ b) ≡ a
+∧-absorb-∨ false b = refl
+∧-absorb-∨ true  b = refl
+
+-- Vektoriell (komponentenweise via zipWith)
+absorb-∨-∧ : ∀ {n} (a b : Dist n) → join a (drift a b) ≡ a
+absorb-∨-∧ {zero} []       []       = refl
+absorb-∨-∧ {suc n} (x ∷ xs) (y ∷ ys) =
+  cong₂ _∷_ (∨-absorb-∧ x y) (absorb-∨-∧ xs ys)
+
+absorb-∧-∨ : ∀ {n} (a b : Dist n) → drift a (join a b) ≡ a
+absorb-∧-∨ {zero} []       []       = refl
+absorb-∧-∨ {suc n} (x ∷ xs) (y ∷ ys) =
+  cong₂ _∷_ (∧-absorb-∨ x y) (absorb-∧-∨ xs ys)
+
+------------------------------------------------------------------------
+-- Komplement-Gesetze (mit neg = map not):  a ∧ ¬a = ⊥,  a ∨ ¬a = ⊤
+-- sowie De-Morgan-Regeln
+------------------------------------------------------------------------
+
+-- Bool-Einzelfakten
+∧-not-false : ∀ a → a ∧ not a ≡ false
+∧-not-false false = refl
+∧-not-false true  = refl
+
+∨-not-true : ∀ a → a ∨ not a ≡ true
+∨-not-true false = refl
+∨-not-true true  = refl
+
+-- Vektoriell (nutzt ⊥ᵈ/⊤ᵈ)
+compl-meet-bot : ∀ {n} (a : Dist n) → drift a (neg a) ≡ ⊥ᵈ
+compl-meet-bot {zero} []       = refl
+compl-meet-bot {suc n} (x ∷ xs) =
+  cong₂ _∷_ (∧-not-false x) (compl-meet-bot xs)
+
+compl-join-top : ∀ {n} (a : Dist n) → join a (neg a) ≡ ⊤ᵈ
+compl-join-top {zero} []       = refl
+compl-join-top {suc n} (x ∷ xs) =
+  cong₂ _∷_ (∨-not-true x) (compl-join-top xs)
+
+-- De Morgan auf Bool (Kopf-Lemmas)
+deMorgan₁ᵇ : ∀ (x y : Bool) → not (x ∧ y) ≡ (not x) ∨ (not y)
+deMorgan₁ᵇ false y = refl
+deMorgan₁ᵇ true  y = refl
+
+deMorgan₂ᵇ : ∀ (x y : Bool) → not (x ∨ y) ≡ (not x) ∧ (not y)
+deMorgan₂ᵇ false y = refl
+deMorgan₂ᵇ true  y = refl
+
+-- Vektorielle De-Morgan-Regeln
+deMorgan₁ : ∀ {n} (a b : Dist n) → neg (drift a b) ≡ join (neg a) (neg b)
+deMorgan₁ {zero} []       []       = refl
+deMorgan₁ {suc n} (x ∷ xs) (y ∷ ys) =
+  cong₂ _∷_ (deMorgan₁ᵇ x y) (deMorgan₁ xs ys)
+
+deMorgan₂ : ∀ {n} (a b : Dist n) → neg (join a b) ≡ drift (neg a) (neg b)
+deMorgan₂ {zero} []       []       = refl
+deMorgan₂ {suc n} (x ∷ xs) (y ∷ ys) =
+  cong₂ _∷_ (deMorgan₂ᵇ x y) (deMorgan₂ xs ys)
 
 ------------------------------------------------------------------------
 -- Checks

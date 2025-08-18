@@ -145,12 +145,8 @@ a ≤ᵈ b = drift a b ≡ a
 -- Meet-Struktur: drift ist größter unterer Schrankenoperator (GLB)
 ------------------------------------------------------------------------
 
--- Bool-assoziativ (komponentweise gebraucht)
-∧-assoc : ∀ (x y z : Bool) → (x ∧ y) ∧ z ≡ x ∧ (y ∧ z)
-∧-assoc false y z = refl
-∧-assoc true  y z = refl
-
 -- Vektorielle Assoziativität für drift (zipWith _∧_)
+-- nutzt ∧-assoc aus Step1_BooleanFoundation
 drift-assoc : ∀ {n} → (a b c : Dist n) → drift (drift a b) c ≡ drift a (drift b c)
 drift-assoc {zero} [] [] [] = refl
 drift-assoc {suc n} (x ∷ xs) (y ∷ ys) (z ∷ zs) =

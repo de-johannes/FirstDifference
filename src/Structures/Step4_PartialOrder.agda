@@ -157,7 +157,11 @@ example-trans :
   (false ∷ false ∷ []) ≤ᵈ (true ∷ false ∷ []) →
   (true  ∷ false ∷ []) ≤ᵈ (true ∷ true  ∷ []) →
   (false ∷ false ∷ []) ≤ᵈ (true ∷ true  ∷ [])
-example-trans = ≤ᵈ-trans
+example-trans :
+  (false ∷ false ∷ []) ≤ᵈ (true ∷ false ∷ []) →
+  (true  ∷ false ∷ []) ≤ᵈ (true ∷ true  ∷ []) →
+  (false ∷ false ∷ []) ≤ᵈ (true ∷ true  ∷ [])
+example-trans p₁ p₂ = ≤ᵈ-trans p₁ p₂
 
 verify-bottom :
   (false ∷ false ∷ []) ≤ᵈ (true ∷ false ∷ [])

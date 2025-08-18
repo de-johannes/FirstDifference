@@ -1,7 +1,7 @@
 {-# OPTIONS --safe #-}
 
--- Step 4: Drift-induzierte (prä)Ordnung
--- a ≤ᵈ b  :≡  drift a b ≡ a   (komponentenweise Implikation)
+-- Step 4: Drift-induzierte Ordnung
+-- Definition: a ≤ᵈ b  :≡  drift a b ≡ a  (komponentenweise Implikation)
 
 module Structures.Step4_PartialOrder where
 
@@ -18,10 +18,10 @@ open import Relation.Nullary                  using (Dec; yes; no)
 open import Relation.Nullary.Decidable        using (⌊_⌋)
 
 ------------------------------------------------------------------------
--- Hilfsfunktionen
+-- Hilfslemmata
 ------------------------------------------------------------------------
 
--- Entscheidbare Gleichheit für Dist (Vektor Bool)
+-- Entscheidbare Gleichheit für Dist
 _≟ᵈ_ : ∀ {n} → (a b : Dist n) → Dec (a ≡ b)
 _≟ᵈ_ [] [] = yes refl
 _≟ᵈ_ (false ∷ xs) (false ∷ ys) with xs ≟ᵈ ys
@@ -33,41 +33,36 @@ _≟ᵈ_ (true  ∷ xs) (true  ∷ ys) with xs ≟ᵈ ys
 _≟ᵈ_ (false ∷ xs) (true  ∷ ys) = no (λ ())
 _≟ᵈ_ (true  ∷ xs) (false ∷ ys) = no (λ ())
 
--- Definitorische Gleichheiten von ∧ (links/rechts)
+-- ∧-Identitäten (links sind definitional, rechts via Fallunterscheidung)
 ∧-trueˡ  : ∀ b → true  ∧ b ≡ b
 ∧-trueˡ b = refl
-
-∧-trueʳ  : ∀ b → b ∧ true  ≡ b
-∧-trueʳ b = refl
 
 ∧-falseˡ : ∀ b → false ∧ b ≡ false
 ∧-falseˡ b = refl
 
--- Kernlemma (Bool-Transitivität auf Implikationsform):
+∧-trueʳ  : ∀ b → b ∧ true ≡ b
+∧-trueʳ true  = refl
+∧-trueʳ false = refl
+
+-- Bool-Transitivität in Implikationsform:
 -- x ∧ y ≡ x   und   y ∧ z ≡ y   ⇒   x ∧ z ≡ x
 component-trans : ∀ (x y z : Bool) → x ∧ y ≡ x → y ∧ z ≡ y → x ∧ z ≡ x
-component-trans false y z xy yz =  -- false ∧ z ≡ false
-  refl
+component-trans false y z xy yz = refl                    -- false ∧ z ≡ false
 component-trans true  y z xy yz =
-  -- Aus true ∧ y ≡ true folgt y ≡ true
   let y≡true : y ≡ true
       y≡true = trans (sym (∧-trueˡ y)) xy
 
-      -- true ∧ z ≡ y ∧ z   (durch Ersetzen y := true in yz)
       step1 : true ∧ z ≡ y ∧ z
       step1 = cong (λ u → u ∧ z) (sym y≡true)
 
-      -- true ∧ z ≡ y       (Kettenschluss)
       step2 : true ∧ z ≡ y
       step2 = trans step1 yz
 
-      -- true ∧ z ≡ true
       step3 : true ∧ z ≡ true
       step3 = trans step2 y≡true
   in step3
-  -- Damit (für x = true): x ∧ z ≡ x  qed.
 
--- Kopf-/Schwanz-Extraktoren passend zur Richtung  drift a b ≡ a
+-- Kopf/Schwanz aus  drift (x∷xs) (y∷ys) ≡ (x∷xs)
 head-of-drift≡a :
   ∀ {n} {x y : Bool} {xs ys : Vec Bool n} →
   zipWith _∧_ (x ∷ xs) (y ∷ ys) ≡ (x ∷ xs) → x ∧ y ≡ x
@@ -112,7 +107,7 @@ a ≤ᵈ b = drift a b ≡ a
   in cong₂ _∷_ head tail
 
 ------------------------------------------------------------------------
--- Entscheidbarkeit und Schranken
+-- Entscheidbarkeit & Schranken
 ------------------------------------------------------------------------
 
 ≤ᵈ-dec : ∀ {n} (a b : Dist n) → Dec (a ≤ᵈ b)
@@ -121,7 +116,6 @@ a ≤ᵈ b = drift a b ≡ a
 ≤ᵈ? : ∀ {n} → Dist n → Dist n → Bool
 ≤ᵈ? a b = ⌊ ≤ᵈ-dec a b ⌋
 
--- ⊥: überall false
 ⊥ᵈ : ∀ {n} → Dist n
 ⊥ᵈ = all-false _
 
@@ -130,7 +124,6 @@ a ≤ᵈ b = drift a b ≡ a
 ⊥ᵈ-least {suc n} (x ∷ xs) =
   cong₂ _∷_ (∧-falseˡ x) (⊥ᵈ-least xs)
 
--- ⊤: überall true
 ⊤ᵈ : ∀ {n} → Dist n
 ⊤ᵈ = all-true _
 
@@ -140,7 +133,7 @@ a ≤ᵈ b = drift a b ≡ a
   cong₂ _∷_ (∧-trueʳ x) (⊤ᵈ-greatest xs)
 
 ------------------------------------------------------------------------
--- Beispiele / Checks
+-- Checks
 ------------------------------------------------------------------------
 
 example-≤ᵈ :

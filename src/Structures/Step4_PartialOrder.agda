@@ -6,11 +6,11 @@
 module Structures.Step4_PartialOrder where
 
 open import Structures.Step1_BooleanFoundation
-open import Structures.Step2_VectorOperations using (Dist; drift; all-true; all-false)
+open import Structures.Step2_VectorOperations using (Dist; drift; all-true; all-false; join; neg)
 open import Structures.Step3_AlgebraLaws      using (drift-idempotent; drift-comm)
 
 open import Data.Vec                          using (Vec; []; _∷_; zipWith)
-open import Data.Bool                         using (Bool; true; false; _∧_)
+open import Data.Bool                         using (Bool; true; false; not; _∧_; _∨_)
 open import Data.Nat                          using (ℕ; zero; suc)
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans; cong; cong₂)
@@ -225,7 +225,7 @@ absorb-∧-∨ {suc n} (x ∷ xs) (y ∷ ys) =
 ∨-not-true false = refl
 ∨-not-true true  = refl
 
--- Vektoriell (nutzt ⊥ᵈ/⊤ᵈ aus Step 4)
+-- Vektoriell (nutzt ⊥ᵈ/⊤ᵈ)
 compl-meet-bot : ∀ {n} (a : Dist n) → drift a (neg a) ≡ ⊥ᵈ
 compl-meet-bot {zero} []       = refl
 compl-meet-bot {suc n} (x ∷ xs) =
@@ -236,18 +236,25 @@ compl-join-top {zero} []       = refl
 compl-join-top {suc n} (x ∷ xs) =
   cong₂ _∷_ (∨-not-true x) (compl-join-top xs)
 
--- De Morgan: ¬(a ∧ b) = ¬a ∨ ¬b  und  ¬(a ∨ b) = ¬a ∧ ¬b
+-- De Morgan auf Bool (Kopf-Lemmas)
+deMorgan₁ᵇ : ∀ (x y : Bool) → not (x ∧ y) ≡ (not x) ∨ (not y)
+deMorgan₁ᵇ false y = refl
+deMorgan₁ᵇ true  y = refl
+
+deMorgan₂ᵇ : ∀ (x y : Bool) → not (x ∨ y) ≡ (not x) ∧ (not y)
+deMorgan₂ᵇ false y = refl
+deMorgan₂ᵇ true  y = refl
+
+-- Vektorielle De-Morgan-Regeln
 deMorgan₁ : ∀ {n} (a b : Dist n) → neg (drift a b) ≡ join (neg a) (neg b)
 deMorgan₁ {zero} []       []       = refl
 deMorgan₁ {suc n} (x ∷ xs) (y ∷ ys) =
-  -- not (x ∧ y) ≡ (not x) ∨ (not y), komponentenweise
-  cong₂ _∷_ refl (deMorgan₁ xs ys)
+  cong₂ _∷_ (deMorgan₁ᵇ x y) (deMorgan₁ xs ys)
 
 deMorgan₂ : ∀ {n} (a b : Dist n) → neg (join a b) ≡ drift (neg a) (neg b)
 deMorgan₂ {zero} []       []       = refl
 deMorgan₂ {suc n} (x ∷ xs) (y ∷ ys) =
-  -- not (x ∨ y) ≡ (not x) ∧ (not y), komponentenweise
-  cong₂ _∷_ refl (deMorgan₂ xs ys)
+  cong₂ _∷_ (deMorgan₂ᵇ x y) (deMorgan₂ xs ys)
 
 ------------------------------------------------------------------------
 -- Checks

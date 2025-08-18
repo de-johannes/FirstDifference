@@ -6,18 +6,18 @@ module Structures.Step10_SpectralEmergence where
 
 -- Import our complete mathematical foundation  
 open import Structures.Step1_BooleanFoundation
-open import Structures.Step2_VectorOperations using (Dist; drift; _∧_; _∨_)
+open import Structures.Step2_VectorOperations using (Dist; drift)  -- Removed _∧_ and _∨_
 open import Structures.Step4_PartialOrder using (_≤ᵈ_)
 open import Structures.Step7_DriftGraph using (DriftGraph; Node; NodeId; _—→_within_)
 open import Structures.Step8_PathCategory using (Path)
 
 -- Mathematical foundations
-open import Data.Nat using (ℕ; zero; suc; _+_; _*_)
+open import Data.Nat using (ℕ; zero; suc; _+_; _*_; _∸_; ∣_∣; _<_)
 open import Data.List using (List; []; _∷_; length; map; foldr)
 open import Data.Vec using (Vec; []; _∷_)
-open import Data.Bool using (Bool; true; false)
+open import Data.Bool using (Bool; true; false; _∧_; _∨_)  -- HIER sind die Boolean-Operatoren!
 open import Data.Product using (_×_; _,_; Σ; ∃)
-open import Data.Float using (Float)
+open import Data.Float using (Float; _+_; _*_; _-_; fromℕ; exp; log; _<_)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong; sym; trans)
 
 ------------------------------------------------------------------------
@@ -34,7 +34,7 @@ open FirstDistinction public
 -- | The fundamental Drift Operator from the First Distinction
 -- | This is THE operator that generates all structure
 DistOp : FirstDistinction → FirstDistinction → FirstDistinction
-DistOp D₀[ φ₁ ] D₀[ φ₂ ] = D₀[ φ₁ ∧ φ₂ ]
+DistOp D₀[ φ₁ ] D₀[ φ₂ ] = D₀[ φ₁ ∧ φ₂ ]  -- Jetzt sollte ∧ funktionieren
 
 -- | Iteration of drift creates the irreducible distinction ledger
 -- | This generates the causal structure of spacetime itself

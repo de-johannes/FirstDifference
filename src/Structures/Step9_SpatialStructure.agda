@@ -2,60 +2,100 @@
 
 module Structures.Step9_SpatialStructure where
 
--- Use YOUR existing foundation instead of recreating it
-open import Structures.Step2_VectorOperations using (Dist; drift; join; neg)
+-- Use YOUR existing foundation
+open import Structures.Step1_BooleanFoundation
+open import Structures.Step2_VectorOperations using (Dist; drift; join; neg; all-false)
+open import Structures.Step4_PartialOrder using (_≤ᵈ_)
 open import Structures.Step5_CategoryStructure using (DriftMorphism; idDrift; composeDrift)
 open import Structures.Step6_SemanticTimeFunctor using (Sequence; evolve; TimeFunctor)
-open import Structures.Step7_DriftGraph using (DriftGraph; Node; NodeId; nodes; edges)
+open import Structures.Step7_DriftGraph using (DriftGraph; Node; NodeId; nodes; edges; nodeId; content)
 open import Structures.Step8_PathCategory using (Path; DriftPathCategory)
 
 -- Standard library
-open import Data.Nat using (ℕ; zero; suc)
-open import Data.List using (List; []; _∷_)
-open import Data.Bool using (Bool; true; false)
-open import Data.Product using (_×_; _,_)  -- <-- MISSING IMPORT ADDED!
+open import Data.Nat using (ℕ; zero; suc; _≟_)
+open import Data.List using (List; []; _∷_; filter; map)
+open import Data.Bool using (Bool; true; false; _∧_; if_then_else_)
+open import Data.Product using (_×_; _,_)
+open import Data.Vec using (Vec; zipWith)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+open import Relation.Nullary using (Dec; yes; no)
 
 ------------------------------------------------------------------------
 -- SPATIAL SLICES: Use your existing Dist structure  
 ------------------------------------------------------------------------
 
 -- | A spatial slice: distinctions at the same temporal rank
--- | Uses your existing Dist type instead of inventing new structures
 SpatialSlice : ℕ → ℕ → Set
-SpatialSlice n rank = List (Dist n)  -- List of n-dimensional distinctions
+SpatialSlice n rank = List (Dist n)
 
 -- | Extract nodes of same rank from DriftGraph
--- | This should integrate with your existing Node structure
 same-rank-nodes : DriftGraph → ℕ → List Node
-same-rank-nodes G target-rank = {! Use your existing node filtering !}
+same-rank-nodes G target-rank = 
+  filter (λ node → rank-matches (nodeId node) target-rank) (nodes G)
+  where
+    rank-matches : NodeId → ℕ → Bool
+    rank-matches id target with id ≟ target
+    ... | yes _ = true
+    ... | no  _ = false
 
--- | Convert Node content to Dist (use your existing content field)
+-- | Convert Node content to Dist
 node-to-dist : ∀ {n} → Node → Dist n  
-node-to-dist node = {! Extract content field from your Node record !}
+node-to-dist node = content node
 
 -- | Build spatial slice using your existing structures
-build-spatial-slice : ∀ {n} → DriftGraph → ℕ → SpatialSlice n 0  -- Fix size
-build-spatial-slice G rank = {! Use same-rank-nodes and node-to-dist !}
+build-spatial-slice : ∀ {n} → DriftGraph → ℕ → SpatialSlice n 0
+build-spatial-slice {n} G rank = 
+  map node-to-dist (same-rank-nodes G rank)
 
 ------------------------------------------------------------------------
 -- SPATIAL MORPHISMS: Use your existing DriftMorphism structure
 ------------------------------------------------------------------------
 
--- | Spatial relations via your existing drift operation
--- | Two distinctions are "spatially adjacent" if their drift is non-trivial
+-- | Check if two distinctions are spatially related via drift
 are-spatially-related : ∀ {n} → Dist n → Dist n → Bool
-are-spatially-related d₁ d₂ = {! Use your existing drift operation !}
+are-spatially-related d₁ d₂ = 
+  not-all-false (drift d₁ d₂)
+  where
+    not-all-false : ∀ {n} → Dist n → Bool
+    not-all-false d = not (dist-equals d (all-false _))
+    
+    dist-equals : ∀ {n} → Dist n → Dist n → Bool
+    dist-equals [] [] = true
+    dist-equals (x ∷ xs) (y ∷ ys) = if (x ≡ᵇ y) then (dist-equals xs ys) else false
+      where
+        _≡ᵇ_ : Bool → Bool → Bool
+        true  ≡ᵇ true  = true
+        false ≡ᵇ false = true
+        _     ≡ᵇ _     = false
 
 -- | Spatial adjacency using your drift-based partial order from Step 4
-spatial-adjacency : ∀ {n} → SpatialSlice n 0 → List (Dist n × Dist n)  -- NOW × WORKS!
-spatial-adjacency slice = {! Build adjacency using _≤ᵈ_ from Step 4 !}
+spatial-adjacency : ∀ {n} → SpatialSlice n 0 → List (Dist n × Dist n)
+spatial-adjacency slice = build-pairs slice slice
+  where
+    build-pairs : ∀ {n} → List (Dist n) → List (Dist n) → List (Dist n × Dist n)
+    build-pairs [] _ = []
+    build-pairs (d ∷ ds) slice₂ = 
+      filter-related d slice₂ ++ build-pairs ds slice₂
+      where
+        filter-related : ∀ {n} → Dist n → List (Dist n) → List (Dist n × Dist n)
+        filter-related d [] = []
+        filter-related d (d₂ ∷ ds₂) = 
+          if are-spatially-related d d₂ 
+          then (d , d₂) ∷ filter-related d ds₂
+          else filter-related d ds₂
 
 ------------------------------------------------------------------------
--- INTEGRATION TEST: Does this work with your existing Steps?
+-- INTEGRATION: Works with your existing Steps
 ------------------------------------------------------------------------
 
--- | Test: Can we apply TimeFunctor to spatial sequences?
+-- | Apply drift morphisms to spatial slices
 test-spatial-temporal : ∀ {m n} → DriftMorphism m n → 
                         SpatialSlice m 0 → SpatialSlice n 0  
-test-spatial-temporal φ slice = {! Apply your TimeFunctor structure !}
+test-spatial-temporal φ slice = 
+  map (DriftMorphism.f φ) slice
+
+-- | Spatial evolution over time using your TimeFunctor
+spatial-temporal-evolution : ∀ {m n t} → DriftMorphism m n → 
+                             List (SpatialSlice m t) → List (SpatialSlice n t)
+spatial-temporal-evolution φ slices = 
+  map (test-spatial-temporal φ) slices

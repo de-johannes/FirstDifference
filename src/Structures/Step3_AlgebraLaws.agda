@@ -49,3 +49,52 @@ drift-absorbing (x ∷ xs) =
 -- MATHEMATICAL VICTORY: Vec Bool n forms Boolean Algebra!
 -- Component-wise operations preserve all algebraic structure
 ------------------------------------------------------------------------
+
+-- Ergänzungen für Join (∨) und Distributivität
+open import Data.Bool using (Bool; true; false; _∧_; _∨_)
+open import Structures.Step2_VectorOperations using (Dist; drift; join)
+
+-- Lokale Bool-Lemmata (Step 1 liefert ∨-comm, aber nicht diese hier)
+∨-assoc : ∀ (x y z : Bool) → (x ∨ y) ∨ z ≡ x ∨ (y ∨ z)
+∨-assoc false y z = refl
+∨-assoc true  y z = refl
+
+∨-idem  : ∀ (x : Bool) → x ∨ x ≡ x
+∨-idem false = refl
+∨-idem true  = refl
+
+-- Distributivität: (x ∨ y) ∧ z ≡ (x ∧ z) ∨ (y ∧ z)
+∧-dist-∨ʳ : ∀ (x y z : Bool) → (x ∨ y) ∧ z ≡ (x ∧ z) ∨ (y ∧ z)
+∧-dist-∨ʳ true  true  true  = refl
+∧-dist-∨ʳ true  true  false = refl
+∧-dist-∨ʳ true  false true  = refl
+∧-dist-∨ʳ true  false false = refl
+∧-dist-∨ʳ false true  true  = refl
+∧-dist-∨ʳ false true  false = refl
+∧-dist-∨ʳ false false true  = refl
+∧-dist-∨ʳ false false false = refl
+
+-- Lifts auf Dist (nutzen ∨-comm aus Step 1!)
+join-assoc : ∀ {n} (a b c : Dist n) → join (join a b) c ≡ join a (join b c)
+join-assoc [] [] [] = refl
+join-assoc (x ∷ xs) (y ∷ ys) (z ∷ zs) =
+  cong₂ _∷_ (∨-assoc x y z) (join-assoc xs ys zs)
+
+join-comm : ∀ {n} (a b : Dist n) → join a b ≡ join b a
+join-comm [] [] = refl
+join-comm (x ∷ xs) (y ∷ ys) =
+  cong₂ _∷_ (∨-comm x y) (join-comm xs ys)
+
+join-idempotent : ∀ {n} (a : Dist n) → join a a ≡ a
+join-idempotent [] = refl
+join-idempotent (x ∷ xs) =
+  cong₂ _∷_ (∨-idem x) (join-idempotent xs)
+
+-- Distributivität auf Dist:
+-- drift (join a b) c  ≡  join (drift a c) (drift b c)
+drift-join-distrib-right : ∀ {n} (a b c : Dist n) →
+  drift (join a b) c ≡ join (drift a c) (drift b c)
+drift-join-distrib-right [] [] [] = refl
+drift-join-distrib-right (x ∷ xs) (y ∷ ys) (z ∷ zs) =
+  cong₂ _∷_ (∧-dist-∨ʳ x y z)
+             (drift-join-distrib-right xs ys zs)

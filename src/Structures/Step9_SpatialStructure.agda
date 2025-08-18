@@ -13,6 +13,7 @@ open import Structures.Step8_PathCategory using (Path; DriftPathCategory)
 open import Data.Nat using (ℕ; zero; suc)
 open import Data.List using (List; []; _∷_)
 open import Data.Bool using (Bool; true; false)
+open import Data.Product using (_×_; _,_)  -- <-- MISSING IMPORT ADDED!
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
 ------------------------------------------------------------------------
@@ -47,7 +48,7 @@ are-spatially-related : ∀ {n} → Dist n → Dist n → Bool
 are-spatially-related d₁ d₂ = {! Use your existing drift operation !}
 
 -- | Spatial adjacency using your drift-based partial order from Step 4
-spatial-adjacency : ∀ {n} → SpatialSlice n 0 → List (Dist n × Dist n)
+spatial-adjacency : ∀ {n} → SpatialSlice n 0 → List (Dist n × Dist n)  -- NOW × WORKS!
 spatial-adjacency slice = {! Build adjacency using _≤ᵈ_ from Step 4 !}
 
 ------------------------------------------------------------------------

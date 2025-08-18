@@ -1,9 +1,11 @@
 {-# OPTIONS --safe #-}
 
 ------------------------------------------------------------------------
--- Step 10a : Constructive Fold-Map (rank-preserving quotient)
---            From a spatial slice (Step 9) to an undirected FoldedGraph.
---            Pure List-DFS, no postulates, no Float, no if-sugar.
+-- Step 10a : Constructive Fold-Map  (rank-preserving quotient)
+------------------------------------------------------------------------
+--  * reiner Listen-DFS
+--  * keine Postulate / kein if-Sugar
+--  * hängt nur von Steps 1,2,7,9 ab
 ------------------------------------------------------------------------
 
 module Structures.Step10_FoldMap where
@@ -25,16 +27,12 @@ open import Structures.Step9_SpatialStructure      using
   ( same-rank-nodes ; node-to-dist ; are-spatially-related )
 
 ------------------------------------------------------------------------
--- 0.  Dec → Bool helper
+-- 0.   Hilfsfunktionen: Dec → Bool  & Nat-/Node-Vergleich
 ------------------------------------------------------------------------
 
 decToBool : {A : Set} → Dec A → Bool
 decToBool (yes _) = true
 decToBool (no  _) = false
-
-------------------------------------------------------------------------
--- 1.  Bool-gestützte Gleichheit und Listen-Helfer
-------------------------------------------------------------------------
 
 _==ᴮ_ : ℕ → ℕ → Bool
 m ==ᴮ n = decToBool (m ≟ n)
@@ -42,80 +40,75 @@ m ==ᴮ n = decToBool (m ≟ n)
 nodesEqᵇ : Node → Node → Bool
 nodesEqᵇ a b = (nodeId a) ==ᴮ (nodeId b)
 
--- Generic membership with Bool comparator
+------------------------------------------------------------------------
+-- 1.   Listen-Utilities (Mit Bool-Comparator)
+------------------------------------------------------------------------
+
 _∈_ : {A : Set} → (A → A → Bool) → A → List A → Bool
 _∈_ _≈_ x []       = false
 _∈_ _≈_ x (y ∷ ys) with _≈_ x y
 ... | true  = true
 ... | false = _∈_ _≈_ x ys
 
--- Remove first occurrence w.r.t. Bool comparator
 remove1By : {A : Set} → (A → A → Bool) → A → List A → List A
 remove1By _≈_ x []       = []
 remove1By _≈_ x (y ∷ ys) with _≈_ x y
 ... | true  = ys
 ... | false = y ∷ remove1By _≈_ x ys
 
--- Remove all occurrences w.r.t. Bool comparator
 removeAllBy : {A : Set} → (A → A → Bool) → List A → List A → List A
 removeAllBy _≈_ []       xs = xs
 removeAllBy _≈_ (z ∷ zs) xs = removeAllBy _≈_ zs (remove1By _≈_ z xs)
 
--- mapMaybe (local; avoids extra imports)
 mapMaybe : {A B : Set} → (A → Maybe B) → List A → List B
 mapMaybe f []       = []
 mapMaybe f (x ∷ xs) with f x
 ... | just y   = y ∷ mapMaybe f xs
 ... | nothing  = mapMaybe f xs
 
+concat : {A : Set} → List (List A) → List A
+concat []         = []
+concat (xs ∷ xss) = xs ++ concat xss
+
 ------------------------------------------------------------------------
--- 2.  Symmetrisierte Nachbarschaft im Slice + DFS
+-- 2.   Symmetrisierte Nachbarschaft + DFS
 ------------------------------------------------------------------------
 
--- Symmetrisierte spatial-Relation (nutzt Step 9)
 relatedᵇ : Node → Node → Bool
 relatedᵇ a b =
-  let d₁ = node-to-dist a
-      d₂ = node-to-dist b
-  in  are-spatially-related d₁ d₂ ∨ are-spatially-related d₂ d₁
+  let d₁ = node-to-dist a ; d₂ = node-to-dist b in
+  are-spatially-related d₁ d₂ ∨ are-spatially-related d₂ d₁
 
 nbrs : List Node → Node → List Node
 nbrs slice n = filter (λ m → relatedᵇ n m) slice
 
--- DFS für die transitive Hülle (connected component)
 dfs : List Node → List Node → List Node → List Node
-dfs slice []       visited = visited
-dfs slice (s ∷ st) visited with nodesEqᵇ s ∈ visited
-... | true  = dfs slice st visited
-... | false = dfs slice (nbrs slice s ++ st) (s ∷ visited)
+dfs slice []       vis = vis
+dfs slice (s ∷ st) vis with (_∈_ nodesEqᵇ s vis)
+... | true  = dfs slice st vis
+... | false = dfs slice (nbrs slice s ++ st) (s ∷ vis)
 
 connectedComponent : List Node → Node → List Node
 connectedComponent slice seed = dfs slice (seed ∷ []) []
 
 ------------------------------------------------------------------------
--- 3.  Komponentenbildung (Partition des Slices)
+-- 3.   Partition des Slices in Komponenten
 ------------------------------------------------------------------------
 
--- Komponentenbildung durch "unvisited"-Schleife
 componentsFrom : List Node → List (List Node)
 componentsFrom slice = loop slice []
   where
     loop : List Node → List (List Node) → List (List Node)
     loop []         acc = acc
-    loop (u ∷ rest) acc with nodesEqᵇ u ∈ concat acc
-    ... | true  = loop rest acc              -- u bereits in gebildeter Komponente
+    loop (u ∷ rest) acc with (_∈_ nodesEqᵇ u (concat acc))
+    ... | true  = loop rest acc
     ... | false =
-      let comp   = connectedComponent slice u
-          rest'  = removeAllBy nodesEqᵇ comp rest
-          acc'   = comp ∷ acc
-      in  loop rest' acc'
-
-    concat : List (List Node) → List Node
-    concat []         = []
-    concat (xs ∷ xss) = xs ++ concat xss
+      let comp  = connectedComponent slice u
+          rest' = removeAllBy nodesEqᵇ comp rest
+      in  loop rest' (comp ∷ acc)
 
 ------------------------------------------------------------------------
--- 4.  Zellen und gefalteter (undirektionaler) Graph
+-- 4.   Datentypen für Cells & FoldedGraph
 ------------------------------------------------------------------------
 
 record Cell : Set where
@@ -132,7 +125,7 @@ record FoldedGraph : Set where
     uEdges : List (Cell × Cell)
 
 ------------------------------------------------------------------------
--- 5.  Fold-Map: Projektion π und gefalteter Raum
+-- 5.   Fold-Map  (π + gefalteter Raum)
 ------------------------------------------------------------------------
 
 record FoldMap (G : DriftGraph) (rank : ℕ) : Set where
@@ -147,31 +140,28 @@ buildFold G rank = mkFoldMap π (mkFolded cells uEdges)
     slice  : List Node
     slice  = same-rank-nodes G rank
 
-    comps  : List (List Node)
-    comps  = componentsFrom slice
+    comps : List (List Node)
+    comps = componentsFrom slice
 
     toCell : List Node → Cell
-    toCell []       = mkCell 0
-    toCell (n ∷ _)  = mkCell (nodeId n)
+    toCell []      = mkCell 0
+    toCell (n ∷ _) = mkCell (nodeId n)
 
     cells : List Cell
     cells = map toCell comps
 
-    -- Finde die Komponente, zu der ein Knoten gehört
-    findComp : Node → List (List Node) → Maybe (List Node)
-    findComp n []       = nothing
-    findComp n (c ∷ cs) with nodesEqᵇ n ∈ c
-    ... | true  = just c
-    ... | false = findComp n cs
-
-    -- Projektion π : Node → Cell
-    π : Node → Cell
+    -- π : Node → Cell
     π n with findComp n comps
     ... | just c  = toCell c
-    ... | nothing = mkCell (nodeId n)   -- sollte für Slice-Knoten nicht auftreten
+    ... | nothing = mkCell (nodeId n)
+      where
+        findComp : Node → List (List Node) → Maybe (List Node)
+        findComp n [] = nothing
+        findComp n (c ∷ cs) with (_∈_ nodesEqᵇ n c)
+        ... | true  = just c
+        ... | false = findComp n cs
 
-    -- Zwei unterschiedliche Komponenten sind u-adjazent,
-    -- wenn irgendein Paar (a ∈ C1, b ∈ C2) relatedᵇ ist.
+    -- Prüft, ob zwei Komponenten benachbart sind
     compsRelatedᵇ : List Node → List Node → Bool
     compsRelatedᵇ []       _  = false
     compsRelatedᵇ (a ∷ as) bs = anyRelated a bs ∨ compsRelatedᵇ as bs
@@ -182,7 +172,8 @@ buildFold G rank = mkFoldMap π (mkFolded cells uEdges)
 
     buildUEdges : List (List Node) → List (Cell × Cell)
     buildUEdges []       = []
-    buildUEdges (c ∷ cs) = mapMaybe (edgeIfRelated c) cs ++ buildUEdges cs
+    buildUEdges (c ∷ cs) =
+      mapMaybe (edgeIfRelated c) cs ++ buildUEdges cs
       where
         edgeIfRelated : List Node → List Node → Maybe (Cell × Cell)
         edgeIfRelated c₁ c₂ with compsRelatedᵇ c₁ c₂

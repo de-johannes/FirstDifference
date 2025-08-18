@@ -11,10 +11,10 @@ open import Structures.Step6_SemanticTimeFunctor using (Sequence; evolve; TimeFu
 open import Structures.Step7_DriftGraph using (DriftGraph; Node; NodeId; nodes; edges; nodeId; content)
 open import Structures.Step8_PathCategory using (Path; DriftPathCategory)
 
--- Standard library
+-- Standard library - FIXED IMPORTS
 open import Data.Nat using (ℕ; zero; suc; _≟_)
-open import Data.List using (List; []; _∷_; filter; map)
-open import Data.Bool using (Bool; true; false; _∧_; if_then_else_)
+open import Data.List using (List; []; _∷_; filter; map; _++_)  -- Added _++_
+open import Data.Bool using (Bool; true; false; _∧_; not; if_then_else_)  -- Added 'not'
 open import Data.Product using (_×_; _,_)
 open import Data.Vec using (Vec; zipWith)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)

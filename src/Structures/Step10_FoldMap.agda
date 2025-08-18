@@ -150,17 +150,18 @@ buildFold G rank = mkFoldMap π (mkFolded cells uEdges)
     cells : List Cell
     cells = map toCell comps
 
-    -- ⬇⬇⬇  **Type signature added here**  ⬇⬇⬇
+    -- **findComp jetzt HIER definiert (sichtbar für π)**
+    findComp : Node → List (List Node) → Maybe (List Node)
+    findComp n []       = nothing
+    findComp n (c ∷ cs) with (_∈_ nodesEqᵇ n c)
+    ... | true  = just c
+    ... | false = findComp n cs
+
+    -- π : Node → Cell
     π : Node → Cell
     π n with findComp n comps
     ... | just c  = toCell c
     ... | nothing = mkCell (nodeId n)
-      where
-        findComp : Node → List (List Node) → Maybe (List Node)
-        findComp n []       = nothing
-        findComp n (c ∷ cs) with (_∈_ nodesEqᵇ n c)
-        ... | true  = just c
-        ... | false = findComp n cs
 
     -- Prüft, ob zwei Komponenten benachbart sind
     compsRelatedᵇ : List Node → List Node → Bool

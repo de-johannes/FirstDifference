@@ -166,21 +166,17 @@ meet≤₁ a b =
       s₄ = cong (λ t → drift t b) (drift-idempotent a)
   in trans s₁ (trans s₂ (trans s₃ s₄))
 
+-- Projektion 2: a ∧ b ≤ b
 meet≤₂ : ∀ {n} (a b : Dist n) → drift a b ≤ᵈ b
 meet≤₂ a b =
-  -- per Symmetrie (Kommutativität) auf meet≤₁ zurückführen
-  let step : drift a b ≤ᵈ b
-      step = begin
-                -- drift a b  ≡  drift b a
-                -- also genügt drift (drift b a) b ≡ drift b a
-             in
-             let s₁ = cong (λ t → drift t b) (drift-comm a b)
-                 s₂ = meet≤₁ b a
-                 s₃ = sym (drift-comm a b)
-             in trans s₁ (trans s₂ s₃)
-  in step
-  where
-    begin = λ x → x  -- nur Syntaxanker
+  -- drift (drift a b) b
+  --   ≡ drift (drift b a) b           (cong mit drift-comm a b)
+  --   ≡ drift b a                     (meet≤₁ b a)
+  --   ≡ drift a b                     (sym (drift-comm a b))
+  let s₁ = cong (λ t → drift t b) (drift-comm a b)
+      s₂ = meet≤₁ b a
+      s₃ = sym (drift-comm a b)
+  in trans s₁ (trans s₂ s₃)
 
 -- Größter unterer Schranken:  c ≤ a  ∧  c ≤ b  ⇒  c ≤ (a ∧ b)
 glb-≤ᵈ : ∀ {n} {a b c : Dist n} → c ≤ᵈ a → c ≤ᵈ b → c ≤ᵈ drift a b

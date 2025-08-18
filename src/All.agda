@@ -22,6 +22,7 @@ open import Structures.Step8_PathCategory public
 open import Structures.Step8_CutCategory public
 open import Structures.Step8_TemporalFunctor public
 open import Structures.Step9_SpatialStructure public
+open import Structures.Step10_FoldMap public
 
 ------------------------------------------------------------------------
 -- Examples and demonstrations

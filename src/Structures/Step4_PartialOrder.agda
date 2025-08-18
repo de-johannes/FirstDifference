@@ -193,6 +193,71 @@ glb-≤ᵈ {a = a} {b} {c} c≤a c≤b =
   in trans t₁ (trans t₂ t₃)
 
 ------------------------------------------------------------------------
+-- Absorptionsgesetze:  a ∧ (a ∨ b) = a  und  a ∨ (a ∧ b) = a
+-- (komponentenweise; hier ∧ ≡ drift, ∨ ≡ join)
+------------------------------------------------------------------------
+
+open import Structures.Step2_VectorOperations using (join; neg)
+
+-- Bool-Absorption
+∨-absorb-∧ : ∀ (a b : Bool) → a ∨ (a ∧ b) ≡ a
+∨-absorb-∧ false b = refl
+∨-absorb-∧ true  b = refl
+
+∧-absorb-∨ : ∀ (a b : Bool) → a ∧ (a ∨ b) ≡ a
+∧-absorb-∨ false b = refl
+∧-absorb-∨ true  b = refl
+
+-- Vektoriell (komponentenweise via zipWith)
+absorb-∨-∧ : ∀ {n} (a b : Dist n) → join a (drift a b) ≡ a
+absorb-∨-∧ {zero} []       []       = refl
+absorb-∨-∧ {suc n} (x ∷ xs) (y ∷ ys) =
+  cong₂ _∷_ (∨-absorb-∧ x y) (absorb-∨-∧ xs ys)
+
+absorb-∧-∨ : ∀ {n} (a b : Dist n) → drift a (join a b) ≡ a
+absorb-∧-∨ {zero} []       []       = refl
+absorb-∧-∨ {suc n} (x ∷ xs) (y ∷ ys) =
+  cong₂ _∷_ (∧-absorb-∨ x y) (absorb-∧-∨ xs ys)
+
+------------------------------------------------------------------------
+-- Komplement-Gesetze (mit neg = map not):  a ∧ ¬a = ⊥,  a ∨ ¬a = ⊤
+-- sowie De-Morgan-Regeln
+------------------------------------------------------------------------
+
+-- Bool-Einzelfakten
+∧-not-false : ∀ a → a ∧ not a ≡ false
+∧-not-false false = refl
+∧-not-false true  = refl
+
+∨-not-true : ∀ a → a ∨ not a ≡ true
+∨-not-true false = refl
+∨-not-true true  = refl
+
+-- Vektoriell (nutzt ⊥ᵈ/⊤ᵈ aus Step 4)
+compl-meet-bot : ∀ {n} (a : Dist n) → drift a (neg a) ≡ ⊥ᵈ
+compl-meet-bot {zero} []       = refl
+compl-meet-bot {suc n} (x ∷ xs) =
+  cong₂ _∷_ (∧-not-false x) (compl-meet-bot xs)
+
+compl-join-top : ∀ {n} (a : Dist n) → join a (neg a) ≡ ⊤ᵈ
+compl-join-top {zero} []       = refl
+compl-join-top {suc n} (x ∷ xs) =
+  cong₂ _∷_ (∨-not-true x) (compl-join-top xs)
+
+-- De Morgan: ¬(a ∧ b) = ¬a ∨ ¬b  und  ¬(a ∨ b) = ¬a ∧ ¬b
+deMorgan₁ : ∀ {n} (a b : Dist n) → neg (drift a b) ≡ join (neg a) (neg b)
+deMorgan₁ {zero} []       []       = refl
+deMorgan₁ {suc n} (x ∷ xs) (y ∷ ys) =
+  -- not (x ∧ y) ≡ (not x) ∨ (not y), komponentenweise
+  cong₂ _∷_ refl (deMorgan₁ xs ys)
+
+deMorgan₂ : ∀ {n} (a b : Dist n) → neg (join a b) ≡ drift (neg a) (neg b)
+deMorgan₂ {zero} []       []       = refl
+deMorgan₂ {suc n} (x ∷ xs) (y ∷ ys) =
+  -- not (x ∨ y) ≡ (not x) ∧ (not y), komponentenweise
+  cong₂ _∷_ refl (deMorgan₂ xs ys)
+
+------------------------------------------------------------------------
 -- Checks
 ------------------------------------------------------------------------
 

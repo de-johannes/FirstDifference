@@ -59,9 +59,9 @@ open import Structures.Step2_VectorOperations using (Dist; drift; join)
 
 -- join: Assoziativität
 join-assoc : ∀ {n} (a b c : Dist n) → join (join a b) c ≡ join a (join b c)
-join-assoc {n = zero} [] [] [] = refl
-join-assoc {n = suc n} (x ∷ xs) (y ∷ ys) (z ∷ zs) =
-  cong₂ _∷_ (∨-assoc x y z) (join-assoc {n = n} xs ys zs)
+join-assoc [] [] [] = refl
+join-assoc (x ∷ xs) (y ∷ ys) (z ∷ zs) =
+  cong₂ _∷_ (∨-assoc x y z) (join-assoc xs ys zs)
 
 -- join: Kommutativität
 join-comm : ∀ {n} (a b : Dist n) → join a b ≡ join b a
@@ -78,7 +78,7 @@ join-idempotent (x ∷ xs) =
 -- Distributivität: drift (join a b) c ≡ join (drift a c) (drift b c)
 drift-join-distrib-right : ∀ {n} (a b c : Dist n) →
   drift (join a b) c ≡ join (drift a c) (drift b c)
-drift-join-distrib-right {n = zero} [] [] [] = refl
-drift-join-distrib-right {n = suc n} (x ∷ xs) (y ∷ ys) (z ∷ zs) =
+drift-join-distrib-right [] [] [] = refl
+drift-join-distrib-right (x ∷ xs) (y ∷ ys) (z ∷ zs) =
   cong₂ _∷_ (∧-dist-∨ʳ x y z)
-             (drift-join-distrib-right {n = n} xs ys zs)
+             (drift-join-distrib-right xs ys zs)

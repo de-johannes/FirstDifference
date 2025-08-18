@@ -51,31 +51,41 @@ drift-absorbing (x ∷ xs) =
 ------------------------------------------------------------------------
 
 -- Ergänzungen für Join (∨) und Distributivität
-open import Data.Bool using (_∨_)
+open import Data.Bool using (Bool; true; false; _∧_; _∨_)
 open import Structures.Step2_VectorOperations using (Dist; drift; join)
 
--- Wir verwenden die Bool-Lemmas aus Step1_BooleanFoundation:
---   ∨-assoc, ∨-comm, ∨-idem, ∧-dist-∨ʳ
+-- Lokale Bool-Lemmata (Step 1 liefert ∨-comm, aber nicht diese hier)
+∨-assoc : ∀ (x y z : Bool) → (x ∨ y) ∨ z ≡ x ∨ (y ∨ z)
+∨-assoc false y z = refl
+∨-assoc true  y z = refl
 
--- join: Assoziativität
+∨-idem  : ∀ (x : Bool) → x ∨ x ≡ x
+∨-idem false = refl
+∨-idem true  = refl
+
+-- Distributivität: (x ∨ y) ∧ z ≡ (x ∧ z) ∨ (y ∧ z)
+∧-dist-∨ʳ : ∀ (x y z : Bool) → (x ∨ y) ∧ z ≡ (x ∧ z) ∨ (y ∧ z)
+∧-dist-∨ʳ x y false = refl                          -- beide Seiten = false
+∧-dist-∨ʳ x y true  = refl                          -- beide Seiten = x ∨ y
+
+-- Lifts auf Dist (nutzen ∨-comm aus Step 1!)
 join-assoc : ∀ {n} (a b c : Dist n) → join (join a b) c ≡ join a (join b c)
 join-assoc [] [] [] = refl
 join-assoc (x ∷ xs) (y ∷ ys) (z ∷ zs) =
   cong₂ _∷_ (∨-assoc x y z) (join-assoc xs ys zs)
 
--- join: Kommutativität
 join-comm : ∀ {n} (a b : Dist n) → join a b ≡ join b a
 join-comm [] [] = refl
 join-comm (x ∷ xs) (y ∷ ys) =
   cong₂ _∷_ (∨-comm x y) (join-comm xs ys)
 
--- join: Idempotenz
 join-idempotent : ∀ {n} (a : Dist n) → join a a ≡ a
 join-idempotent [] = refl
 join-idempotent (x ∷ xs) =
   cong₂ _∷_ (∨-idem x) (join-idempotent xs)
 
--- Distributivität: drift (join a b) c ≡ join (drift a c) (drift b c)
+-- Distributivität auf Dist:
+-- drift (join a b) c  ≡  join (drift a c) (drift b c)
 drift-join-distrib-right : ∀ {n} (a b c : Dist n) →
   drift (join a b) c ≡ join (drift a c) (drift b c)
 drift-join-distrib-right [] [] [] = refl

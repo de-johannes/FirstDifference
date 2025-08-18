@@ -44,6 +44,13 @@ _≟ᵈ_ (true  ∷ xs) (false ∷ ys) = no (λ ())
 ∧-trueʳ true  = refl
 ∧-trueʳ false = refl
 
+-- Kopf/Schwanz-Projektionen für Vec (eigene, damit cong darauf anwendbar ist)
+headV : ∀ {n} → Vec Bool (suc n) → Bool
+headV (x ∷ xs) = x
+
+tailV : ∀ {n} → Vec Bool (suc n) → Vec Bool n
+tailV (x ∷ xs) = xs
+
 -- Bool-Transitivität in Implikationsform:
 -- x ∧ y ≡ x   und   y ∧ z ≡ y   ⇒   x ∧ z ≡ x
 component-trans : ∀ (x y z : Bool) → x ∧ y ≡ x → y ∧ z ≡ y → x ∧ z ≡ x
@@ -62,16 +69,18 @@ component-trans true  y z xy yz =
       step3 = trans step2 y≡true
   in step3
 
--- Kopf/Schwanz aus  drift (x∷xs) (y∷ys) ≡ (x∷xs)
+-- Aus p : zipWith _∧_ (x ∷ xs) (y ∷ ys) ≡ (x ∷ xs)
+-- folgt durch Funktionskongruenz:
+-- headV p : x ∧ y ≡ x,  tailV p : zipWith _∧_ xs ys ≡ xs
 head-of-drift≡a :
   ∀ {n} {x y : Bool} {xs ys : Vec Bool n} →
   zipWith _∧_ (x ∷ xs) (y ∷ ys) ≡ (x ∷ xs) → x ∧ y ≡ x
-head-of-drift≡a refl = refl
+head-of-drift≡a p = cong headV p
 
 tail-of-drift≡a :
   ∀ {n} {x y : Bool} {xs ys : Vec Bool n} →
   zipWith _∧_ (x ∷ xs) (y ∷ ys) ≡ (x ∷ xs) → zipWith _∧_ xs ys ≡ xs
-tail-of-drift≡a refl = refl
+tail-of-drift≡a p = cong tailV p
 
 ------------------------------------------------------------------------
 -- Ordnung aus Drift

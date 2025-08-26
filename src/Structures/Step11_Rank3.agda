@@ -107,8 +107,10 @@ record ℤ³ : Set where
   field x y z₃ : ℤ
 open ℤ³ public
 
+infixl 6 _minus3_
+
 _minus3_ : ℤ³ → ℤ³ → ℤ³
-mk3 a b c -3 mk3 d e f = mk3 (a −ℤ d) (b −ℤ e) (c −ℤ f)
+mk3 a b c minus3 mk3 d e f = mk3 (a −ℤ d) (b −ℤ e) (c −ℤ f)
 
 det3 : ℤ³ → ℤ³ → ℤ³ → ℤ
 det3 r1 r2 r3 =

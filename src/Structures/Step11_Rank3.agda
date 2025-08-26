@@ -195,21 +195,25 @@ isJust : ∀{A} → Maybe A → Bool
 isJust {A} nothing  = false
 isJust {A} (just _) = true
 
--- Sliding-window search for the first good triple (if any), using inspect
--- to obtain a proof that the scrutinee equals 'true' when we match on 'true'.
+-- Termination-safe: make the recursive call only in the 'else' branch.
+-- We use 'inspect' only in the 'then' branch to harvest the equality proof.
 rank3Witness : List ℤ³ → Maybe GoodTriple
-rank3Witness (u ∷ v ∷ w ∷ rs) with inspect (nonZeroℤ (det3 u v w))
-... | it true  eq = just (pack u v w rs eq)
-... | it false _  = rank3Witness (v ∷ w ∷ rs)
+rank3Witness (u ∷ v ∷ w ∷ rs) =
+  let b = nonZeroℤ (det3 u v w) in
+  if b then
+    case inspect b of λ where
+      (it .true refl) → just (pack u v w rs refl)
+  else
+    rank3Witness (v ∷ w ∷ rs)
 rank3Witness _ = nothing
 
 -- Boolean decision: does some window pass det ≠ 0?
 rank3? : List ℤ³ → Bool
 rank3? xs = isJust (rank3Witness xs)
 
--- The checker we actually care about: apply to diffs of FoldMap.
-rank3OnHistory? : ∀{n} → List (Dist n) → Bool
-rank3OnHistory? {n} hist = rank3? (diffs (FoldMap {n} hist))
+-- Public checker specialized to histories (renamed to avoid clashes).
+rank3OnHistoryBool : ∀{n} → List (Dist n) → Bool
+rank3OnHistoryBool {n} hist = rank3? (diffs (FoldMap {n} hist))
 
 ----------------------------------------------------------------------
 -- 8 · Logical predicate and completeness proof
@@ -239,5 +243,5 @@ completeness (u ∷ v ∷ w ∷ rs) (there p) with inspect (nonZeroℤ (det3 u v
 -- Specialized to histories:
 completenessOnHistory :
   ∀ {n} (hist : List (Dist n)) →
-  HasGoodTriple (diffs (FoldMap {n} hist)) → rank3OnHistory? hist ≡ true
+  HasGoodTriple (diffs (FoldMap {n} hist)) → rank3OnHistoryBool hist ≡ true
 completenessOnHistory {n} hist pr = completeness (diffs (FoldMap {n} hist)) pr

@@ -18,6 +18,7 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import Agda.Primitive using (Level; lzero; _⊔_)
 
 open import Structures.Step2_VectorOperations using (Dist)
+open import Structures.Step10_FoldMap using (FoldMap)
 
 ----------------------------------------------------------------------
 -- 1 · Tiny helpers
@@ -167,20 +168,6 @@ zip⁴ _ _          _          []         _          = []
 zip⁴ _ _          _          _          []         = []
 zip⁴ f (a ∷ as) (b ∷ bs) (c ∷ cs) (d ∷ ds) =
   f a b c d ∷ zip⁴ f as bs cs ds
-
-FoldMap : ∀{n} → List (Dist n) → List ℤ³
-FoldMap {n} hist =
-  let s₁ = scanSum 0 (map (mode₁ {n}) hist)
-      s₂ = scanSum 0 (map (mode₂ {n}) hist)
-      s₃ = scanSum 0 (map (mode₃ {n}) hist)
-      fs = scanSum 0 (map (popcount {n}) hist)
-
-      mul : ℕ → ℕ → ℤ
-      mul a b = toℤ (a * b)
-
-      point : ℕ → ℕ → ℕ → ℕ → ℤ³
-      point a b c f = mk3 (mul a f) (mul b f) (mul c f)
-  in  zip⁴ point s₁ s₂ s₃ fs
 
 ----------------------------------------------------------------------
 -- 6 · Rank-3 test via sliding determinant

@@ -13,14 +13,14 @@ module Structures.Step11_Rank3 where
 open import Data.Bool      using (Bool; true; false; _∧_; if_then_else_)
 open import Data.Nat       using (ℕ; zero; suc; _+_; _*_)
 open import Data.List      using (List; []; _∷_; map)
-open import Data.Vec       using (Vec; []; _∷_; replicate)
+open import Data.Vec       using (Vec; []; _∷_)         -- no replicate this time
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import Agda.Primitive using (Level; lzero; _⊔_)
 
-open import Structures.Step2_VectorOperations using (Dist) -- distinction vectors
+open import Structures.Step2_VectorOperations using (Dist)
 
 ----------------------------------------------------------------------
--- 1 · Tiny helpers on Bool / Nat
+-- 1 · Tiny helpers
 ----------------------------------------------------------------------
 
 not : Bool → Bool
@@ -34,7 +34,7 @@ eqℕ (suc _) zero    = false
 eqℕ (suc m) (suc n) = eqℕ m n
 
 ----------------------------------------------------------------------
--- 2 · Pop-count, AND-count, mode masks
+-- 2 · Pop-count, AND-count, masks
 ----------------------------------------------------------------------
 
 popcount : ∀{n} → Dist n → ℕ
@@ -51,9 +51,10 @@ altMask : ∀{n} → Bool → Vec Bool n
 altMask {zero}  _ = []
 altMask {suc n} b = b ∷ altMask {n} (not b)
 
--- mode-1: all true
+-- mode-1: all true   (explicit, avoids replicate --> no Bool/ℕ confusion)
 mask₁ : ∀{n} → Vec Bool n
-mask₁ {n} = replicate true
+mask₁ {zero}  = []
+mask₁ {suc n} = true ∷ mask₁ {n}
 
 -- mode-2:  T F T F …
 mask₂ : ∀{n} → Vec Bool n
@@ -84,7 +85,7 @@ mode₂ {n} d = andCount d (mask₂ {n})
 mode₃ {n} d = andCount d (mask₃ {n})
 
 ----------------------------------------------------------------------
--- 3 · Integers ℤ  (pos, neg)  + basic arithmetic
+-- 3 · Integers ℤ (pos,neg) + arithmetic
 ----------------------------------------------------------------------
 
 record ℤ : Set where
@@ -107,7 +108,7 @@ z a b +ℤ z c d = z (a + c) (b + d)
 _−ℤ_ : ℤ → ℤ → ℤ
 x −ℤ y = x +ℤ negℤ y
 
-_∗ℤ_ : ℤ → ℤ → ℤ            -- (a−b)(c−d) = (ac+bd) − (ad+bc)
+_∗ℤ_ : ℤ → ℤ → ℤ           -- (a−b)(c−d) = (ac+bd) − (ad+bc)
 z a b ∗ℤ z c d =
   z (a * c + b * d)
     (a * d + b * c)
@@ -119,7 +120,7 @@ nonZeroℤ : ℤ → Bool
 nonZeroℤ x = not (isZeroℤ x)
 
 ----------------------------------------------------------------------
--- 4 · Triples ℤ³  + determinant 3×3
+-- 4 · Triples ℤ³ + 3×3 determinant
 ----------------------------------------------------------------------
 
 record ℤ³ : Set where
@@ -156,7 +157,6 @@ scanSum _ []       = []
 scanSum acc (n ∷ ns) with acc + n | scanSum (acc + n) ns
 ... | acc′ | rest = acc′ ∷ rest
 
--- 4-way zipper with explicit universe levels
 zip⁴ : ∀ {ℓA ℓB ℓC ℓD ℓE}
        {A : Set ℓA} {B : Set ℓB} {C : Set ℓC} {D : Set ℓD} {E : Set ℓE}
      → (A → B → C → D → E)

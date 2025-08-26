@@ -107,7 +107,7 @@ record ℤ³ : Set where
   field x y z₃ : ℤ
 open ℤ³ public
 
-_-3_ : ℤ³ → ℤ³ → ℤ³
+_minus3_ : ℤ³ → ℤ³ → ℤ³
 mk3 a b c -3 mk3 d e f = mk3 (a −ℤ d) (b −ℤ e) (c −ℤ f)
 
 det3 : ℤ³ → ℤ³ → ℤ³ → ℤ
@@ -149,7 +149,7 @@ FoldMap {n} hist =
 diffs : List ℤ³ → List ℤ³
 diffs []                = []
 diffs (_ ∷ [])          = []
-diffs (p ∷ q ∷ rest)    = (q -3 p) ∷ diffs (q ∷ rest)
+diffs (p ∷ q ∷ rest)    = (q minus3 p) ∷ diffs (q ∷ rest)
 
 rank3? : List ℤ³ → Bool
 rank3? pts = go (diffs pts)

@@ -2,7 +2,7 @@
 
 module Structures.Step11_Rank3 where
 
-open import Data.Bool using (Bool; true; false; _∧_)
+open import Data.Bool using (Bool; true; false; _∧_; if_then_else_)
 open import Data.Nat  using (ℕ; zero; suc; _+_; _*_)
 open import Data.List using (List; []; _∷_; map)
 open import Data.Vec  using (Vec; []; _∷_)

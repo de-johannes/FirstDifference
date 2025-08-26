@@ -9,33 +9,37 @@ open import Data.Vec  using (Vec; []; _∷_)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import Data.Product using (_×_; _,_)
 
--- Wir benutzen dein Dist aus Step2
+-- Dist aus Step2
 open import Structures.Step2_VectorOperations using (Dist)
 
 ------------------------------------------------------------------------
--- Grund-Utilities: popcount, AND-Zähler, Masken
+-- kleine Helfer: not, eqℕ
 ------------------------------------------------------------------------
 
--- popcount: wie viele 'true' in einer Distinktion
+not : Bool → Bool
+not true  = false
+not false = true
+
+eqℕ : ℕ → ℕ → Bool
+eqℕ zero    zero    = true
+eqℕ zero    (suc _) = false
+eqℕ (suc _) zero    = false
+eqℕ (suc m) (suc n) = eqℕ m n
+
+------------------------------------------------------------------------
+-- Utilities: popcount, AND-Zähler, Masken
+------------------------------------------------------------------------
+
 popcount : ∀ {n} → Dist n → ℕ
 popcount {zero}  []       = zero
-popcount {suc n} (b ∷ bs) = (if b then suc zero else zero) + popcount bs
-  where
-    if : ∀ {A : Set} → Bool → A → A → A
-    if true  x _ = x
-    if false _ y = y
+popcount {suc n} (b ∷ bs) =
+  (if b then suc zero else zero) + popcount bs
 
--- Anzahl der Positionen, an denen beide true sind
 andCount : ∀ {n} → Dist n → Dist n → ℕ
 andCount {zero}  []       []       = zero
 andCount {suc n} (a ∷ as) (b ∷ bs) =
   (if a ∧ b then suc zero else zero) + andCount as bs
-  where
-    if : ∀ {A : Set} → Bool → A → A → A
-    if true  x _ = x
-    if false _ y = y
 
--- einfache Masken, um drei unabhängige Modi zu definieren
 flip : Bool → Bool
 flip true  = false
 flip false = true
@@ -54,7 +58,7 @@ mask1 {n} = replicate true
 mask2 : ∀ {n} → Vec Bool n
 mask2 {n} = altMask true                 -- T F T F ...
 
--- TT  FF  TT  FF ... → periodisch 2, aber konstruktiv als Zähler variiert
+-- TT FF TT FF ... (Periode 2) – konstruktiv via Zähler
 mask3' : ∀ {n} → Bool → ℕ → Vec Bool n
 mask3' {zero}  b k       = []
 mask3' {suc n} b zero    = mask3' {suc n} (flip b) (suc (suc zero))
@@ -69,7 +73,7 @@ mode₂ {n} d = andCount d (mask2 {n})
 mode₃ {n} d = andCount d (mask3 {n})
 
 ------------------------------------------------------------------------
--- ℤ als (pos,neg) – rein konstruktiv; ℤ³ & Determinante
+-- ℤ als (pos,neg); ℤ³ & Determinante
 ------------------------------------------------------------------------
 
 record ℤ : Set where constructor z; field pos neg : ℕ
@@ -92,15 +96,15 @@ x −ℤ y = x +ℤ negℤ y
 
 _∗ℤ_ : ℤ → ℤ → ℤ
 -- (a-b)*(c-d) = (ac+bd) - (ad+bc)
-z a b ∗ℤ z c d = z (a * c + b * d) (a * d + b * c)
-  where
-    _*_ : ℕ → ℕ → ℕ
-    zero  * n = zero
-    suc m * n = n + (m * n)
+z a b ∗ℤ z c d =
+  z ( (a * c) + (b * d) )
+    ( (a * d) + (b * c) )
+
+isZeroℤ : ℤ → Bool
+isZeroℤ (z p n) = eqℕ p n
 
 nonZeroℤ : ℤ → Bool
-nonZeroℤ (z zero zero) = false
-nonZeroℤ _             = true
+nonZeroℤ x = not (isZeroℤ x)
 
 record ℤ³ : Set where
   constructor mk3

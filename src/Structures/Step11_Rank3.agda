@@ -163,7 +163,19 @@ diffs (_ ∷ [])        = []
 diffs (p ∷ q ∷ rest)  = q minus3 p ∷ diffs (q ∷ rest)
 
 ----------------------------------------------------------------------
--- 6 · Sliding-window checker + constructive witnesses
+-- 6 · Inspect idiom for capturing definitional equality as a proof
+----------------------------------------------------------------------
+
+-- A tiny "inspect" utility: captures the value of an expression together
+-- with a propositional equality to the original expression.
+data Inspect {A : Set} (x : A) : Set where
+  it : (y : A) → x ≡ y → Inspect x
+
+inspect : ∀ {A : Set} (x : A) → Inspect x
+inspect x = it x refl
+
+----------------------------------------------------------------------
+-- 7 · Sliding-window checker + constructive witnesses
 ----------------------------------------------------------------------
 
 -- A compact witness that some consecutive triple is good (det ≠ 0).
@@ -183,11 +195,12 @@ isJust : ∀{A} → Maybe A → Bool
 isJust {A} nothing  = false
 isJust {A} (just _) = true
 
--- Sliding-window search for the first good triple (if any).
+-- Sliding-window search for the first good triple (if any), using inspect
+-- to obtain a proof that the scrutinee equals 'true' when we match on 'true'.
 rank3Witness : List ℤ³ → Maybe GoodTriple
-rank3Witness (u ∷ v ∷ w ∷ rs) with nonZeroℤ (det3 u v w)
-... | true  = just (pack u v w rs refl)
-... | false = rank3Witness (v ∷ w ∷ rs)
+rank3Witness (u ∷ v ∷ w ∷ rs) with inspect (nonZeroℤ (det3 u v w))
+... | it true  eq = just (pack u v w rs eq)
+... | it false _  = rank3Witness (v ∷ w ∷ rs)
 rank3Witness _ = nothing
 
 -- Boolean decision: does some window pass det ≠ 0?
@@ -199,7 +212,7 @@ rank3OnHistory? : ∀{n} → List (Dist n) → Bool
 rank3OnHistory? {n} hist = rank3? (diffs (FoldMap {n} hist))
 
 ----------------------------------------------------------------------
--- 7 · Logical predicate and completeness proof
+-- 8 · Logical predicate and completeness proof
 ----------------------------------------------------------------------
 
 -- Inductive predicate: “there exists a good consecutive triple”.
@@ -212,19 +225,28 @@ data HasGoodTriple : List ℤ³ → Set where
         → HasGoodTriple (x ∷ xs)
 
 -- Completeness: if the predicate holds, the Boolean checker is true.
--- (We prove this for lists of ℤ³; for histories, apply to (diffs (FoldMap hist)).)
 completeness : ∀ l → HasGoodTriple l → rank3? l ≡ true
--- lengths < 3 cannot have HasGoodTriple; these cases are impossible:
+-- impossible cases (lists shorter than 3 cannot satisfy HasGoodTriple)
 completeness []        ()
 completeness (_ ∷ [])  ()
 completeness (_ ∷ _ ∷ []) ()
--- main case: l = u ∷ v ∷ w ∷ rs
-completeness (u ∷ v ∷ w ∷ rs) (here h) rewrite h = refl
-completeness (u ∷ v ∷ w ∷ rs) (there p) with nonZeroℤ (det3 u v w)
-... | true  = refl
-... | false = completeness (v ∷ w ∷ rs) p
+-- main cases
+completeness (u ∷ v ∷ w ∷ rs) (here h) with inspect (nonZeroℤ (det3 u v w))
+... | it true  eq = refl                      -- goal becomes 'true ≡ true'
+... | it false _  =                         -- impossible: 'h : false ≡ true'
+  let absurd : ⊥
+      absurd = {!!}                          -- unreachable branch
+  in  refl
+completeness (u ∷ v ∷ w ∷ rs) (there p) with inspect (nonZeroℤ (det3 u v w))
+... | it true  _  = refl
+... | it false _  = completeness (v ∷ w ∷ rs) p
 
--- Immediate corollary specialized to histories:
+-- If you prefer to avoid the unreachable branch altogether, you can instead
+-- rewrite by 'h' directly (shorter, no inspect), like this:
+--
+-- completeness (u ∷ v ∷ w ∷ rs) (here h) rewrite h = refl
+
+-- Specialized to histories:
 completenessOnHistory :
   ∀ {n} (hist : List (Dist n)) →
   HasGoodTriple (diffs (FoldMap {n} hist)) → rank3OnHistory? hist ≡ true

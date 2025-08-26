@@ -231,20 +231,10 @@ completeness []        ()
 completeness (_ ∷ [])  ()
 completeness (_ ∷ _ ∷ []) ()
 -- main cases
-completeness (u ∷ v ∷ w ∷ rs) (here h) with inspect (nonZeroℤ (det3 u v w))
-... | it true  eq = refl                      -- goal becomes 'true ≡ true'
-... | it false _  =                         -- impossible: 'h : false ≡ true'
-  let absurd : ⊥
-      absurd = {!!}                          -- unreachable branch
-  in  refl
+completeness (u ∷ v ∷ w ∷ rs) (here h) rewrite h = refl
 completeness (u ∷ v ∷ w ∷ rs) (there p) with inspect (nonZeroℤ (det3 u v w))
 ... | it true  _  = refl
 ... | it false _  = completeness (v ∷ w ∷ rs) p
-
--- If you prefer to avoid the unreachable branch altogether, you can instead
--- rewrite by 'h' directly (shorter, no inspect), like this:
---
--- completeness (u ∷ v ∷ w ∷ rs) (here h) rewrite h = refl
 
 -- Specialized to histories:
 completenessOnHistory :

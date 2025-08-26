@@ -1,17 +1,13 @@
 {-# OPTIONS --safe #-}
 
 ----------------------------------------------------------------------
---  Step 11  ▸  Rank-3 detection in the Drift-Graph fold-map
---            • bespoke ℤ and ℤ³ definitions (purely constructive)
---            • tail-recursive masks for three independent modes
---            • fold-map History → ℤ³
---            • rank-3 test via 3×3 determinant
+--  Step 11 ▸ Rank-3 detection in the Drift-Graph fold-map
 ----------------------------------------------------------------------
 
 module Structures.Step11_Rank3 where
 
 ----------------------------------------------------------------------
--- 0.  Imports
+-- 0. Imports
 ----------------------------------------------------------------------
 
 open import Data.Bool      using (Bool; true; false; _∧_; if_then_else_)
@@ -19,13 +15,11 @@ open import Data.Nat       using (ℕ; zero; suc; _+_; _*_)
 open import Data.List      using (List; []; _∷_; map)
 open import Data.Vec       using (Vec; []; _∷_; replicate)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
-open import Data.Product   using (_×_; _,_)
 
--- Distinction vectors from earlier step
-open import Structures.Step2_VectorOperations using (Dist)
+open import Structures.Step2_VectorOperations using (Dist)  -- distinction vectors
 
 ----------------------------------------------------------------------
--- 1.  Tiny helpers on Bool and Nat
+-- 1. Tiny helpers on Bool / Nat
 ----------------------------------------------------------------------
 
 not : Bool → Bool
@@ -39,7 +33,7 @@ eqℕ (suc _) zero    = false
 eqℕ (suc m) (suc n) = eqℕ m n
 
 ----------------------------------------------------------------------
--- 2.  Popcount, pairwise AND count, mode masks
+-- 2. Pop-count, AND-count, masks
 ----------------------------------------------------------------------
 
 popcount : ∀{n} → Dist n → ℕ
@@ -56,18 +50,34 @@ altMask : ∀{n} → Bool → Vec Bool n
 altMask {zero}  _ = []
 altMask {suc n} b = b ∷ altMask {n} (not b)
 
--- mode-1:  all true
+-- mode-1: all true
 mask₁ : ∀{n} → Vec Bool n
 mask₁ {n} = replicate true
 
--- mode-2:  alternation length 1  (T F T F …)
+-- mode-2: T F T F …
 mask₂ : ∀{n} → Vec Bool n
 mask₂ {n} = altMask true
 
--- mode-3:  alternation length 2  (T T F F T T F F …)
+-- mode-3: T T F F T T F F …   (two-of-each)
+two : ℕ
+two = suc (suc zero)
+
+pred : ℕ → ℕ
+pred zero    = zero
+pred (suc k) = k
+
+mask3Aux : ∀{n} → Bool → ℕ → Vec Bool n
+mask3Aux {zero}  _ _ = []
+mask3Aux {suc n} b t = b ∷ mask3Aux {n} b' t'
+  where
+    done?  : Bool
+    done?  = eqℕ t zero
+
+    b'  = if done? then not b else b
+    t'  = if done? then two    else pred t
+
 mask₃ : ∀{n} → Vec Bool n
-mask₃ {zero}  = []
-mask₃ {suc n} = true ∷ true ∷ altMask {n} false
+mask₃ {n} = mask3Aux {n} true two
 
 mode₁ mode₂ mode₃ : ∀{n} → Dist n → ℕ
 mode₁ {n} d = andCount d (mask₁ {n})
@@ -75,7 +85,7 @@ mode₂ {n} d = andCount d (mask₂ {n})
 mode₃ {n} d = andCount d (mask₃ {n})
 
 ----------------------------------------------------------------------
--- 3.  Integers ℤ (pos,neg)  and basic arithmetic
+-- 3. Integers ℤ (pos,neg)  + basic arithmetic
 ----------------------------------------------------------------------
 
 record ℤ : Set where
@@ -107,10 +117,10 @@ isZeroℤ : ℤ → Bool
 isZeroℤ (z p n) = eqℕ p n
 
 nonZeroℤ : ℤ → Bool
-nonZeroℤ x = not (isZeroℤ x)
+nonZeroℤ = not ∘ isZeroℤ
 
 ----------------------------------------------------------------------
--- 4.  Triples ℤ³  and determinant of a 3×3 matrix
+-- 4. Triples ℤ³  + determinant 3×3
 ----------------------------------------------------------------------
 
 record ℤ³ : Set where
@@ -139,16 +149,14 @@ det3 r₁ r₂ r₃ =
   in  (t₁ −ℤ t₂) +ℤ t₃
 
 ----------------------------------------------------------------------
--- 5.  Fold-map History → ℤ³
+-- 5. Fold-map History → ℤ³  (plus helper scan / zip⁴)
 ----------------------------------------------------------------------
 
--- left-scan: cumulative sum (exclusive)
 scanSum : ℕ → List ℕ → List ℕ
 scanSum _ []       = []
 scanSum acc (n ∷ ns) with acc + n | scanSum (acc + n) ns
 ... | acc′ | rest = acc′ ∷ rest
 
--- 4-way zipper (total)
 zip⁴ : ∀{A B C D E}
      → (A → B → C → D → E)
      → List A → List B → List C → List D → List E
@@ -166,7 +174,7 @@ FoldMap {n} hist =
       s₃ = scanSum 0 (map (mode₃ {n}) hist)
       fs = scanSum 0 (map (popcount {n}) hist)
 
-      mul   : ℕ → ℕ → ℤ
+      mul : ℕ → ℕ → ℤ
       mul a b = toℤ (a * b)
 
       point : ℕ → ℕ → ℕ → ℕ → ℤ³
@@ -174,7 +182,7 @@ FoldMap {n} hist =
   in  zip⁴ point s₁ s₂ s₃ fs
 
 ----------------------------------------------------------------------
--- 6.  Rank-3 test (linear independence of 3 successive diffs)
+-- 6. Rank-3 test via sliding 3-vector determinant
 ----------------------------------------------------------------------
 
 diffs : List ℤ³ → List ℤ³

@@ -1,7 +1,11 @@
 {-# OPTIONS --safe #-}
 
 ----------------------------------------------------------------------
---  Step 11 ▸ Rank-3 detection in the Drift-Graph fold-map
+--  Step 11 ▸ Rank-3 detection with constructive witnesses
+--            • integers ℤ and triples ℤ³
+--            • determinant det3 over ℤ (no floating-point)
+--            • sliding-window search over diffs (any window)
+--            • predicate HasGoodTriple and completeness proof
 ----------------------------------------------------------------------
 
 module Structures.Step11_Rank3 where
@@ -13,7 +17,7 @@ module Structures.Step11_Rank3 where
 open import Data.Bool      using (Bool; true; false; _∧_; if_then_else_)
 open import Data.Nat       using (ℕ; zero; suc; _+_; _*_)
 open import Data.List      using (List; []; _∷_; map)
-open import Data.Vec       using (Vec; []; _∷_)         -- no replicate here
+open import Data.Vec       using (Vec; []; _∷_)      -- masks built explicitly
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import Agda.Primitive using (Level; lzero; _⊔_)
 
@@ -47,21 +51,21 @@ andCount {zero}  []       []       = zero
 andCount {suc _} (a ∷ as) (b ∷ bs) =
   (if a ∧ b then 1 else 0) + andCount as bs
 
--- infinite alternation  T F T F …
+-- alternating mask  T F T F …
 altMask : ∀{n} → Bool → Vec Bool n
 altMask {zero}  _ = []
 altMask {suc n} b = b ∷ altMask {n} (not b)
 
--- mode-1: all true  (explicit, avoids replicate to keep things simple)
+-- mode-1: all true
 mask₁ : ∀{n} → Vec Bool n
 mask₁ {zero}  = []
 mask₁ {suc n} = true ∷ mask₁ {n}
 
--- mode-2:  T F T F …
+-- mode-2: T F T F …
 mask₂ : ∀{n} → Vec Bool n
 mask₂ {n} = altMask true
 
--- mode-3:  T T F F T T F F …
+-- mode-3: T T F F T T F F …
 two : ℕ
 two = suc (suc zero)
 
@@ -92,7 +96,7 @@ mode₃ {n} d = andCount d (mask₃ {n})
 record ℤ : Set where
   constructor z
   field pos neg : ℕ
-open ℤ   -- NOTE: not public, to avoid exporting `neg` and clashing with Step2
+open ℤ   -- NOTE: not public (avoid clashing `neg` with Step 2)
 
 zeroℤ : ℤ
 zeroℤ = z 0 0
@@ -109,7 +113,7 @@ z a b +ℤ z c d = z (a + c) (b + d)
 _−ℤ_ : ℤ → ℤ → ℤ
 x −ℤ y = x +ℤ negℤ y
 
-_∗ℤ_ : ℤ → ℤ → ℤ           -- (a−b)(c−d) = (ac+bd) − (ad+bc)
+_∗ℤ_ : ℤ → ℤ → ℤ            -- (a−b)(c−d) = (ac+bd) − (ad+bc)
 z a b ∗ℤ z c d =
   z (a * c + b * d)
     (a * d + b * c)
@@ -150,21 +154,78 @@ det3 r₁ r₂ r₃ =
   in  (t₁ −ℤ t₂) +ℤ t₃
 
 ----------------------------------------------------------------------
--- 5 · Rank-3 test via sliding determinant
---     (FoldMap is imported from Step 10)
+-- 5 · Differences (discrete tangents) from FoldMap
 ----------------------------------------------------------------------
 
--- Differences of consecutive points in ℤ³
 diffs : List ℤ³ → List ℤ³
 diffs []              = []
 diffs (_ ∷ [])        = []
 diffs (p ∷ q ∷ rest)  = q minus3 p ∷ diffs (q ∷ rest)
 
--- Checks whether some 3 successive differences are linearly independent
+----------------------------------------------------------------------
+-- 6 · Sliding-window checker + constructive witnesses
+----------------------------------------------------------------------
+
+-- A compact witness that some consecutive triple is good (det ≠ 0).
+record GoodTriple : Set where
+  constructor pack
+  field
+    a b c  : ℤ³
+    rest   : List ℤ³
+    det-ok : nonZeroℤ (det3 a b c) ≡ true
+
+-- A minimal Maybe (to avoid extra imports)
+data Maybe (A : Set) : Set where
+  nothing : Maybe A
+  just    : A → Maybe A
+
+isJust : ∀{A} → Maybe A → Bool
+isJust {A} nothing  = false
+isJust {A} (just _) = true
+
+-- Sliding-window search for the first good triple (if any).
+rank3Witness : List ℤ³ → Maybe GoodTriple
+rank3Witness (u ∷ v ∷ w ∷ rs) with nonZeroℤ (det3 u v w)
+... | true  = just (pack u v w rs refl)
+... | false = rank3Witness (v ∷ w ∷ rs)
+rank3Witness _ = nothing
+
+-- Boolean decision: does some window pass det ≠ 0?
 rank3? : List ℤ³ → Bool
-rank3? pts = slide (diffs pts)
-  where
-    slide : List ℤ³ → Bool
-    slide (a ∷ b ∷ c ∷ []) = nonZeroℤ (det3 a b c)
-    slide (_ ∷ rest)       = slide rest
-    slide _                = false
+rank3? xs = isJust (rank3Witness xs)
+
+-- The checker we actually care about: apply to diffs of FoldMap.
+rank3OnHistory? : ∀{n} → List (Dist n) → Bool
+rank3OnHistory? {n} hist = rank3? (diffs (FoldMap {n} hist))
+
+----------------------------------------------------------------------
+-- 7 · Logical predicate and completeness proof
+----------------------------------------------------------------------
+
+-- Inductive predicate: “there exists a good consecutive triple”.
+data HasGoodTriple : List ℤ³ → Set where
+  here  : ∀ {u v w rs}
+        → nonZeroℤ (det3 u v w) ≡ true
+        → HasGoodTriple (u ∷ v ∷ w ∷ rs)
+  there : ∀ {x xs}
+        → HasGoodTriple xs
+        → HasGoodTriple (x ∷ xs)
+
+-- Completeness: if the predicate holds, the Boolean checker is true.
+-- (We prove this for lists of ℤ³; for histories, apply to (diffs (FoldMap hist)).)
+completeness : ∀ l → HasGoodTriple l → rank3? l ≡ true
+-- lengths < 3 cannot have HasGoodTriple; these cases are impossible:
+completeness []        ()
+completeness (_ ∷ [])  ()
+completeness (_ ∷ _ ∷ []) ()
+-- main case: l = u ∷ v ∷ w ∷ rs
+completeness (u ∷ v ∷ w ∷ rs) (here h) rewrite h = refl
+completeness (u ∷ v ∷ w ∷ rs) (there p) with nonZeroℤ (det3 u v w)
+... | true  = refl
+... | false = completeness (v ∷ w ∷ rs) p
+
+-- Immediate corollary specialized to histories:
+completenessOnHistory :
+  ∀ {n} (hist : List (Dist n)) →
+  HasGoodTriple (diffs (FoldMap {n} hist)) → rank3OnHistory? hist ≡ true
+completenessOnHistory {n} hist pr = completeness (diffs (FoldMap {n} hist)) pr

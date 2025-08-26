@@ -45,7 +45,7 @@ andCount {zero}  []       []       = zero
 andCount {suc _} (a ∷ as) (b ∷ bs) =
   (if a ∧ b then 1 else 0) + andCount as bs
 
--- infinite alternation T F T F …
+-- infinite alternation  T F T F …
 altMask : ∀{n} → Bool → Vec Bool n
 altMask {zero}  _ = []
 altMask {suc n} b = b ∷ altMask {n} (not b)
@@ -54,11 +54,11 @@ altMask {suc n} b = b ∷ altMask {n} (not b)
 mask₁ : ∀{n} → Vec Bool n
 mask₁ {n} = replicate true
 
--- mode-2: T F T F …
+-- mode-2:  T F T F …
 mask₂ : ∀{n} → Vec Bool n
 mask₂ {n} = altMask true
 
--- mode-3: T T F F T T F F …   (two-of-each)
+-- mode-3:  T T F F T T F F …
 two : ℕ
 two = suc (suc zero)
 
@@ -70,11 +70,9 @@ mask3Aux : ∀{n} → Bool → ℕ → Vec Bool n
 mask3Aux {zero}  _ _ = []
 mask3Aux {suc n} b t = b ∷ mask3Aux {n} b' t'
   where
-    done?  : Bool
-    done?  = eqℕ t zero
-
-    b'  = if done? then not b else b
-    t'  = if done? then two    else pred t
+    done? = eqℕ t zero
+    b'    = if done? then not b else b
+    t'    = if done? then two    else pred t
 
 mask₃ : ∀{n} → Vec Bool n
 mask₃ {n} = mask3Aux {n} true two
@@ -117,7 +115,7 @@ isZeroℤ : ℤ → Bool
 isZeroℤ (z p n) = eqℕ p n
 
 nonZeroℤ : ℤ → Bool
-nonZeroℤ = not ∘ isZeroℤ
+nonZeroℤ x = not (isZeroℤ x)
 
 ----------------------------------------------------------------------
 -- 4. Triples ℤ³  + determinant 3×3
@@ -149,7 +147,7 @@ det3 r₁ r₂ r₃ =
   in  (t₁ −ℤ t₂) +ℤ t₃
 
 ----------------------------------------------------------------------
--- 5. Fold-map History → ℤ³  (plus helper scan / zip⁴)
+-- 5. Fold-map History → ℤ³
 ----------------------------------------------------------------------
 
 scanSum : ℕ → List ℕ → List ℕ

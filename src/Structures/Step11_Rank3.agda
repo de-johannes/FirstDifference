@@ -7,7 +7,7 @@
 module Structures.Step11_Rank3 where
 
 ----------------------------------------------------------------------
--- 0. Imports
+-- 0 · Imports
 ----------------------------------------------------------------------
 
 open import Data.Bool      using (Bool; true; false; _∧_; if_then_else_)
@@ -15,11 +15,12 @@ open import Data.Nat       using (ℕ; zero; suc; _+_; _*_)
 open import Data.List      using (List; []; _∷_; map)
 open import Data.Vec       using (Vec; []; _∷_; replicate)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+open import Agda.Primitive using (Level; lzero; _⊔_)
 
-open import Structures.Step2_VectorOperations using (Dist)  -- distinction vectors
+open import Structures.Step2_VectorOperations using (Dist) -- distinction vectors
 
 ----------------------------------------------------------------------
--- 1. Tiny helpers on Bool / Nat
+-- 1 · Tiny helpers on Bool / Nat
 ----------------------------------------------------------------------
 
 not : Bool → Bool
@@ -33,7 +34,7 @@ eqℕ (suc _) zero    = false
 eqℕ (suc m) (suc n) = eqℕ m n
 
 ----------------------------------------------------------------------
--- 2. Pop-count, AND-count, masks
+-- 2 · Pop-count, AND-count, mode masks
 ----------------------------------------------------------------------
 
 popcount : ∀{n} → Dist n → ℕ
@@ -52,7 +53,7 @@ altMask {suc n} b = b ∷ altMask {n} (not b)
 
 -- mode-1: all true
 mask₁ : ∀{n} → Vec Bool n
-mask₁ {n} = replicate n true
+mask₁ {n} = replicate true
 
 -- mode-2:  T F T F …
 mask₂ : ∀{n} → Vec Bool n
@@ -83,7 +84,7 @@ mode₂ {n} d = andCount d (mask₂ {n})
 mode₃ {n} d = andCount d (mask₃ {n})
 
 ----------------------------------------------------------------------
--- 3. Integers ℤ (pos,neg)  + basic arithmetic
+-- 3 · Integers ℤ  (pos, neg)  + basic arithmetic
 ----------------------------------------------------------------------
 
 record ℤ : Set where
@@ -106,7 +107,7 @@ z a b +ℤ z c d = z (a + c) (b + d)
 _−ℤ_ : ℤ → ℤ → ℤ
 x −ℤ y = x +ℤ negℤ y
 
-_∗ℤ_ : ℤ → ℤ → ℤ           -- (a−b)(c−d) = (ac+bd) − (ad+bc)
+_∗ℤ_ : ℤ → ℤ → ℤ            -- (a−b)(c−d) = (ac+bd) − (ad+bc)
 z a b ∗ℤ z c d =
   z (a * c + b * d)
     (a * d + b * c)
@@ -118,7 +119,7 @@ nonZeroℤ : ℤ → Bool
 nonZeroℤ x = not (isZeroℤ x)
 
 ----------------------------------------------------------------------
--- 4. Triples ℤ³  + determinant 3×3
+-- 4 · Triples ℤ³  + determinant 3×3
 ----------------------------------------------------------------------
 
 record ℤ³ : Set where
@@ -147,7 +148,7 @@ det3 r₁ r₂ r₃ =
   in  (t₁ −ℤ t₂) +ℤ t₃
 
 ----------------------------------------------------------------------
--- 5. Fold-map History → ℤ³
+-- 5 · Fold-map  History → ℤ³
 ----------------------------------------------------------------------
 
 scanSum : ℕ → List ℕ → List ℕ
@@ -155,7 +156,9 @@ scanSum _ []       = []
 scanSum acc (n ∷ ns) with acc + n | scanSum (acc + n) ns
 ... | acc′ | rest = acc′ ∷ rest
 
-zip⁴ : ∀{A B C D E}
+-- 4-way zipper with explicit universe levels
+zip⁴ : ∀ {ℓA ℓB ℓC ℓD ℓE}
+       {A : Set ℓA} {B : Set ℓB} {C : Set ℓC} {D : Set ℓD} {E : Set ℓE}
      → (A → B → C → D → E)
      → List A → List B → List C → List D → List E
 zip⁴ _ []         _          _          _          = []
@@ -180,7 +183,7 @@ FoldMap {n} hist =
   in  zip⁴ point s₁ s₂ s₃ fs
 
 ----------------------------------------------------------------------
--- 6. Rank-3 test via sliding determinant
+-- 6 · Rank-3 test via sliding determinant
 ----------------------------------------------------------------------
 
 diffs : List ℤ³ → List ℤ³

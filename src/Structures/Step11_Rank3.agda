@@ -52,8 +52,8 @@ mask1 : ∀ {n} → Vec Bool n
 mask1 {n} = replicate true
   where
     replicate : ∀ {A : Set}{n : ℕ} → A → Vec A n
-    replicate {zero}  a = []
-    replicate {suc n} a = a ∷ replicate a
+    replicate {n = zero}  a = []
+    replicate {n = suc n} a = a ∷ replicate a
 
 mask2 : ∀ {n} → Vec Bool n
 mask2 {n} = altMask true                 -- T F T F ...

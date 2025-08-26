@@ -23,6 +23,7 @@ open import Structures.Step8_CutCategory public
 open import Structures.Step8_TemporalFunctor public
 open import Structures.Step9_SpatialStructure public
 open import Structures.Step10_FoldMap public
+open import Structures.Step11_Rank3 public
 
 ------------------------------------------------------------------------
 -- Examples and demonstrations

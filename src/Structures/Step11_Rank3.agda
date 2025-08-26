@@ -13,12 +13,12 @@ module Structures.Step11_Rank3 where
 open import Data.Bool      using (Bool; true; false; _∧_; if_then_else_)
 open import Data.Nat       using (ℕ; zero; suc; _+_; _*_)
 open import Data.List      using (List; []; _∷_; map)
-open import Data.Vec       using (Vec; []; _∷_)         -- no replicate this time
+open import Data.Vec       using (Vec; []; _∷_)         -- no replicate here
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import Agda.Primitive using (Level; lzero; _⊔_)
 
 open import Structures.Step2_VectorOperations using (Dist)
-open import Structures.Step10_FoldMap using (FoldMap)
+open import Structures.Step10_FoldMap         using (FoldMap)
 
 ----------------------------------------------------------------------
 -- 1 · Tiny helpers
@@ -52,7 +52,7 @@ altMask : ∀{n} → Bool → Vec Bool n
 altMask {zero}  _ = []
 altMask {suc n} b = b ∷ altMask {n} (not b)
 
--- mode-1: all true   (explicit, avoids replicate --> no Bool/ℕ confusion)
+-- mode-1: all true  (explicit, avoids replicate to keep things simple)
 mask₁ : ∀{n} → Vec Bool n
 mask₁ {zero}  = []
 mask₁ {suc n} = true ∷ mask₁ {n}
@@ -92,7 +92,7 @@ mode₃ {n} d = andCount d (mask₃ {n})
 record ℤ : Set where
   constructor z
   field pos neg : ℕ
-open ℤ public
+open ℤ   -- NOTE: not public, to avoid exporting `neg` and clashing with Step2
 
 zeroℤ : ℤ
 zeroℤ = z 0 0
@@ -150,34 +150,17 @@ det3 r₁ r₂ r₃ =
   in  (t₁ −ℤ t₂) +ℤ t₃
 
 ----------------------------------------------------------------------
--- 5 · Fold-map  History → ℤ³
+-- 5 · Rank-3 test via sliding determinant
+--     (FoldMap is imported from Step 10)
 ----------------------------------------------------------------------
 
-scanSum : ℕ → List ℕ → List ℕ
-scanSum _ []       = []
-scanSum acc (n ∷ ns) with acc + n | scanSum (acc + n) ns
-... | acc′ | rest = acc′ ∷ rest
-
-zip⁴ : ∀ {ℓA ℓB ℓC ℓD ℓE}
-       {A : Set ℓA} {B : Set ℓB} {C : Set ℓC} {D : Set ℓD} {E : Set ℓE}
-     → (A → B → C → D → E)
-     → List A → List B → List C → List D → List E
-zip⁴ _ []         _          _          _          = []
-zip⁴ _ _          []         _          _          = []
-zip⁴ _ _          _          []         _          = []
-zip⁴ _ _          _          _          []         = []
-zip⁴ f (a ∷ as) (b ∷ bs) (c ∷ cs) (d ∷ ds) =
-  f a b c d ∷ zip⁴ f as bs cs ds
-
-----------------------------------------------------------------------
--- 6 · Rank-3 test via sliding determinant
-----------------------------------------------------------------------
-
+-- Differences of consecutive points in ℤ³
 diffs : List ℤ³ → List ℤ³
 diffs []              = []
 diffs (_ ∷ [])        = []
 diffs (p ∷ q ∷ rest)  = q minus3 p ∷ diffs (q ∷ rest)
 
+-- Checks whether some 3 successive differences are linearly independent
 rank3? : List ℤ³ → Bool
 rank3? pts = slide (diffs pts)
   where

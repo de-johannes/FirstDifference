@@ -52,7 +52,7 @@ altMask {suc n} b = b ∷ altMask {n} (not b)
 
 -- mode-1: all true
 mask₁ : ∀{n} → Vec Bool n
-mask₁ {n} = replicate true
+mask₁ {n} = replicate n true
 
 -- mode-2:  T F T F …
 mask₂ : ∀{n} → Vec Bool n
@@ -180,7 +180,7 @@ FoldMap {n} hist =
   in  zip⁴ point s₁ s₂ s₃ fs
 
 ----------------------------------------------------------------------
--- 6. Rank-3 test via sliding 3-vector determinant
+-- 6. Rank-3 test via sliding determinant
 ----------------------------------------------------------------------
 
 diffs : List ℤ³ → List ℤ³

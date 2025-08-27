@@ -32,7 +32,7 @@ open import Structures.Step11_Rank3 public using
 
 ----------------------------------------------------------------------
 -- 0 · Auxiliary unfolding lemma for rank3? on 3+ lists
---     (matches the definition of rank3Witness / rank3?)
+--     Make the definition explicit by case-splitting on the Bool.
 ----------------------------------------------------------------------
 
 rank3?-cons : ∀ (u v w : ℤ³) (rs : List ℤ³) →
@@ -40,8 +40,15 @@ rank3?-cons : ∀ (u v w : ℤ³) (rs : List ℤ³) →
   ≡ (if nonZeroℤ (det3 u v w)
      then true
      else rank3? (v ∷ w ∷ rs))
-rank3?-cons u v w rs = refl
--- By computation: see Step 11 definitions of rank3? and rank3Witness.
+rank3?-cons u v w rs with nonZeroℤ (det3 u v w)
+... | true  = refl
+... | false = refl
+-- Explanation:
+--   rank3? (u ∷ v ∷ w ∷ rs)
+--   = isJust (rank3Witness (u ∷ v ∷ w ∷ rs))
+--   and rank3Witness … = if b then just … else rank3Witness (tail)
+--   → if b ≡ true:  LHS reduces to true; RHS reduces to true.
+--   → if b ≡ false: LHS reduces to rank3? (tail); RHS reduces to rank3? (tail).
 
 ----------------------------------------------------------------------
 -- 1 · Soundness: rank3? xs ≡ true  ⇒  HasGoodTriple xs
@@ -60,7 +67,7 @@ soundness (u ∷ v ∷ w ∷ rs) pr
       -- In this branch, rank3? (u ∷ v ∷ w ∷ rs) ≡ true, thus 'here refl'.
       here {u = u} {v = v} {w = w} {rs = rs} refl
 ... | false =
-      -- Rewrite 'pr' with rank3?-cons to derive a proof on the tail.
+      -- Rewrite 'pr' with rank3?-cons to obtain a proof on the tail.
       let pr-tail : rank3? (v ∷ w ∷ rs) ≡ true
           pr-tail = trans (sym (rank3?-cons u v w rs)) pr
       in  there (soundness (v ∷ w ∷ rs) pr-tail)

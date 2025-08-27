@@ -3,8 +3,7 @@
 ----------------------------------------------------------------------
 --  Step 12 ▸ Rank-3 Soundness (Bool ⇒ Spec) and History corollaries
 --            Uses the Step 11 checker and spec; no postulates.
---  Final version: explicit structural recursion on 'n' combined
---                 with 'inspect' for a fully sound and terminating proof.
+--  Key idea: explicit structural recursion on the length 'n'.
 ----------------------------------------------------------------------
 
 module Structures.Step12_Rank3_Soundness where
@@ -35,7 +34,7 @@ open import Structures.Step11_Rank3 public using
   )
 
 ----------------------------------------------------------------------
--- 0 · Inspect utility (to capture an equality from a decision)
+-- 0 · Inspect utility (to capture an equality from a Bool decision)
 ----------------------------------------------------------------------
 
 data Inspect {A : Set} (x : A) : Set where
@@ -66,7 +65,7 @@ rank3?-cons u v w rs with nonZeroℤ (det3 u v w)
 ... | false = refl
 
 ----------------------------------------------------------------------
--- 3 · Stripping lemma for the false-branch
+-- 3 · Stripping lemma for the false branch
 --     If nonZeroℤ(det3 u v w) ≡ false and rank3? (u v w rs) ≡ true,
 --     then rank3? (v w rs) ≡ true.
 ----------------------------------------------------------------------
@@ -78,10 +77,12 @@ stripFalse :
   → rank3? (v ∷ w ∷ rs) ≡ true
 stripFalse {u} {v} {w} {rs} eqFalse pr =
   let
+    -- Unfold to the conditional form (pure propositional step)
     pr-cond :
       (if nonZeroℤ (det3 u v w) then true else rank3? (v ∷ w ∷ rs)) ≡ true
     pr-cond = trans (sym (rank3?-cons u v w rs)) pr
 
+    -- Substitute the 'false' equality for the guard
     pr-false :
       (if false then true else rank3? (v ∷ w ∷ rs)) ≡ true
     pr-false =
@@ -89,6 +90,7 @@ stripFalse {u} {v} {w} {rs} eqFalse pr =
             eqFalse
             pr-cond
   in
+    -- β-reduce to the else-branch to get the tail proof
     trans (sym (if-false-β true (rank3? (v ∷ w ∷ rs)))) pr-false
 
 ----------------------------------------------------------------------
@@ -101,45 +103,44 @@ soundnessLen : ∀ (n : ℕ) (xs : List ℤ³) →
                HasGoodTriple xs
 
 -- n = 0
-soundnessLen zero []       _   ()
-soundnessLen zero (_ ∷ _)  ()
+soundnessLen zero []          _   ()
+soundnessLen zero (_ ∷ _)     ()
 
 -- n = 1
-soundnessLen (suc zero) []           ()
-soundnessLen (suc zero) (_ ∷ [])     _  ()
-soundnessLen (suc zero) (_ ∷ _ ∷ _)  ()
+soundnessLen (suc zero) []            ()
+soundnessLen (suc zero) (_ ∷ [])      _  ()
+soundnessLen (suc zero) (_ ∷ _ ∷ _)   ()
 
 -- n = 2
-soundnessLen (suc (suc zero)) []              ()
-soundnessLen (suc (suc zero)) (_ ∷ [])        ()
-soundnessLen (suc (suc zero)) (_ ∷ _ ∷ [])      _  ()
-soundnessLen (suc (suc zero)) (_ ∷ _ ∷ _ ∷ _)  ()
+soundnessLen (suc (suc zero)) []                 ()
+soundnessLen (suc (suc zero)) (_ ∷ [])           ()
+soundnessLen (suc (suc zero)) (_ ∷ _ ∷ [])       _  ()
+soundnessLen (suc (suc zero)) (_ ∷ _ ∷ _ ∷ _)    ()
 
--- n ≥ 3, but list too short (impossible by length equation)
-soundnessLen (suc (suc (suc n′))) []              ()
-soundnessLen (suc (suc (suc n′))) (_ ∷ [])        ()
-soundnessLen (suc (suc (suc n′))) (_ ∷ _ ∷ [])      ()
+-- n ≥ 3, but list too short (ruled out by the length equality)
+soundnessLen (suc (suc (suc n′))) []                   ()
+soundnessLen (suc (suc (suc n′))) (_ ∷ [])             ()
+soundnessLen (suc (suc (suc n′))) (_ ∷ _ ∷ [])         ()
 
--- Main case: n ≥ 3 and xs has at least 3 elements
+-- Main case: n = suc (suc (suc n′)) and xs = u ∷ v ∷ w ∷ rs
+-- The length equality is definitional (refl), so n′ ≡ length rs judgmentally.
 soundnessLen (suc (suc (suc n′))) (u ∷ v ∷ w ∷ rs) refl pr
   with inspect (nonZeroℤ (det3 u v w))
-... | it true eqT =
-      -- Case 1: The determinant is non-zero.
-      -- 'inspect' provides the proof 'eqT', which we use for 'here'.
-      here eqT
-... | it false eqF =
-      -- Case 2: The determinant is zero.
-      -- 'inspect' provides the proof 'eqF'. We use it to strip the head
-      -- and recurse on a structurally smaller number 'n′'.
-      let pr-tail = stripFalse eqF pr
-      in there (soundnessLen (suc (suc n′)) (v ∷ w ∷ rs) refl pr-tail)
+... | it true  eqTrue  =
+      -- Provide the explicit equality to 'here'
+      here {u = u} {v = v} {w = w} {rs = rs} eqTrue
+... | it false eqFalse =
+      -- Tail recursion on strictly smaller length: suc (suc n′)
+      let pr-tail : rank3? (v ∷ w ∷ rs) ≡ true
+          pr-tail = stripFalse eqFalse pr
+      in  there (soundnessLen (suc (suc n′)) (v ∷ w ∷ rs) refl pr-tail)
 
 ----------------------------------------------------------------------
 -- 5 · Public soundness (derives 'n' from length xs, then calls soundnessLen)
 ----------------------------------------------------------------------
 
 soundness : ∀ xs → rank3? xs ≡ true → HasGoodTriple xs
-soundness xs pr = soundnessLen (length xs) xs refl pr
+soundness xs = soundnessLen (length xs) xs refl
 
 ----------------------------------------------------------------------
 -- 6 · Soundness specialized to histories

@@ -74,11 +74,11 @@ soundness (_ ∷ _ ∷ []) ()
 
 -- Main case: xs = u ∷ v ∷ w ∷ rs
 soundness (u ∷ v ∷ w ∷ rs) pr
-  with nonZeroℤ (det3 u v w) | inspect (nonZeroℤ (det3 u v w))
-... | true  | it .true  eqTrue =
+  with inspect (nonZeroℤ (det3 u v w))
+... | it true  eqTrue =
       -- We have eqTrue : nonZeroℤ (det3 u v w) ≡ true
       here {u = u} {v = v} {w = w} {rs = rs} eqTrue
-... | false | it .false eqFalse =
+... | it false eqFalse =
       -- Transform 'pr' to a tail-proof using only propositional steps.
       there (soundness (v ∷ w ∷ rs) pr-tail)
   where

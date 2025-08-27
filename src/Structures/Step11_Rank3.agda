@@ -163,17 +163,7 @@ diffs (_ ∷ [])        = []
 diffs (p ∷ q ∷ rest)  = q minus3 p ∷ diffs (q ∷ rest)
 
 ----------------------------------------------------------------------
--- 6 · Inspect idiom (to capture equality proofs when needed)
-----------------------------------------------------------------------
-
-data Inspect {A : Set} (x : A) : Set where
-  it : (y : A) → x ≡ y → Inspect x
-
-inspect : ∀ {A : Set} (x : A) → Inspect x
-inspect x = it x refl
-
-----------------------------------------------------------------------
--- 7 · Sliding-window checker + constructive witnesses
+-- 6 · Sliding-window checker + constructive witnesses
 ----------------------------------------------------------------------
 
 record GoodTriple : Set where
@@ -191,12 +181,11 @@ isJust : ∀{A} → Maybe A → Bool
 isJust {A} nothing  = false
 isJust {A} (just _) = true
 
--- Termination-safe: with-split on the Bool; recursion only in the 'false' branch.
--- In the 'true' branch we use 'inspect' to obtain the equality proof for the witness.
+-- Termination-safe: recurse only on the strictly shorter tail in the 'false' branch.
+-- In the 'true' branch, 'refl' is valid because the with-bound scrutinee reduces to 'true'.
 rank3Witness : List ℤ³ → Maybe GoodTriple
 rank3Witness (u ∷ v ∷ w ∷ rs) with nonZeroℤ (det3 u v w)
-... | true  with inspect (nonZeroℤ (det3 u v w))
-...   | it .true refl = just (pack u v w rs refl)
+... | true  = just (pack u v w rs refl)
 ... | false = rank3Witness (v ∷ w ∷ rs)
 rank3Witness _ = nothing
 
@@ -208,7 +197,7 @@ rank3OnHistoryBool : ∀{n} → List (Dist n) → Bool
 rank3OnHistoryBool {n} hist = rank3? (diffs (FoldMap {n} hist))
 
 ----------------------------------------------------------------------
--- 8 · Logical predicate and completeness proof
+-- 7 · Logical predicate and completeness proof
 ----------------------------------------------------------------------
 
 data HasGoodTriple : List ℤ³ → Set where
@@ -231,4 +220,5 @@ completeness (u ∷ v ∷ w ∷ rs) (there p) with nonZeroℤ (det3 u v w)
 completenessOnHistory :
   ∀ {n} (hist : List (Dist n)) →
   HasGoodTriple (diffs (FoldMap {n} hist)) → rank3OnHistoryBool hist ≡ true
-completenessOnHistory {n} hist pr = completeness (diffs (FoldMap {n} hist)) pr
+completenessOnHistory {n} hist pr =
+  completeness (diffs (FoldMap {n} hist)) pr

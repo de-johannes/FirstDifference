@@ -1,44 +1,45 @@
 {-# OPTIONS --safe #-}
 
 ----------------------------------------------------------------------
---  Step 12 ▸ Rank-3 Soundness via Witness
---  Idea: Separate computation and proof.
---        We prove: if isJust (rank3Witness xs) ≡ true
---        then xs contains a good triple (HasGoodTriple xs).
---  No postulates. Pure structural recursion on the list.
+--  Step 12 ▸ Rank-3 Soundness via Witness and Length Measure (safe)
+--  Strategy: Separate computation (rank3Witness) and proof.
+--  Goal:  If isJust (rank3Witness xs) ≡ true
+--         then HasGoodTriple xs.
+--  Technical trick: Use an explicit length measure to please the
+--  termination checker under --safe.
 ----------------------------------------------------------------------
 
 module Structures.Step12_Rank3_Soundness where
 
-open import Agda.Primitive using (Level)
 open import Data.Bool      using (Bool; true; false; if_then_else_)
 open import Data.List.Base using (List; []; _∷_)
+open import Data.Nat       using (ℕ; zero; suc)
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans; subst)
 
--- Dist only needed if you add history corollaries later.
+-- Only needed later if you add corollaries on histories.
 open import Structures.Step2_VectorOperations using (Dist)
 
--- We import exactly what we need from Step 11.
+-- Import exactly the symbols we rely on from Step 11
 open import Structures.Step11_Rank3 public using
   ( ℤ³
   ; det3
   ; nonZeroℤ
 
-  ; Maybe               -- witness carrier
+  ; Maybe
   ; just
   ; nothing
-  ; isJust              -- Bool projection from Maybe
-  ; rank3Witness        -- PROGRAM: scans list, returns witness if found
+  ; isJust
+  ; rank3Witness
 
-  ; HasGoodTriple       -- SPEC: logical property “there exists a good triple”
-  ; here                -- constructor: head triple is good (needs equality proof)
-  ; there               -- constructor: witness lives in the tail
-  ; pack                -- packaging used by rank3Witness (not used here directly)
+  ; HasGoodTriple
+  ; here
+  ; there
+  ; pack
   )
 
 ----------------------------------------------------------------------
--- 0 · Inspect utility (capture equality from a decision)
+-- Inspect utility (captures definitional equality of a computed term)
 ----------------------------------------------------------------------
 
 data Inspect {A : Set} (x : A) : Set where
@@ -48,15 +49,15 @@ inspect : ∀ {A : Set} → (x : A) → Inspect x
 inspect x = it x refl
 
 ----------------------------------------------------------------------
--- 1 · Tiny β-lemma for 'if' with false
+-- Small β-lemma for 'if false then ... else ...'
 ----------------------------------------------------------------------
 
 if-false-β : ∀ {A : Set} (x y : A) → (if false then x else y) ≡ y
 if-false-β x y = refl
 
 ----------------------------------------------------------------------
--- 2 · Unfolding lemma for the WITNESS (non-recursive)
---    Behaviour of isJust (rank3Witness ...) on length ≥ 3.
+-- Behaviour of isJust ∘ rank3Witness on lists with ≥ 3 elements
+-- (non-recursive unfolding lemma)
 ----------------------------------------------------------------------
 
 isJust-cons :
@@ -68,7 +69,7 @@ isJust-cons u v w rs with nonZeroℤ (det3 u v w)
 ... | false = refl
 
 ----------------------------------------------------------------------
--- 3 · Tail extraction for the false branch
+-- From a failed head test we extract the tail obligation
 ----------------------------------------------------------------------
 
 tailFromFalse :
@@ -78,10 +79,12 @@ tailFromFalse :
   isJust (rank3Witness (v ∷ w ∷ rs)) ≡ true
 tailFromFalse {u} {v} {w} {rs} eqFalse pr =
   let
+    -- Replace witness by its head-unfolding and transport equality
     pr-cond :
       (if nonZeroℤ (det3 u v w) then true else isJust (rank3Witness (v ∷ w ∷ rs))) ≡ true
     pr-cond = trans (sym (isJust-cons u v w rs)) pr
 
+    -- Substitute false for the condition
     pr-false :
       (if false then true else isJust (rank3Witness (v ∷ w ∷ rs))) ≡ true
     pr-false =
@@ -89,22 +92,45 @@ tailFromFalse {u} {v} {w} {rs} eqFalse pr =
             eqFalse
             pr-cond
   in
+    -- Eliminate the if with 'false' and conclude the tail is true
     trans (sym (if-false-β true (isJust (rank3Witness (v ∷ w ∷ rs))))) pr-false
 
 ----------------------------------------------------------------------
--- 4 · Main theorem: witness ⇒ spec
---    If rank3Witness finds something (isJust ≡ true),
---    then HasGoodTriple holds. Structural recursion on the list.
+-- Length measure for lists of ℤ³ and an indexed soundness proof
+-- The length index makes the recursive call obviously smaller.
+----------------------------------------------------------------------
+
+len3 : List ℤ³ → ℕ
+len3 []       = zero
+len3 (_ ∷ xs) = suc (len3 xs)
+
+-- Main indexed proof: recursion on the length index.
+witnessSoundLen :
+  ∀ n (xs : List ℤ³) →
+  len3 xs ≡ n →
+  isJust (rank3Witness xs) ≡ true →
+  HasGoodTriple xs
+
+-- Length 0: impossible because the witness is 'nothing' ⇒ isJust = false
+witnessSoundLen .zero [] refl ()
+
+-- Length 1: also impossible
+witnessSoundLen .(suc zero) (_ ∷ []) refl ()
+
+-- Length 2: also impossible
+witnessSoundLen .(suc (suc zero)) (_ ∷ _ ∷ []) refl ()
+
+-- Length ≥ 3: do the head test; if it succeeds use 'here', else recurse on tail
+witnessSoundLen .(suc (suc (suc n))) (u ∷ v ∷ w ∷ rs) refl pr
+  with inspect (nonZeroℤ (det3 u v w))
+... | it true  eqTrue  =               -- head triple is definitively good
+      here {u = u} {v = v} {w = w} {rs = rs} eqTrue
+... | it false eqFalse =               -- push obligation into the tail
+      there (witnessSoundLen (suc (suc n)) (v ∷ w ∷ rs) refl (tailFromFalse eqFalse pr))
+
+----------------------------------------------------------------------
+-- Wrapper with the actual statement (no explicit length in the type)
 ----------------------------------------------------------------------
 
 witnessSound : ∀ xs → isJust (rank3Witness xs) ≡ true → HasGoodTriple xs
--- Lists of length < 3: rank3Witness ≡ nothing ⇒ isJust ≡ false ⇒ impossible
-witnessSound []          ()
-witnessSound (_ ∷ [])    ()
-witnessSound (_ ∷ _ ∷ []) ()
-
--- Length ≥ 3
-witnessSound (u ∷ v ∷ w ∷ rs) pr
-  with inspect (nonZeroℤ (det3 u v w))
-... | it true  eqTrue  = here  {u = u} {v = v} {w = w} {rs = rs} eqTrue
-... | it false eqFalse = there (witnessSound (v ∷ w ∷ rs) (tailFromFalse eqFalse pr))
+witnessSound xs = witnessSoundLen (len3 xs) xs refl

@@ -8,14 +8,16 @@
 module Structures.Step12_Rank3_Soundness where
 
 open import Agda.Primitive using (Level)
-open import Data.Bool      using (Bool; true; false)
+open import Data.Bool      using (Bool; true; false; if_then_else_)
 open import Data.List      using (List; []; _∷_)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans)
 
+-- Dist is not re-exported by Step 11, import from Step 2:
+open import Structures.Step2_VectorOperations using (Dist)
+
 -- Reuse exactly what we need from Step 11 (public using, no empty renaming)
 open import Structures.Step11_Rank3 public using
-  ( Dist
-  ; ℤ³
+  ( ℤ³
   ; det3
   ; nonZeroℤ
   ; diffs

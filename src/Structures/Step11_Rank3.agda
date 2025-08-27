@@ -21,7 +21,8 @@ open import Structures.Step2_VectorOperations using (Dist)
 open import Structures.Step10_FoldMap         using (FoldMap)
 
 ----------------------------------------------------------------------
--- 1 · Small helpers --------------------------------------------------
+-- 1 · Tiny helpers
+----------------------------------------------------------------------
 
 not : Bool → Bool
 not true  = false
@@ -34,7 +35,8 @@ eqℕ (suc _) zero    = false
 eqℕ (suc m) (suc n) = eqℕ m n
 
 ----------------------------------------------------------------------
--- 2 · Mode masks -----------------------------------------------------
+-- 2 · Mode masks
+----------------------------------------------------------------------
 
 popcount : ∀ {n} → Dist n → ℕ
 popcount {zero}  []       = zero
@@ -55,11 +57,11 @@ mask₁ : ∀ {n} → Vec Bool n
 mask₁ {zero}  = []
 mask₁ {suc n} = true ∷ mask₁ {n}
 
--- mode-2: T F T F …
+-- mode-2:  T F T F …
 mask₂ : ∀ {n} → Vec Bool n
 mask₂ {n} = altMask true
 
--- mode-3: T T F F T T F F …
+-- mode-3:  T T F F T T F F …
 two : ℕ
 two = suc (suc zero)
 
@@ -84,12 +86,17 @@ mode₂ {n} d = andCount d (mask₂ {n})
 mode₃ {n} d = andCount d (mask₃ {n})
 
 ----------------------------------------------------------------------
--- 3 · Integers ℤ -----------------------------------------------------
+-- 3 · Integers ℤ
+----------------------------------------------------------------------
 
 record ℤ : Set where
   constructor z
   field pos neg : ℕ
-open ℤ           -- not public (avoid clash)
+open ℤ
+
+-- fixities so Agda parses mixed expressions
+infixl 7 _∗ℤ_
+infixl 6 _+ℤ_ _−ℤ_
 
 zeroℤ : ℤ
 zeroℤ = z 0 0
@@ -107,9 +114,7 @@ _−ℤ_ : ℤ → ℤ → ℤ
 x −ℤ y = x +ℤ negℤ y
 
 _∗ℤ_ : ℤ → ℤ → ℤ
-z a b ∗ℤ z c d =
-  z (a * c + b * d)
-    (a * d + b * c)
+z a b ∗ℤ z c d = z (a * c + b * d) (a * d + b * c)
 
 isZeroℤ : ℤ → Bool
 isZeroℤ (z p n) = eqℕ p n
@@ -118,7 +123,8 @@ nonZeroℤ : ℤ → Bool
 nonZeroℤ x = not (isZeroℤ x)
 
 ----------------------------------------------------------------------
--- 4 · Triples ℤ³ + determinant --------------------------------------
+-- 4 · Triples ℤ³  + determinant
+----------------------------------------------------------------------
 
 record ℤ³ : Set where
   constructor mk3
@@ -138,10 +144,14 @@ det3 r₁ r₂ r₃ =
       ei = e ∗ℤ i ; fh = f ∗ℤ h
       di = d ∗ℤ i ; fg = f ∗ℤ g
       dh = d ∗ℤ h ; eg = e ∗ℤ g
-  in  a ∗ℤ (ei −ℤ fh) −ℤ b ∗ℤ (di −ℤ fg) +ℤ c ∗ℤ (dh −ℤ eg)
+      t₁ = a ∗ℤ (ei −ℤ fh)
+      t₂ = b ∗ℤ (di −ℤ fg)
+      t₃ = c ∗ℤ (dh −ℤ eg)
+  in  (t₁ −ℤ t₂) +ℤ t₃
 
 ----------------------------------------------------------------------
--- 5 · Differences of FoldMap points ---------------------------------
+-- 5 · Differences of FoldMap points
+----------------------------------------------------------------------
 
 diffs : List ℤ³ → List ℤ³
 diffs []              = []
@@ -149,36 +159,27 @@ diffs (_ ∷ [])        = []
 diffs (p ∷ q ∷ rs)    = q minus3 p ∷ diffs (q ∷ rs)
 
 ----------------------------------------------------------------------
--- 6 · Inspect utility ----------------------------------------------
-
-data Inspect {A : Set} (x : A) : Set where
-  it : (y : A) → x ≡ y → Inspect x
-
-inspect : ∀ {A} → (x : A) → Inspect x
-inspect x = it x refl
-
+-- 6 · Witness search & Boolean checker
 ----------------------------------------------------------------------
--- 7 · Witness search & Boolean checker ------------------------------
 
 record GoodTriple : Set where
   constructor pack
-  field
-    a b c  : ℤ³
-    rest   : List ℤ³
-    det-ok : nonZeroℤ (det3 a b c) ≡ true
+  field a b c : ℤ³
+        rest  : List ℤ³
+        det-ok : nonZeroℤ (det3 a b c) ≡ true
 
 data Maybe (A : Set) : Set where
   nothing : Maybe A
   just    : A → Maybe A
 
-isJust : ∀{A} → Maybe A → Bool
+isJust : ∀ {A} → Maybe A → Bool
 isJust nothing  = false
 isJust (just _) = true
 
 rank3Witness : List ℤ³ → Maybe GoodTriple
-rank3Witness (u ∷ v ∷ w ∷ rs) with inspect (nonZeroℤ (det3 u v w))
-... | it true  eq = just (pack u v w rs eq)
-... | it false _  = rank3Witness (v ∷ w ∷ rs)
+rank3Witness (u ∷ v ∷ w ∷ rs) with nonZeroℤ (det3 u v w)
+... | true  = just (pack u v w rs refl)
+... | false = rank3Witness (v ∷ w ∷ rs)
 rank3Witness _ = nothing
 
 rank3? : List ℤ³ → Bool
@@ -188,7 +189,8 @@ rank3OnHistoryBool : ∀ {n} → List (Dist n) → Bool
 rank3OnHistoryBool {n} hist = rank3? (diffs (FoldMap {n} hist))
 
 ----------------------------------------------------------------------
--- 8 · Spec predicate & completeness proof ---------------------------
+-- 7 · Spec predicate & completeness
+----------------------------------------------------------------------
 
 data HasGoodTriple : List ℤ³ → Set where
   here  : ∀ {u v w rs}
@@ -201,8 +203,7 @@ completeness []        ()
 completeness (_ ∷ [])  ()
 completeness (_ ∷ _ ∷ []) ()
 completeness (u ∷ v ∷ w ∷ rs) (here h) rewrite h = refl
-completeness (u ∷ v ∷ w ∷ rs) (there p)
-  with nonZeroℤ (det3 u v w)
+completeness (u ∷ v ∷ w ∷ rs) (there p) with nonZeroℤ (det3 u v w)
 ... | true  = refl
 ... | false = completeness (v ∷ w ∷ rs) p
 

@@ -31,8 +31,18 @@ open import Structures.Step11_Rank3 public using
   )
 
 ----------------------------------------------------------------------
--- 0 · Auxiliary unfolding lemma for rank3? on 3+ lists
---     Make the definition explicit by case-splitting on the Bool.
+-- 0 · Inspect utility (to capture an equality from a decision)
+----------------------------------------------------------------------
+
+data Inspect {A : Set} (x : A) : Set where
+  it : (y : A) → x ≡ y → Inspect x
+
+inspect : ∀ {A : Set} → (x : A) → Inspect x
+inspect x = it x refl
+
+----------------------------------------------------------------------
+-- 1 · Unfolding lemma for rank3? on lists with ≥ 3 elements
+--     Matches the definition of rank3Witness / rank3? in Step 11.
 ----------------------------------------------------------------------
 
 rank3?-cons : ∀ (u v w : ℤ³) (rs : List ℤ³) →
@@ -45,13 +55,10 @@ rank3?-cons u v w rs with nonZeroℤ (det3 u v w)
 ... | false = refl
 -- Explanation:
 --   rank3? (u ∷ v ∷ w ∷ rs)
---   = isJust (rank3Witness (u ∷ v ∷ w ∷ rs))
---   and rank3Witness … = if b then just … else rank3Witness (tail)
---   → if b ≡ true:  LHS reduces to true; RHS reduces to true.
---   → if b ≡ false: LHS reduces to rank3? (tail); RHS reduces to rank3? (tail).
+--   = if nonZeroℤ (det3 u v w) then true else rank3? (v ∷ w ∷ rs)
 
 ----------------------------------------------------------------------
--- 1 · Soundness: rank3? xs ≡ true  ⇒  HasGoodTriple xs
+-- 2 · Soundness: rank3? xs ≡ true  ⇒  HasGoodTriple xs
 ----------------------------------------------------------------------
 
 soundness : ∀ xs → rank3? xs ≡ true → HasGoodTriple xs
@@ -62,18 +69,18 @@ soundness (_ ∷ _ ∷ []) ()
 
 -- Main case: xs = u ∷ v ∷ w ∷ rs
 soundness (u ∷ v ∷ w ∷ rs) pr
-  with nonZeroℤ (det3 u v w)
-... | true  =
-      -- In this branch, rank3? (u ∷ v ∷ w ∷ rs) ≡ true, thus 'here refl'.
-      here {u = u} {v = v} {w = w} {rs = rs} refl
-... | false =
-      -- Rewrite 'pr' with rank3?-cons to obtain a proof on the tail.
+  with inspect (nonZeroℤ (det3 u v w))
+... | it true  eq =
+      -- We have eq : nonZeroℤ (det3 u v w) ≡ true
+      here {u = u} {v = v} {w = w} {rs = rs} eq
+... | it false _  =
+      -- Rewrite 'pr' using rank3?-cons to get a tail proof:
       let pr-tail : rank3? (v ∷ w ∷ rs) ≡ true
           pr-tail = trans (sym (rank3?-cons u v w rs)) pr
       in  there (soundness (v ∷ w ∷ rs) pr-tail)
 
 ----------------------------------------------------------------------
--- 2 · Soundness specialized to histories
+-- 3 · Soundness specialized to histories
 ----------------------------------------------------------------------
 
 soundnessOnHistory :
@@ -84,7 +91,7 @@ soundnessOnHistory {n} hist pr =
   soundness (diffs (FoldMap³ {n} hist)) pr
 
 ----------------------------------------------------------------------
--- 3 · Convenience re-exports (pair the two directions)
+-- 4 · Convenience re-exports (pair the two directions)
 ----------------------------------------------------------------------
 
 -- completeness is provided by Step 11:
@@ -96,7 +103,7 @@ completeness' = completeness
 soundness' : ∀ xs → rank3? xs ≡ true → HasGoodTriple xs
 soundness' = soundness
 
--- On histories: define the completeness corollary directly (no external symbol).
+-- On histories: define the completeness corollary directly.
 completenessOnHistory' :
   ∀ {n} (hist : List (Dist n)) →
   HasGoodTriple (diffs (FoldMap³ {n} hist)) →

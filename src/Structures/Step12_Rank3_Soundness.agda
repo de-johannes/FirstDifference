@@ -1,184 +1,112 @@
 {-# OPTIONS --safe #-}
 
 ----------------------------------------------------------------------
---  Step 12 ▸ Rank-3 Soundness (Bool ⇒ Spec) and History corollaries
---            Uses the Step 11 checker and spec; no postulates.
---  Key idea: explicit structural recursion on the length 'n', and
---            move all Bool/equality case analysis into a non-recursive
---            helper (no with-split inside the recursive function).
+--  Step 12 ▸ Rank-3 Soundness via Witness
+--  Idea: Separate computation and proof.
+--        We prove:  if isJust (rank3Witness xs) ≡ true
+--        then xs contains a good triple (HasGoodTriple xs).
+--  No postulates. No sized types. Pure structural recursion on the list.
 ----------------------------------------------------------------------
 
 module Structures.Step12_Rank3_Soundness where
 
 open import Agda.Primitive using (Level)
 open import Data.Bool      using (Bool; true; false; if_then_else_)
-open import Data.Nat       using (ℕ; zero; suc)
-open import Data.List.Base using (List; []; _∷_; length)
-open import Data.Sum       using (_⊎_; inj₁; inj₂)
+open import Data.List.Base using (List; []; _∷_)
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans; subst)
 
--- Dist is not re-exported by Step 11, import from Step 2:
+-- Dist is only needed for potential history lemmas later; keep import light.
 open import Structures.Step2_VectorOperations using (Dist)
 
--- Reuse exactly what we need from Step 11
+-- Import exactly what we need from Step 11 (witness + spec constructors).
 open import Structures.Step11_Rank3 public using
   ( ℤ³
   ; det3
   ; nonZeroℤ
-  ; diffs
-  ; FoldMap³
-  ; HasGoodTriple
-  ; here
-  ; there
-  ; rank3?
-  ; rank3OnHistoryBool
-  ; completeness
+
+  ; Maybe               -- witness carrier
+  ; just
+  ; nothing
+  ; isJust              -- witness-to-Bool projection
+  ; rank3Witness        -- the PROGRAM: scans the list and returns a witness if found
+
+  ; HasGoodTriple       -- the SPEC: logical property “there exists a good triple”
+  ; here                -- constructor: immediate triple at the head (needs proof cond ≡ true)
+  ; there               -- constructor: witness is in the tail
+  ; pack                -- packages (u v w rs) into a GoodTriple; used by rank3Witness’ definition
   )
 
 ----------------------------------------------------------------------
--- 0 · Inspect utility (to capture an equality from a Bool decision)
-----------------------------------------------------------------------
-
-data Inspect {A : Set} (x : A) : Set where
-  it : (y : A) → x ≡ y → Inspect x
-
-inspect : ∀ {A : Set} → (x : A) → Inspect x
-inspect x = it x refl
-
-----------------------------------------------------------------------
--- 1 · Tiny β-lemma for 'if'
+-- 0 · Tiny β-lemma for 'if' with false (handy for tail extraction)
 ----------------------------------------------------------------------
 
 if-false-β : ∀ {A : Set} (x y : A) → (if false then x else y) ≡ y
 if-false-β x y = refl
 
 ----------------------------------------------------------------------
--- 2 · Unfolding lemma for rank3? on lists with ≥ 3 elements
---     (matches the definition of rank3Witness / rank3? in Step 11)
+-- 1 · Unfolding lemma for the WITNESS (non-recursive)
+--    How 'isJust ∘ rank3Witness' behaves on lists of length ≥ 3.
+--    This matches the Step 11 definition:
+--      rank3Witness (u∷v∷w∷rs) =
+--        if nonZeroℤ (det3 u v w)
+--        then just (pack u v w rs)
+--        else rank3Witness (v ∷ w ∷ rs)
 ----------------------------------------------------------------------
 
-rank3?-cons : ∀ (u v w : ℤ³) (rs : List ℤ³) →
-  rank3? (u ∷ v ∷ w ∷ rs)
-  ≡ (if nonZeroℤ (det3 u v w)
-     then true
-     else rank3? (v ∷ w ∷ rs))
-rank3?-cons u v w rs with nonZeroℤ (det3 u v w)
-... | true  = refl
-... | false = refl
+isJust-cons :
+  ∀ (u v w : ℤ³) (rs : List ℤ³) →
+  isJust (rank3Witness (u ∷ v ∷ w ∷ rs))
+  ≡ (if nonZeroℤ (det3 u v w) then true else isJust (rank3Witness (v ∷ w ∷ rs)))
+isJust-cons u v w rs with nonZeroℤ (det3 u v w)
+... | true  = refl   -- LHS reduces to isJust (just …) ≡ true; RHS reduces to if true then true else … ≡ true
+... | false = refl   -- LHS reduces to isJust (rank3Witness tail); RHS to if false then true else … ≡ isJust tail
 
 ----------------------------------------------------------------------
--- 3 · Stripping lemma for the false branch
---     If nonZeroℤ(det3 u v w) ≡ false and rank3? (u v w rs) ≡ true,
---     then rank3? (v w rs) ≡ true.
+-- 2 · Tail extraction: from a 'false' guard we get a tail proof
+--    If nonZeroℤ(det3 u v w) ≡ false and the head-branch yields true overall,
+--    then the tail projection must be true as well.
 ----------------------------------------------------------------------
 
-stripFalse :
-  ∀ {u v w rs}
-  → nonZeroℤ (det3 u v w) ≡ false
-  → rank3? (u ∷ v ∷ w ∷ rs) ≡ true
-  → rank3? (v ∷ w ∷ rs) ≡ true
-stripFalse {u} {v} {w} {rs} eqFalse pr =
+tailFromFalse :
+  ∀ {u v w rs} →
+  nonZeroℤ (det3 u v w) ≡ false →
+  isJust (rank3Witness (u ∷ v ∷ w ∷ rs)) ≡ true →
+  isJust (rank3Witness (v ∷ w ∷ rs)) ≡ true
+tailFromFalse {u} {v} {w} {rs} eqFalse pr =
   let
+    -- Move to the conditional shape using the unfolding lemma:
     pr-cond :
-      (if nonZeroℤ (det3 u v w) then true else rank3? (v ∷ w ∷ rs)) ≡ true
-    pr-cond = trans (sym (rank3?-cons u v w rs)) pr
+      (if nonZeroℤ (det3 u v w) then true else isJust (rank3Witness (v ∷ w ∷ rs))) ≡ true
+    pr-cond = trans (sym (isJust-cons u v w rs)) pr
 
+    -- Substitute b = false into the guard:
     pr-false :
-      (if false then true else rank3? (v ∷ w ∷ rs)) ≡ true
+      (if false then true else isJust (rank3Witness (v ∷ w ∷ rs))) ≡ true
     pr-false =
-      subst (λ b → (if b then true else rank3? (v ∷ w ∷ rs)) ≡ true)
+      subst (λ b → (if b then true else isJust (rank3Witness (v ∷ w ∷ rs))) ≡ true)
             eqFalse
             pr-cond
   in
-    trans (sym (if-false-β true (rank3? (v ∷ w ∷ rs)))) pr-false
+    -- β-reduce the false-branch and finish:
+    trans (sym (if-false-β true (isJust (rank3Witness (v ∷ w ∷ rs))))) pr-false
 
 ----------------------------------------------------------------------
--- 4 · Non-recursive decision: either immediate witness (true-branch)
---     or a tail-proof for recursion (false-branch).
+-- 3 · Main theorem: “witness ⇒ spec”
+--    If rank3Witness finds something (isJust ≡ true),
+--    then the logical property HasGoodTriple holds.
+--    Proof is by plain structural recursion on the list.
 ----------------------------------------------------------------------
 
-decideOrTail :
-  ∀ (u v w : ℤ³) (rs : List ℤ³)
-  → (pr : rank3? (u ∷ v ∷ w ∷ rs) ≡ true)
-  → HasGoodTriple (u ∷ v ∷ w ∷ rs) ⊎ (rank3? (v ∷ w ∷ rs) ≡ true)
-decideOrTail u v w rs pr
-  with inspect (nonZeroℤ (det3 u v w))
-... | it true  eqTrue  = inj₁ (here {u = u} {v = v} {w = w} {rs = rs} eqTrue)
-... | it false eqFalse = inj₂ (stripFalse eqFalse pr)
+witnessSound : ∀ xs → isJust (rank3Witness xs) ≡ true → HasGoodTriple xs
+-- Lists of length < 3: rank3Witness ≡ nothing ⇒ isJust ≡ false ⇒ impossible
+witnessSound []          ()
+witnessSound (_ ∷ [])    ()
+witnessSound (_ ∷ _ ∷ []) ()
 
-----------------------------------------------------------------------
--- 5 · Soundness with an explicit length parameter (structural recursion)
---     No with-split here; recursion is purely on 'n'.
-----------------------------------------------------------------------
-
-soundnessLen : ∀ (n : ℕ) (xs : List ℤ³) →
-               length xs ≡ n →
-               rank3? xs ≡ true →
-               HasGoodTriple xs
-
--- n = 0
-soundnessLen zero []          _   ()
-soundnessLen zero (_ ∷ _)     ()
-
--- n = 1
-soundnessLen (suc zero) []            ()
-soundnessLen (suc zero) (_ ∷ [])      _  ()
-soundnessLen (suc zero) (_ ∷ _ ∷ _)   ()
-
--- n = 2
-soundnessLen (suc (suc zero)) []                 ()
-soundnessLen (suc (suc zero)) (_ ∷ [])           ()
-soundnessLen (suc (suc zero)) (_ ∷ _ ∷ [])       _  ()
-soundnessLen (suc (suc zero)) (_ ∷ _ ∷ _ ∷ _)    ()
-
--- n ≥ 3, but list too short (ruled out by the length equation)
-soundnessLen (suc (suc (suc n′))) []                   ()
-soundnessLen (suc (suc (suc n′))) (_ ∷ [])             ()
-soundnessLen (suc (suc (suc n′))) (_ ∷ _ ∷ [])         ()
-
--- Main case: n = suc (suc (suc n′)) and xs = u ∷ v ∷ w ∷ rs
--- The length equality is definitional (refl), so n′ ≡ length rs judgmentally.
-soundnessLen (suc (suc (suc n′))) (u ∷ v ∷ w ∷ rs) refl pr
-  with decideOrTail u v w rs pr
-... | inj₁ witness = witness
-... | inj₂ prTail  = there (soundnessLen (suc (suc n′)) (v ∷ w ∷ rs) refl prTail)
-
-----------------------------------------------------------------------
--- 6 · Public soundness (derive 'n' from length xs, then call soundnessLen)
-----------------------------------------------------------------------
-
-soundness : ∀ xs → rank3? xs ≡ true → HasGoodTriple xs
-soundness xs = soundnessLen (length xs) xs refl
-
-----------------------------------------------------------------------
--- 7 · Soundness specialized to histories
-----------------------------------------------------------------------
-
-soundnessOnHistory :
-  ∀ {n} (hist : List (Dist n)) →
-  rank3OnHistoryBool hist ≡ true →
-  HasGoodTriple (diffs (FoldMap³ {n} hist))
-soundnessOnHistory {n} hist pr =
-  soundness (diffs (FoldMap³ {n} hist)) pr
-
-----------------------------------------------------------------------
--- 8 · Convenience re-exports (pair the two directions)
-----------------------------------------------------------------------
-
--- completeness is provided by Step 11:
---   completeness : ∀ xs → HasGoodTriple xs → rank3? xs ≡ true
-
-completeness' : ∀ xs → HasGoodTriple xs → rank3? xs ≡ true
-completeness' = completeness
-
-soundness' : ∀ xs → rank3? xs ≡ true → HasGoodTriple xs
-soundness' = soundness
-
--- On histories: define the completeness corollary directly.
-completenessOnHistory' :
-  ∀ {n} (hist : List (Dist n)) →
-  HasGoodTriple (diffs (FoldMap³ {n} hist)) →
-  rank3OnHistoryBool hist ≡ true
-completenessOnHistory' {n} hist pr =
-  completeness (diffs (FoldMap³ {n} hist)) pr
+-- Length ≥ 3: split off the first triple (u,v,w) and the rest rs
+witnessSound (u ∷ v ∷ w ∷ rs) pr with nonZeroℤ (det3 u v w)
+... | true  =              -- Head already contains a good triple
+  here {u = u} {v = v} {w = w} {rs = rs} refl
+... | false =              -- Otherwise, the witness lives in the tail
+  there (witnessSound (v ∷ w ∷ rs) (tailFromFalse refl pr))

@@ -17,6 +17,7 @@ open import Data.List      using (List; []; _∷_; map)
 open import Data.Vec       using (Vec; []; _∷_)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import Agda.Primitive using (Level)
+open import Data.Sum.Base using (_⊎_; inj₁; inj₂)
 
 open import Structures.Step2_VectorOperations using (Dist)
 
@@ -33,6 +34,7 @@ eqℕ zero    zero    = true
 eqℕ zero    (suc _) = false
 eqℕ (suc _) zero    = false
 eqℕ (suc m) (suc n) = eqℕ m n
+
 
 ----------------------------------------------------------------------
 -- 2 · Mode masks
@@ -226,6 +228,13 @@ rank3? xs = isJust (rank3Witness xs)
 -- Public checker specialized to histories (uses the local FoldMap³)
 rank3OnHistoryBool : ∀ {n} → List (Dist n) → Bool
 rank3OnHistoryBool {n} hist = rank3? (diffs (FoldMap³ {n} hist))
+
+decNonZeroDet3 : ∀ (u v w : ℤ³)
+               → (nonZeroℤ (det3 u v w) ≡ true)
+               ⊎ (nonZeroℤ (det3 u v w) ≡ false)
+decNonZeroDet3 u v w with nonZeroℤ (det3 u v w)
+... | true  = inj₁ refl
+... | false = inj₂ refl
 
 ----------------------------------------------------------------------
 -- 8 · Spec predicate & completeness (Boolean meets spec)

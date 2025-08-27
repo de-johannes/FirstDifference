@@ -15,11 +15,15 @@ open import Structures.Step11_Rank3 public using
   ; HasGoodTriple ; here ; there
   )
 
--- kleines β-Lemma
+------------------------------------------------------------------------
+-- Hilfs-Lemmas
+------------------------------------------------------------------------
+
+-- β-Lemma: „if false …“ vereinfacht
 if-false-β : ∀ {A : Set} (x y : A) → (if false then x else y) ≡ y
 if-false-β x y = refl
 
--- Entfaltung des Programms (reine Definition von Step 11)
+-- Entfaltung des Programms (direkt aus der Def. in Step 11)
 isJust-cons :
   ∀ (u v w : ℤ³) (rs : List ℤ³) →
   isJust (rank3Witness (u ∷ v ∷ w ∷ rs))
@@ -28,7 +32,7 @@ isJust-cons u v w rs with nonZeroℤ (det3 u v w)
 ... | true  = refl
 ... | false = refl
 
--- False-Zweig: isJust (…tail…) = true
+-- Falls det=0: das True muss aus dem Tail kommen
 tailFromFalse :
   ∀ {u v w rs} →
   nonZeroℤ (det3 u v w) ≡ false →
@@ -49,24 +53,29 @@ tailFromFalse {u} {v} {w} {rs} eqFalse pr =
   in
     trans (sym (if-false-β true (isJust (rank3Witness (v ∷ w ∷ rs))))) pr-false
 
--- Kleine Inspect-Hilfe (lokal), um eine Gleichheit zum 'with'-Wert zu bekommen
+------------------------------------------------------------------------
+-- Kleine Inspect-Hilfe, um eine Gleichheit zum Bool-Wert zu bekommen
+------------------------------------------------------------------------
+
 data Inspect {A : Set} (x : A) : Set where
   it : (y : A) → x ≡ y → Inspect x
 
 inspect : ∀ {A : Set} → (x : A) → Inspect x
 inspect x = it x refl
 
--- Soundness: jetzt direkt auf das Bool matchen (keine 'inspect'-Gleichheiten nötig)
+------------------------------------------------------------------------
+-- Hauptsatz: Soundness für rank3Witness
+------------------------------------------------------------------------
+
 witnessSound : ∀ xs → isJust (rank3Witness xs) ≡ true → HasGoodTriple xs
 witnessSound []          ()
 witnessSound (_ ∷ [])    ()
 witnessSound (_ ∷ _ ∷ []) ()
 witnessSound (u ∷ v ∷ w ∷ rs) pr
-  with nonZeroℤ (det3 u v w)
-... | true
-  with inspect (nonZeroℤ (det3 u v w))
-... | it .true  eqTrue  = here  {u = u} {v = v} {w = w} {rs = rs} eqTrue
-
-... | false
-  with inspect (nonZeroℤ (det3 u v w))
-... | it .false eqFalse = there (witnessSound (v ∷ w ∷ rs) (tailFromFalse eqFalse pr))
+  with b | inspect b
+  where
+    b = nonZeroℤ (det3 u v w)
+... | true  | it .true  eqTrue  =
+      here {u = u} {v = v} {w = w} {rs = rs} eqTrue
+... | false | it .false eqFalse =
+      there (witnessSound (v ∷ w ∷ rs) (tailFromFalse eqFalse pr))

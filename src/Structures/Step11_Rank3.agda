@@ -2,6 +2,7 @@
 
 ----------------------------------------------------------------------
 --  Step 11 ▸ Rank-3 detection with constructive witnesses
+--            (self-contained: local FoldMap³, no conflicts)
 ----------------------------------------------------------------------
 
 module Structures.Step11_Rank3 where
@@ -18,10 +19,9 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import Agda.Primitive using (Level)
 
 open import Structures.Step2_VectorOperations using (Dist)
-open import Structures.Step10_FoldMap         using (FoldMap)
 
 ----------------------------------------------------------------------
--- 1 · Helper functions
+-- 1 · Tiny helpers
 ----------------------------------------------------------------------
 
 not : Bool → Bool
@@ -47,17 +47,21 @@ andCount {zero}  []       []       = zero
 andCount {suc _} (a ∷ as) (b ∷ bs) =
   (if a ∧ b then 1 else 0) + andCount as bs
 
-altMask : ∀ {n} → Bool → Vec Bool n       -- T F T F …
+-- alternating mask  T F T F …
+altMask : ∀ {n} → Bool → Vec Bool n
 altMask {zero}  _ = []
 altMask {suc n} b = b ∷ altMask {n} (not b)
 
-mask₁ : ∀ {n} → Vec Bool n                -- all true
+-- mode-1: all true
+mask₁ : ∀ {n} → Vec Bool n
 mask₁ {zero}  = []
 mask₁ {suc n} = true ∷ mask₁ {n}
 
-mask₂ : ∀ {n} → Vec Bool n                -- alternation
+-- mode-2:  T F T F …
+mask₂ : ∀ {n} → Vec Bool n
 mask₂ {n} = altMask true
 
+-- mode-3:  T T F F T T F F …
 two : ℕ
 two = suc (suc zero)
 
@@ -65,7 +69,7 @@ pred : ℕ → ℕ
 pred zero    = zero
 pred (suc k) = k
 
-mask3Aux : ∀ {n} → Bool → ℕ → Vec Bool n  -- T T F F …
+mask3Aux : ∀ {n} → Bool → ℕ → Vec Bool n
 mask3Aux {zero}  _ _ = []
 mask3Aux {suc n} b t = b ∷ mask3Aux {n} b' t'
   where
@@ -90,22 +94,26 @@ record ℤ : Set where
   field pos neg : ℕ
 open ℤ
 
+-- fixities (so mixed expressions parse deterministically)
 infixl 7 _∗ℤ_
 infixl 6 _+ℤ_ _−ℤ_
 
 zeroℤ : ℤ
 zeroℤ = z 0 0
 
-_+ℤ_ : ℤ → ℤ → ℤ
-z a b +ℤ z c d = z (a + c) (b + d)
+toℤ : ℕ → ℤ
+toℤ n = z n 0
 
 negℤ : ℤ → ℤ
 negℤ (z p n) = z n p
 
+_+ℤ_ : ℤ → ℤ → ℤ
+z a b +ℤ z c d = z (a + c) (b + d)
+
 _−ℤ_ : ℤ → ℤ → ℤ
 x −ℤ y = x +ℤ negℤ y
 
-_∗ℤ_ : ℤ → ℤ → ℤ            -- (a−b)(c−d)
+_∗ℤ_ : ℤ → ℤ → ℤ            -- (a−b)(c−d) = (ac+bd) − (ad+bc)
 z a b ∗ℤ z c d = z (a * c + b * d) (a * d + b * c)
 
 isZeroℤ : ℤ → Bool
@@ -115,7 +123,7 @@ nonZeroℤ : ℤ → Bool
 nonZeroℤ x = not (isZeroℤ x)
 
 ----------------------------------------------------------------------
--- 4 · Triples ℤ³  + determinant
+-- 4 · Triples ℤ³  + determinant (fully parenthesised)
 ----------------------------------------------------------------------
 
 record ℤ³ : Set where
@@ -142,7 +150,44 @@ det3 r₁ r₂ r₃ =
   in  (t₁ −ℤ t₂) +ℤ t₃
 
 ----------------------------------------------------------------------
--- 5 · Differences of FoldMap points
+-- 5 · Local FoldMap³ (no conflict with Step 10)
+----------------------------------------------------------------------
+
+-- prefix sums (exclusive)
+scanSum : ℕ → List ℕ → List ℕ
+scanSum _   []       = []
+scanSum acc (n ∷ ns) with acc + n | scanSum (acc + n) ns
+... | acc′ | rest = acc′ ∷ rest
+
+-- 4-way zipper (total & level-polymorphic)
+zip⁴ : ∀ {ℓA ℓB ℓC ℓD ℓE}
+       {A : Set ℓA} {B : Set ℓB} {C : Set ℓC} {D : Set ℓD} {E : Set ℓE}
+     → (A → B → C → D → E)
+     → List A → List B → List C → List D → List E
+zip⁴ _ []         _          _          _          = []
+zip⁴ _ _          []         _          _          = []
+zip⁴ _ _          _          []         _          = []
+zip⁴ _ _          _          _          []         = []
+zip⁴ f (a ∷ as) (b ∷ bs) (c ∷ cs) (d ∷ ds) =
+  f a b c d ∷ zip⁴ f as bs cs ds
+
+-- FoldMap³: History → ℤ³ using the 3 mode-counters and popcount as weight
+FoldMap³ : ∀ {n} → List (Dist n) → List ℤ³
+FoldMap³ {n} hist =
+  let s₁ = scanSum 0 (map (mode₁ {n}) hist)
+      s₂ = scanSum 0 (map (mode₂ {n}) hist)
+      s₃ = scanSum 0 (map (mode₃ {n}) hist)
+      fs = scanSum 0 (map (popcount {n}) hist)
+
+      mul : ℕ → ℕ → ℤ
+      mul a b = toℤ (a * b)
+
+      point : ℕ → ℕ → ℕ → ℕ → ℤ³
+      point a b c f = mk3 (mul a f) (mul b f) (mul c f)
+  in  zip⁴ point s₁ s₂ s₃ fs
+
+----------------------------------------------------------------------
+-- 6 · Differences of FoldMap points
 ----------------------------------------------------------------------
 
 diffs : List ℤ³ → List ℤ³
@@ -151,24 +196,14 @@ diffs (_ ∷ [])        = []
 diffs (p ∷ q ∷ rs)    = q minus3 p ∷ diffs (q ∷ rs)
 
 ----------------------------------------------------------------------
--- 6 · Inspect utility
-----------------------------------------------------------------------
-
-data Inspect {A : Set} (x : A) : Set where
-  it : (y : A) → x ≡ y → Inspect x
-
-inspect : ∀ {A} → (x : A) → Inspect x
-inspect x = it x refl
-
-----------------------------------------------------------------------
 -- 7 · Witness search & Boolean checker
 ----------------------------------------------------------------------
 
+-- Minimal witness (no proof components needed for the boolean decider)
 record GoodTriple : Set where
   constructor pack
   field a b c : ℤ³
         rest  : List ℤ³
-        det-ok : nonZeroℤ (det3 a b c) ≡ true
 
 data Maybe (A : Set) : Set where
   nothing : Maybe A
@@ -178,30 +213,33 @@ isJust : ∀ {A} → Maybe A → Bool
 isJust nothing  = false
 isJust (just _) = true
 
--- uses inspect → explicit equality proof; recursion only in 'false' path
+-- Termination-safe: pattern on the list, then 'with' on the Bool.
+-- Recursive call only in the 'false' branch on a strictly shorter list.
 rank3Witness : List ℤ³ → Maybe GoodTriple
-rank3Witness (u ∷ v ∷ w ∷ rs)
-  with inspect (nonZeroℤ (det3 u v w))
-... | it true  eq = just (pack u v w rs eq)
-... | it false _  = rank3Witness (v ∷ w ∷ rs)
+rank3Witness (u ∷ v ∷ w ∷ rs) with nonZeroℤ (det3 u v w)
+... | true  = just (pack u v w rs)
+... | false = rank3Witness (v ∷ w ∷ rs)
 rank3Witness _ = nothing
 
 rank3? : List ℤ³ → Bool
 rank3? xs = isJust (rank3Witness xs)
 
+-- Public checker specialized to histories (uses the local FoldMap³)
 rank3OnHistoryBool : ∀ {n} → List (Dist n) → Bool
-rank3OnHistoryBool {n} h = rank3? (diffs (FoldMap {n} h))
+rank3OnHistoryBool {n} hist = rank3? (diffs (FoldMap³ {n} hist))
 
 ----------------------------------------------------------------------
--- 8 · Spec predicate & completeness proof
+-- 8 · Spec predicate & completeness (Boolean meets spec)
 ----------------------------------------------------------------------
 
+-- Logical spec: “there exists a consecutive triple with det ≠ 0”
 data HasGoodTriple : List ℤ³ → Set where
   here  : ∀ {u v w rs}
         → nonZeroℤ (det3 u v w) ≡ true
         → HasGoodTriple (u ∷ v ∷ w ∷ rs)
   there : ∀ {x xs} → HasGoodTriple xs → HasGoodTriple (x ∷ xs)
 
+-- Completeness: if the spec holds, the Boolean checker is true.
 completeness : ∀ xs → HasGoodTriple xs → rank3? xs ≡ true
 completeness []        ()
 completeness (_ ∷ [])  ()
@@ -212,9 +250,10 @@ completeness (u ∷ v ∷ w ∷ rs) (there p)
 ... | true  = refl
 ... | false = completeness (v ∷ w ∷ rs) p
 
+-- Specialized to histories via the local FoldMap³
 completenessOnHistory :
   ∀ {n} (hist : List (Dist n)) →
-  HasGoodTriple (diffs (FoldMap {n} hist)) →
+  HasGoodTriple (diffs (FoldMap³ {n} hist)) →
   rank3OnHistoryBool hist ≡ true
-completenessOnHistory {n} h pr =
-  completeness (diffs (FoldMap {n} h)) pr
+completenessOnHistory {n} hist pr =
+  completeness (diffs (FoldMap³ {n} hist)) pr

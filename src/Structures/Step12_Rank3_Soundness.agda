@@ -1,24 +1,27 @@
 {-# OPTIONS --safe #-}
 
 ----------------------------------------------------------------------
---  Step 12 ▸ Rank-3 Soundness via Witness
---  Idee: Programm/Beweis trennen.
---        Wir zeigen: isJust (rank3Witness xs) ≡ true ⇒ HasGoodTriple xs
---  Keine Postulate. Reine strukturelle Rekursion über die Liste.
+--  Step 12 ▸ Rank-3 Soundness from the Step 11 witness (safe)
+--  Goal proved here:
+--     ∀ xs → isJust (rank3Witness xs) ≡ true → HasGoodTriple xs
+--  Strategy:
+--    • Separate computation (rank3Witness) and proof (this file).
+--    • Pure structural recursion on the list (no length index).
+--    • A tiny helper lemma propagates the tail obligation in the
+--      “head test = false” branch.
 ----------------------------------------------------------------------
 
 module Structures.Step12_Rank3_Soundness where
 
-open import Agda.Primitive using (Level)
 open import Data.Bool      using (Bool; true; false; if_then_else_)
 open import Data.List.Base using (List; []; _∷_)
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans; subst)
 
--- Dist nur nötig, falls später History-Korollare ergänzt werden.
+-- If you later want results over Dist histories, keep this import handy.
 open import Structures.Step2_VectorOperations using (Dist)
 
--- Import aus Step 11: genau das, was wir brauchen.
+-- Import exactly what we need from Step 11.
 open import Structures.Step11_Rank3 public using
   ( ℤ³
   ; det3
@@ -33,29 +36,19 @@ open import Structures.Step11_Rank3 public using
   ; HasGoodTriple
   ; here
   ; there
-  ; GoodTriple        -- (für Vollständigkeit; hier nicht direkt verwendet)
+  ; pack
   )
 
 ----------------------------------------------------------------------
--- 0 · Inspect-Hilfstyp (Erfassen einer Gleichheit aus einer Entscheidung)
-----------------------------------------------------------------------
-
-data Inspect {A : Set} (x : A) : Set where
-  it : (y : A) → x ≡ y → Inspect x
-
-inspect : ∀ {A : Set} → (x : A) → Inspect x
-inspect x = it x refl
-
-----------------------------------------------------------------------
--- 1 · β-Lemma: 'if false then x else y' ≡ y
+-- Small β-lemma for 'if false then ... else ...'
 ----------------------------------------------------------------------
 
 if-false-β : ∀ {A : Set} (x y : A) → (if false then x else y) ≡ y
 if-false-β x y = refl
 
 ----------------------------------------------------------------------
--- 2 · Entfaltungslemma für isJust (rank3Witness (u ∷ v ∷ w ∷ rs))
---     (nicht-rekursiv; folgt direkt aus der Definition in Step 11)
+-- Behaviour of isJust ∘ rank3Witness on lists with ≥ 3 elements.
+-- This mirrors the head unfolding from Step 11.
 ----------------------------------------------------------------------
 
 isJust-cons :
@@ -67,7 +60,8 @@ isJust-cons u v w rs with nonZeroℤ (det3 u v w)
 ... | false = refl
 
 ----------------------------------------------------------------------
--- 3 · Schwänzeziehen im false-Zweig
+-- From a failed head test we extract the tail obligation:
+--   if head-test = false and whole = true  ⇒  tail = true
 ----------------------------------------------------------------------
 
 tailFromFalse :
@@ -77,10 +71,12 @@ tailFromFalse :
   isJust (rank3Witness (v ∷ w ∷ rs)) ≡ true
 tailFromFalse {u} {v} {w} {rs} eqFalse pr =
   let
+    -- Replace LHS by its head unfolding and transport equality:
     pr-cond :
       (if nonZeroℤ (det3 u v w) then true else isJust (rank3Witness (v ∷ w ∷ rs))) ≡ true
     pr-cond = trans (sym (isJust-cons u v w rs)) pr
 
+    -- Substitute 'false' for the condition:
     pr-false :
       (if false then true else isJust (rank3Witness (v ∷ w ∷ rs))) ≡ true
     pr-false =
@@ -88,22 +84,23 @@ tailFromFalse {u} {v} {w} {rs} eqFalse pr =
             eqFalse
             pr-cond
   in
+    -- Eliminate the 'if false' and conclude the tail is true:
     trans (sym (if-false-β true (isJust (rank3Witness (v ∷ w ∷ rs))))) pr-false
 
 ----------------------------------------------------------------------
--- 4 · Hauptsatz (Soundness): witness ⇒ spec
---     Wenn isJust (rank3Witness xs) ≡ true, dann HasGoodTriple xs.
---     Strukturelle Rekursion über xs.
+-- Main theorem: whenever the program finds a witness (isJust = true),
+-- the logical predicate HasGoodTriple holds.
+-- Pure structural recursion on the list:
 ----------------------------------------------------------------------
 
 witnessSound : ∀ xs → isJust (rank3Witness xs) ≡ true → HasGoodTriple xs
--- Längen < 3: unmöglich (rank3Witness ≡ nothing ⇒ isJust ≡ false)
-witnessSound []          ()
-witnessSound (_ ∷ [])    ()
+
+-- Length < 3: impossible, rank3Witness = nothing ⇒ isJust = false
+witnessSound [] ()
+witnessSound (_ ∷ []) ()
 witnessSound (_ ∷ _ ∷ []) ()
 
--- Länge ≥ 3
-witnessSound (u ∷ v ∷ w ∷ rs) pr
-  with inspect (nonZeroℤ (det3 u v w))
-... | it true  eqTrue  = here  {u = u} {v = v} {w = w} {rs = rs} eqTrue
-... | it false eqFalse = there (witnessSound (v ∷ w ∷ rs) (tailFromFalse eqFalse pr))
+-- Length ≥ 3: test the head triple; if true we are done, else recurse on the tail
+witnessSound (u ∷ v ∷ w ∷ rs) pr with nonZeroℤ (det3 u v w)
+... | true  = here refl
+... | false = there (witnessSound (v ∷ w ∷ rs) (tailFromFalse refl pr))

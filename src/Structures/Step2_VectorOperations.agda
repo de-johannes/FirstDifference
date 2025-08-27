@@ -1,51 +1,136 @@
--- src/Step2_VectorOperations.agda
 {-# OPTIONS --safe #-}
 
--- | Step 2: Boolean Vectors with Component-wise Operations  
--- | Building multi-dimensional Boolean spaces
-module Structures.Step2_VectorOperations where
+----------------------------------------------------------------------
+--  Step 12 ▸ Rank-3 Soundness via Witness and Length Measure (safe)
+--  Strategy: Separate computation (rank3Witness) and proof.
+--  Goal:  If isJust (rank3Witness xs) ≡ true
+--         then HasGoodTriple xs.
+--  Technical trick: Use an explicit length measure to please the
+--  termination checker under --safe.
+----------------------------------------------------------------------
 
-open import Data.Bool using (Bool; true; false; _∧_; _∨_; not)
-open import Data.Nat using (ℕ; zero; suc)
-open import Data.Vec using (Vec; []; _∷_; zipWith)
-open import Structures.Step1_BooleanFoundation
+module Structures.Step12_Rank3_Soundness where
 
-------------------------------------------------------------------------  
--- DISTINCTION VECTORS: Multi-dimensional Boolean Spaces
-------------------------------------------------------------------------
+open import Data.Bool      using (Bool; true; false; if_then_else_)
+open import Data.List.Base using (List; []; _∷_)
+open import Data.Nat       using (ℕ; zero; suc)
+open import Relation.Binary.PropositionalEquality
+  using (_≡_; refl; sym; trans; subst)
 
--- | A distinction is an n-dimensional Boolean vector
--- | Each component represents a polar choice (marked/unmarked)
-Dist : ℕ → Set
-Dist n = Vec Bool n
+-- Only needed later if you add corollaries on histories.
+open import Structures.Step2_VectorOperations using (Dist)
 
--- | Drift: component-wise Boolean AND 
--- | Models "both conditions must hold simultaneously"
-drift : ∀ {n} → Dist n → Dist n → Dist n
-drift = zipWith _∧_
+-- Import exactly the symbols we rely on from Step 11
+open import Structures.Step11_Rank3 public using
+  ( ℤ³
+  ; det3
+  ; nonZeroℤ
 
--- | Join: component-wise Boolean OR
--- | Models "either condition can hold"  
-join : ∀ {n} → Dist n → Dist n → Dist n
-join = zipWith _∨_
+  ; Maybe
+  ; just
+  ; nothing
+  ; isJust
+  ; rank3Witness
 
--- | Negation: component-wise Boolean NOT
--- | Models "flip all polar choices"
-neg : ∀ {n} → Dist n → Dist n  
-neg []       = []
-neg (x ∷ xs) = not x ∷ neg xs
+  ; HasGoodTriple
+  ; here
+  ; there
+  ; pack
+  )
 
--- | All-true vector: identity element for drift
-all-true : ∀ n → Dist n
-all-true zero    = []
-all-true (suc n) = true ∷ all-true n
+----------------------------------------------------------------------
+-- Inspect utility (captures definitional equality of a computed term)
+----------------------------------------------------------------------
 
--- | All-false vector: absorbing element for drift
-all-false : ∀ n → Dist n
-all-false zero    = []
-all-false (suc n) = false ∷ all-false n
+data Inspect {A : Set} (x : A) : Set where
+  it : (y : A) → x ≡ y → Inspect x
 
-------------------------------------------------------------------------
--- BREAKTHROUGH: Vector operations inherit Boolean structure!
--- The n-dimensional case follows from 1-dimensional proofs
-------------------------------------------------------------------------
+inspect : ∀ {A : Set} → (x : A) → Inspect x
+inspect x = it x refl
+
+----------------------------------------------------------------------
+-- Small β-lemma for 'if false then ... else ...'
+----------------------------------------------------------------------
+
+if-false-β : ∀ {A : Set} (x y : A) → (if false then x else y) ≡ y
+if-false-β x y = refl
+
+----------------------------------------------------------------------
+-- Behaviour of isJust ∘ rank3Witness on lists with ≥ 3 elements
+-- (non-recursive unfolding lemma)
+----------------------------------------------------------------------
+
+isJust-cons :
+  ∀ (u v w : ℤ³) (rs : List ℤ³) →
+  isJust (rank3Witness (u ∷ v ∷ w ∷ rs))
+  ≡ (if nonZeroℤ (det3 u v w) then true else isJust (rank3Witness (v ∷ w ∷ rs)))
+isJust-cons u v w rs with nonZeroℤ (det3 u v w)
+... | true  = refl
+... | false = refl
+
+----------------------------------------------------------------------
+-- From a failed head test we extract the tail obligation
+----------------------------------------------------------------------
+
+tailFromFalse :
+  ∀ {u v w rs} →
+  nonZeroℤ (det3 u v w) ≡ false →
+  isJust (rank3Witness (u ∷ v ∷ w ∷ rs)) ≡ true →
+  isJust (rank3Witness (v ∷ w ∷ rs)) ≡ true
+tailFromFalse {u} {v} {w} {rs} eqFalse pr =
+  let
+    -- Replace witness by its head-unfolding and transport equality
+    pr-cond :
+      (if nonZeroℤ (det3 u v w) then true else isJust (rank3Witness (v ∷ w ∷ rs))) ≡ true
+    pr-cond = trans (sym (isJust-cons u v w rs)) pr
+
+    -- Substitute false for the condition
+    pr-false :
+      (if false then true else isJust (rank3Witness (v ∷ w ∷ rs))) ≡ true
+    pr-false =
+      subst (λ b → (if b then true else isJust (rank3Witness (v ∷ w ∷ rs))) ≡ true)
+            eqFalse
+            pr-cond
+  in
+    -- Eliminate the if with 'false' and conclude the tail is true
+    trans (sym (if-false-β true (isJust (rank3Witness (v ∷ w ∷ rs))))) pr-false
+
+----------------------------------------------------------------------
+-- Length measure for lists of ℤ³ and an indexed soundness proof
+-- The length index makes the recursive call obviously smaller.
+----------------------------------------------------------------------
+
+len3 : List ℤ³ → ℕ
+len3 []       = zero
+len3 (_ ∷ xs) = suc (len3 xs)
+
+-- Main indexed proof: recursion on the length index.
+witnessSoundLen :
+  ∀ n (xs : List ℤ³) →
+  len3 xs ≡ n →
+  isJust (rank3Witness xs) ≡ true →
+  HasGoodTriple xs
+
+-- Length 0: impossible because the witness is 'nothing' ⇒ isJust = false
+witnessSoundLen .zero [] refl ()
+
+-- Length 1: also impossible
+witnessSoundLen .(suc zero) (_ ∷ []) refl ()
+
+-- Length 2: also impossible
+witnessSoundLen .(suc (suc zero)) (_ ∷ _ ∷ []) refl ()
+
+-- Length ≥ 3: do the head test; if it succeeds use 'here', else recurse on tail
+witnessSoundLen .(suc (suc (suc n))) (u ∷ v ∷ w ∷ rs) refl pr
+  with inspect (nonZeroℤ (det3 u v w))
+... | it true  eqTrue  =               -- head triple is definitively good
+      here {u = u} {v = v} {w = w} {rs = rs} eqTrue
+... | it false eqFalse =               -- push obligation into the tail
+      there (witnessSoundLen (suc (suc n)) (v ∷ w ∷ rs) refl (tailFromFalse eqFalse pr))
+
+----------------------------------------------------------------------
+-- Wrapper with the actual statement (no explicit length in the type)
+----------------------------------------------------------------------
+
+witnessSound : ∀ xs → isJust (rank3Witness xs) ≡ true → HasGoodTriple xs
+witnessSound xs = witnessSoundLen (len3 xs) xs refl

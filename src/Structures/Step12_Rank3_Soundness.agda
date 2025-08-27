@@ -6,7 +6,7 @@
 --            - prüft nur konsekutive Tripel (kompatibel zu HasGoodTriple)
 ----------------------------------------------------------------------
 
-module Structures.Step12_Rank3_Soundnesss where
+module Structures.Step12_Rank3_Soundness where
 
 open import Agda.Primitive using (Level)
 open import Data.Bool      using (Bool; true; false; _∧_; if_then_else_)

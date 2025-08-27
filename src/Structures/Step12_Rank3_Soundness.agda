@@ -9,29 +9,44 @@ open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans; subst)
 open import Data.Sum.Base using (_⊎_; inj₁; inj₂)
 
+-- Only needed if you later add history corollaries.
 open import Structures.Step2_VectorOperations using (Dist)
 
+-- We rely solely on Step 11’s public surface.
 open import Structures.Step11_Rank3 public using
-  ( ℤ³ ; det3 ; nonZeroℤ
+  ( ℤ³
+  ; det3
+  ; nonZeroℤ
   ; Maybe ; just ; nothing ; isJust ; rank3Witness
   ; HasGoodTriple ; here ; there
   ; decNonZeroDet3
   )
 
--- β-Lemma
+------------------------------------------------------------------------
+-- Small β-lemma for 'if false …'
+------------------------------------------------------------------------
+
 if-false-β : ∀ {A : Set} (x y : A) → (if false then x else y) ≡ y
 if-false-β x y = refl
 
--- Entfaltung (direkt aus der Def. von rank3Witness)
+------------------------------------------------------------------------
+-- Unfolding lemma for the program (directly from Step 11's def)
+------------------------------------------------------------------------
+
 isJust-cons :
   ∀ (u v w : ℤ³) (rs : List ℤ³) →
   isJust (rank3Witness (u ∷ v ∷ w ∷ rs))
-    ≡ (if nonZeroℤ (det3 u v w) then true else isJust (rank3Witness (v ∷ w ∷ rs)))
+    ≡ (if nonZeroℤ (det3 u v w)
+         then true
+         else isJust (rank3Witness (v ∷ w ∷ rs)))
 isJust-cons u v w rs with nonZeroℤ (det3 u v w)
 ... | true  = refl
 ... | false = refl
 
--- False-Zweig extrahieren
+------------------------------------------------------------------------
+-- Extract the tail in the 'false' branch
+------------------------------------------------------------------------
+
 tailFromFalse :
   ∀ {u v w rs} →
   nonZeroℤ (det3 u v w) ≡ false →
@@ -54,12 +69,24 @@ tailFromFalse {u} {v} {w} {rs} eqFalse pr =
   in
     trans (sym (if-false-β true (isJust (rank3Witness (v ∷ w ∷ rs))))) pr-false
 
--- Hauptsatz: Soundness über den Decider aus Step 11
+------------------------------------------------------------------------
+-- No 'with' in the recursive theorem: eliminate the decision explicitly
+------------------------------------------------------------------------
+
+-- Generic eliminator for a two-way decision (to avoid 'with'-lifting):
+dec-elim : ∀ {A B C : Set} → (A ⊎ B) → (A → C) → (B → C) → C
+dec-elim (inj₁ a) f g = f a
+dec-elim (inj₂ b) f g = g b
+
+-- Main theorem: Soundness for the window scan (structural recursion on xs).
 witnessSound : ∀ xs → isJust (rank3Witness xs) ≡ true → HasGoodTriple xs
+-- Lengths < 3: impossible (by rank3Witness definition)
 witnessSound []          ()
 witnessSound (_ ∷ [])    ()
 witnessSound (_ ∷ _ ∷ []) ()
-witnessSound (u ∷ v ∷ w ∷ rs) pr
-  with decNonZeroDet3 u v w
-... | inj₁ eqTrue  = here  {u = u} {v = v} {w = w} {rs = rs} eqTrue
-... | inj₂ eqFalse = there (witnessSound (v ∷ w ∷ rs) (tailFromFalse eqFalse pr))
+
+-- Length ≥ 3
+witnessSound (u ∷ v ∷ w ∷ rs) pr =
+  dec-elim (decNonZeroDet3 u v w)
+    (λ eqTrue  → here  {u = u} {v = v} {w = w} {rs = rs} eqTrue)
+    (λ eqFalse → there (witnessSound (v ∷ w ∷ rs) (tailFromFalse eqFalse pr)))

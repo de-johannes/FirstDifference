@@ -10,8 +10,9 @@ module Structures.Step12_Rank3_Soundness where
 open import Agda.Primitive using (Level)
 open import Data.Bool      using (Bool; true; false; if_then_else_)
 open import Data.List      using (List; []; _∷_)
+open import Data.Sum       using (_⊎_; inj₁; inj₂)
 open import Relation.Binary.PropositionalEquality
-  using (_≡_; refl; sym; trans)
+  using (_≡_; refl; sym; trans; subst)
 
 -- Dist is not re-exported by Step 11, import from Step 2:
 open import Structures.Step2_VectorOperations using (Dist)
@@ -32,15 +33,25 @@ open import Structures.Step11_Rank3 public using
   )
 
 ----------------------------------------------------------------------
--- 0 · Tiny β-lemma for 'if'
+-- 0 · Inspect utility (for extracting equalities from decisions)
+----------------------------------------------------------------------
+
+data Inspect {A : Set} (x : A) : Set where
+  it : (y : A) → x ≡ y → Inspect x
+
+inspect : ∀ {A : Set} → (x : A) → Inspect x
+inspect x = it x refl
+
+----------------------------------------------------------------------
+-- 1 · Tiny β-lemma for 'if'
 ----------------------------------------------------------------------
 
 if-false-β : ∀ {A : Set} (x y : A) → (if false then x else y) ≡ y
 if-false-β x y = refl
 
 ----------------------------------------------------------------------
--- 1 · Unfolding lemma for rank3? on lists with ≥ 3 elements
---     Matches the definition of rank3Witness / rank3? in Step 11.
+-- 2 · Unfolding lemma for rank3? on lists with ≥ 3 elements
+--     (matches the definition of rank3Witness / rank3? in Step 11)
 ----------------------------------------------------------------------
 
 rank3?-cons : ∀ (u v w : ℤ³) (rs : List ℤ³) →
@@ -53,7 +64,52 @@ rank3?-cons u v w rs with nonZeroℤ (det3 u v w)
 ... | false = refl
 
 ----------------------------------------------------------------------
--- 2 · Soundness: rank3? xs ≡ true  ⇒  HasGoodTriple xs
+-- 3 · Stripping lemma for the false-branch
+--     If nonZeroℤ(det3 u v w) ≡ false and rank3? (u v w rs) ≡ true,
+--     then rank3? (v w rs) ≡ true.
+----------------------------------------------------------------------
+
+stripFalse :
+  ∀ {u v w rs}
+  → nonZeroℤ (det3 u v w) ≡ false
+  → rank3? (u ∷ v ∷ w ∷ rs) ≡ true
+  → rank3? (v ∷ w ∷ rs) ≡ true
+stripFalse {u} {v} {w} {rs} eqFalse pr =
+  let
+    -- unfold to conditional form
+    pr-cond :
+      (if nonZeroℤ (det3 u v w) then true else rank3? (v ∷ w ∷ rs)) ≡ true
+    pr-cond = trans (sym (rank3?-cons u v w rs)) pr
+
+    -- substitute the 'false' equality
+    pr-false :
+      (if false then true else rank3? (v ∷ w ∷ rs)) ≡ true
+    pr-false =
+      subst (λ b → (if b then true else rank3? (v ∷ w ∷ rs)) ≡ true)
+            eqFalse
+            pr-cond
+  in
+    -- β-reduce to the else-branch
+    trans (sym (if-false-β true (rank3? (v ∷ w ∷ rs)))) pr-false
+
+----------------------------------------------------------------------
+-- 4 · Non-recursive case analysis:
+--     Either we build a witness right now (true-branch),
+--     or we return the tail-proof we need for recursion (false-branch).
+----------------------------------------------------------------------
+
+decide-or-tail :
+  ∀ {u v w rs}
+  → (pr : rank3? (u ∷ v ∷ w ∷ rs) ≡ true)
+  → HasGoodTriple (u ∷ v ∷ w ∷ rs) ⊎ (rank3? (v ∷ w ∷ rs) ≡ true)
+decide-or-tail {u} {v} {w} {rs} pr
+  with inspect (nonZeroℤ (det3 u v w))
+... | it true  eqTrue  = inj₁ (here {u = u} {v = v} {w = w} {rs = rs} eqTrue)
+... | it false eqFalse = inj₂ (stripFalse eqFalse pr)
+
+----------------------------------------------------------------------
+-- 5 · Soundness: rank3? xs ≡ true  ⇒  HasGoodTriple xs
+--     Recursion only happens after decide-or-tail, and only on the tail.
 ----------------------------------------------------------------------
 
 soundness : ∀ xs → rank3? xs ≡ true → HasGoodTriple xs
@@ -64,26 +120,12 @@ soundness (_ ∷ _ ∷ []) ()
 
 -- Main case: xs = u ∷ v ∷ w ∷ rs
 soundness (u ∷ v ∷ w ∷ rs) pr
-  with nonZeroℤ (det3 u v w)
-... | true  =
-      -- In this branch the goal 'nonZeroℤ (det3 u v w) ≡ true' reduces to 'true ≡ true'.
-      here {u = u} {v = v} {w = w} {rs = rs} refl
-... | false =
-      -- Transform the proof to the tail:
-      --   pr : rank3? (u ∷ v ∷ w ∷ rs) ≡ true
-      --   rank3?-cons → (if false then true else rank3? tail) ≡ true
-      --   if-false-β  → rank3? tail ≡ true
-      there (soundness (v ∷ w ∷ rs) pr-tail)
-  where
-    pr-cond :
-      (if nonZeroℤ (det3 u v w) then true else rank3? (v ∷ w ∷ rs)) ≡ true
-    pr-cond = trans (sym (rank3?-cons u v w rs)) pr
-
-    pr-tail : rank3? (v ∷ w ∷ rs) ≡ true
-    pr-tail = trans (sym (if-false-β true (rank3? (v ∷ w ∷ rs)))) pr-cond
+  with decide-or-tail {u} {v} {w} {rs} pr
+... | inj₁ witness   = witness
+... | inj₂ pr-tail   = there (soundness (v ∷ w ∷ rs) pr-tail)
 
 ----------------------------------------------------------------------
--- 3 · Soundness specialized to histories
+-- 6 · Soundness specialized to histories
 ----------------------------------------------------------------------
 
 soundnessOnHistory :
@@ -94,7 +136,7 @@ soundnessOnHistory {n} hist pr =
   soundness (diffs (FoldMap³ {n} hist)) pr
 
 ----------------------------------------------------------------------
--- 4 · Convenience re-exports (pair the two directions)
+-- 7 · Convenience re-exports (pair the two directions)
 ----------------------------------------------------------------------
 
 -- completeness is provided by Step 11:

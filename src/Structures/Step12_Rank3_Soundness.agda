@@ -15,17 +15,11 @@ open import Structures.Step11_Rank3 public using
   ; HasGoodTriple ; here ; there
   )
 
--- Inspect + β
-data Inspect {A : Set} (x : A) : Set where
-  it : (y : A) → x ≡ y → Inspect x
-
-inspect : ∀ {A : Set} → (x : A) → Inspect x
-inspect x = it x refl
-
+-- kleines β-Lemma
 if-false-β : ∀ {A : Set} (x y : A) → (if false then x else y) ≡ y
 if-false-β x y = refl
 
--- Unfolding
+-- Entfaltung des Programms (reine Definition von Step 11)
 isJust-cons :
   ∀ (u v w : ℤ³) (rs : List ℤ³) →
   isJust (rank3Witness (u ∷ v ∷ w ∷ rs))
@@ -34,7 +28,7 @@ isJust-cons u v w rs with nonZeroℤ (det3 u v w)
 ... | true  = refl
 ... | false = refl
 
--- Tail vom false-Zweig abziehen
+-- False-Zweig: isJust (…tail…) = true
 tailFromFalse :
   ∀ {u v w rs} →
   nonZeroℤ (det3 u v w) ≡ false →
@@ -55,12 +49,11 @@ tailFromFalse {u} {v} {w} {rs} eqFalse pr =
   in
     trans (sym (if-false-β true (isJust (rank3Witness (v ∷ w ∷ rs))))) pr-false
 
--- Soundness (klassischer Fenster-Scan)
+-- Soundness: jetzt direkt auf das Bool matchen (keine 'inspect'-Gleichheiten nötig)
 witnessSound : ∀ xs → isJust (rank3Witness xs) ≡ true → HasGoodTriple xs
 witnessSound []          ()
 witnessSound (_ ∷ [])    ()
 witnessSound (_ ∷ _ ∷ []) ()
-witnessSound (u ∷ v ∷ w ∷ rs) pr
-  with inspect (nonZeroℤ (det3 u v w))
-... | it true  eqTrue  = here  {u = u} {v = v} {w = w} {rs = rs} eqTrue
-... | it false eqFalse = there (witnessSound (v ∷ w ∷ rs) (tailFromFalse eqFalse pr))
+witnessSound (u ∷ v ∷ w ∷ rs) pr with nonZeroℤ (det3 u v w)
+... | true  = here  {u = u} {v = v} {w = w} {rs = rs} refl
+... | false = there (witnessSound (v ∷ w ∷ rs) (tailFromFalse refl pr))

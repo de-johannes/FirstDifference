@@ -48,7 +48,7 @@ inspect x = it x refl
 if-false-β : ∀ {A : Set} (x y : A) → (if false then x else y) ≡ y
 if-false-β x y = refl
 
--- (not needed right now, but kept for symmetry)
+-- kept for symmetry (not used below)
 if-true-β  : ∀ {A : Set} (x y : A) → (if true  then x else y) ≡ x
 if-true-β x y = refl
 
@@ -82,26 +82,29 @@ soundness (_ ∷ _ ∷ []) ()
 -- Main case: xs = u ∷ v ∷ w ∷ rs
 soundness (u ∷ v ∷ w ∷ rs) pr
   with inspect (nonZeroℤ (det3 u v w))
-... | it true eqTrue =
+... | it true  eqTrue =
       -- We have eqTrue : nonZeroℤ (det3 u v w) ≡ true
-      -- Produce the witness directly:
       here {u = u} {v = v} {w = w} {rs = rs} eqTrue
 ... | it false eqFalse =
-      -- Step 1: transform pr : rank3? (u ∷ v ∷ w ∷ rs) ≡ true
-      --         into a proof about the conditional form via rank3?-cons.
-      let pr-cond : (if nonZeroℤ (det3 u v w) then true else rank3? (v ∷ w ∷ rs)) ≡ true
-          pr-cond = trans (sym (rank3?-cons u v w rs)) pr
+      -- Use local equalities (see 'where') to turn 'pr' into a tail proof.
+      there (soundness (v ∷ w ∷ rs) pr-tail)
+  where
+    -- Step 1: rewrite to the conditional shape
+    pr-cond :
+      (if nonZeroℤ (det3 u v w) then true else rank3? (v ∷ w ∷ rs)) ≡ true
+    pr-cond = trans (sym (rank3?-cons u v w rs)) pr
 
-          -- Step 2: rewrite the conditional using eqFalse to collapse to the tail.
-          pr-false : (if false then true else rank3? (v ∷ w ∷ rs)) ≡ true
-          pr-false = subst (λ b → (if b then true else rank3? (v ∷ w ∷ rs)) ≡ true)
-                            eqFalse
-                            pr-cond
+    -- Step 2: substitute 'nonZeroℤ (det3 u v w) ≡ false'
+    pr-false :
+      (if false then true else rank3? (v ∷ w ∷ rs)) ≡ true
+    pr-false =
+      subst (λ b → (if b then true else rank3? (v ∷ w ∷ rs)) ≡ true)
+            eqFalse
+            pr-cond
 
-          -- Step 3: reduce 'if false then … else …' to the else-branch.
-          pr-tail : rank3? (v ∷ w ∷ rs) ≡ true
-          pr-tail rewrite if-false-β true (rank3? (v ∷ w ∷ rs)) = pr-false
-      in  there (soundness (v ∷ w ∷ rs) pr-tail)
+    -- Step 3: β-reduce 'if false … else …' to the else-branch
+    pr-tail : rank3? (v ∷ w ∷ rs) ≡ true
+    pr-tail rewrite if-false-β true (rank3? (v ∷ w ∷ rs)) = pr-false
 
 ----------------------------------------------------------------------
 -- 4 · Soundness specialized to histories

@@ -1,25 +1,26 @@
 {-# OPTIONS --safe #-}
 
 ----------------------------------------------------------------------
--- Step 12 ▸ Incremental Rank-3 (consecutive) with constructive witness
---            - hält ein nicht-kollineares Paar als "Basis"
---            - prüft nur konsekutive Tripel (kompatibel zu HasGoodTriple)
+--  Step 12 ▸ Rank-3 Soundness via Witness
+--  Variante: zusätzlich inkrementeller konsekutiver Finder in Step12,
+--  damit rank3WitnessInc im Scope ist (keine neuen Module notwendig).
 ----------------------------------------------------------------------
 
 module Structures.Step12_Rank3_Soundness where
 
 open import Agda.Primitive using (Level)
 open import Data.Bool      using (Bool; true; false; _∧_; if_then_else_)
-open import Data.List      using (List; []; _∷_)
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; subst)
+open import Data.List.Base using (List; []; _∷_)
+open import Relation.Binary.PropositionalEquality
+  using (_≡_; refl; sym; trans; subst)
 
--- Step 2: Dist (für die History-Variante)
+-- Dist nur nötig, wenn du History-Corollarien ergänzen willst.
 open import Structures.Step2_VectorOperations using (Dist)
 
--- Step 11: ℤ, ℤ³, det3, Maybe & Co., FoldMap³, diffs, GoodTriple, HasGoodTriple …
+-- Import aus Step 11 (erweitert, damit wir Kreuzprodukt bauen können)
 open import Structures.Step11_Rank3 public using
-  ( ℤ ; ℤ³ ; mk3 ; x ; y ; z₃
-  ; _+ℤ_ ; _−ℤ_ ; _∗ℤ_
+  ( ℤ³ ; mk3 ; x ; y ; z₃
+  ; _−ℤ_ ; _∗ℤ_
   ; isZeroℤ ; nonZeroℤ
   ; det3
 
@@ -27,11 +28,12 @@ open import Structures.Step11_Rank3 public using
   ; Maybe ; just ; nothing ; isJust
 
   ; HasGoodTriple ; here ; there
-  ; FoldMap³ ; diffs
+  -- rank3Witness bleibt für die alte Soundness verfügbar
+  ; rank3Witness
   )
 
 ----------------------------------------------------------------------
--- 0 · Inspect-Tool (wie in Step 12): Booleans als Gleichheit b ≡ true/false fassen
+-- 0 · Inspect-Tool und β-Lemmata für if
 ----------------------------------------------------------------------
 
 data Inspect {A : Set} (x : A) : Set where
@@ -40,7 +42,6 @@ data Inspect {A : Set} (x : A) : Set where
 inspect : ∀ {A : Set} → (x : A) → Inspect x
 inspect x = it x refl
 
--- β-Lemmas für if
 if-true-β  : ∀ {A : Set} (x y : A) → (if true  then x else y) ≡ x
 if-true-β  x y = refl
 
@@ -48,7 +49,53 @@ if-false-β : ∀ {A : Set} (x y : A) → (if false then x else y) ≡ y
 if-false-β x y = refl
 
 ----------------------------------------------------------------------
--- 1 · Geometrische Hilfen: Kreuzprodukt & (Nicht-)Kollinearität über Bool
+-- 1 · (Alt) Unfolding für den alten Fenster-Scan (bleibt drin)
+----------------------------------------------------------------------
+
+isJust-cons :
+  ∀ (u v w : ℤ³) (rs : List ℤ³) →
+  isJust (rank3Witness (u ∷ v ∷ w ∷ rs))
+    ≡ (if nonZeroℤ (det3 u v w)
+        then true
+        else isJust (rank3Witness (v ∷ w ∷ rs)))
+isJust-cons u v w rs with nonZeroℤ (det3 u v w)
+... | true  = refl
+... | false = refl
+
+tailFromFalse :
+  ∀ {u v w rs} →
+  nonZeroℤ (det3 u v w) ≡ false →
+  isJust (rank3Witness (u ∷ v ∷ w ∷ rs)) ≡ true →
+  isJust (rank3Witness (v ∷ w ∷ rs)) ≡ true
+tailFromFalse {u} {v} {w} {rs} eqFalse pr =
+  let
+    pr-cond :
+      (if nonZeroℤ (det3 u v w)
+         then true else isJust (rank3Witness (v ∷ w ∷ rs))) ≡ true
+    pr-cond = trans (sym (isJust-cons u v w rs)) pr
+
+    pr-false :
+      (if false then true else isJust (rank3Witness (v ∷ w ∷ rs))) ≡ true
+    pr-false =
+      subst (λ b → (if b then true else isJust (rank3Witness (v ∷ w ∷ rs))) ≡ true)
+            eqFalse pr-cond
+  in
+    trans (sym (if-false-β true (isJust (rank3Witness (v ∷ w ∷ rs))))) pr-false
+
+-- Alt: Soundness für den klassischen Fenster-Scan
+witnessSound : ∀ xs → isJust (rank3Witness xs) ≡ true → HasGoodTriple xs
+witnessSound []          ()
+witnessSound (_ ∷ [])    ()
+witnessSound (_ ∷ _ ∷ []) ()
+witnessSound (u ∷ v ∷ w ∷ rs) pr
+  with inspect (nonZeroℤ (det3 u v w))
+... | it true  eqTrue  = here {u = u} {v = v} {w = w} {rs = rs} eqTrue
+... | it false eqFalse = there (witnessSound (v ∷ w ∷ rs) (tailFromFalse eqFalse pr))
+
+----------------------------------------------------------------------
+-- 2 · Neu: Inkrementeller konsekutiver Finder in Step12
+--     - hält ein gutes Paar (a,b) fest und testet w
+--     - bei degeneriertem (b,w) Neustart auf dem Tail
 ----------------------------------------------------------------------
 
 -- Kreuzprodukt in ℤ³
@@ -67,11 +114,6 @@ isZero3 v = isZeroℤ (x v) ∧ isZeroℤ (y v) ∧ isZeroℤ (z₃ v)
 pairGood : ℤ³ → ℤ³ → Bool
 pairGood a b = if isZero3 (cross3 a b) then false else true
 
-----------------------------------------------------------------------
--- 2 · Inkrementelle Suche nur über konsekutive Tripel
---     rank3FromPair hält das (gute) Paar (a,b) und testet fortlaufend w.
-----------------------------------------------------------------------
-
 private
   rank3FromPair : ℤ³ → ℤ³ → List ℤ³ → Maybe GoodTriple
   rank3FromPair a b [] = nothing
@@ -81,7 +123,7 @@ private
   ... | true  = rank3FromPair b w rs
   ... | false = rank3WitnessInc (b ∷ w ∷ rs)
 
--- Öffentliche Funktion: inkrementeller konsekutiver Zeugenfinder
+-- Öffentlicher inkrementeller Finder (konsekutive Tripel)
 rank3WitnessInc : List ℤ³ → Maybe GoodTriple
 rank3WitnessInc (u ∷ v ∷ w ∷ rs) with pairGood u v
 ... | true  with nonZeroℤ (det3 u v w)
@@ -90,18 +132,10 @@ rank3WitnessInc (u ∷ v ∷ w ∷ rs) with pairGood u v
 ... | false         = rank3WitnessInc (v ∷ w ∷ rs)
 rank3WitnessInc _ = nothing
 
--- Boolean-Wrapper
 rank3?Inc : List ℤ³ → Bool
 rank3?Inc xs = isJust (rank3WitnessInc xs)
 
--- Historien-Variante (wie in Step 11, nur mit inkrementellem Checker)
-rank3OnHistoryBoolInc : ∀ {n} → List (Dist n) → Bool
-rank3OnHistoryBoolInc {n} hist = rank3?Inc (diffs (FoldMap³ {n} hist))
-
-----------------------------------------------------------------------
--- 3 · Unfolding-Lemmas für isJust (analog Step 12), alles ohne Postulates
-----------------------------------------------------------------------
-
+-- Unfolding-Lemmas für isJust der neuen Funktionen
 isJust-fromPair-cons :
   ∀ (a b w : ℤ³) (rs : List ℤ³) →
   isJust (rank3FromPair a b (w ∷ rs))
@@ -131,91 +165,86 @@ isJust-inc-cons u v w rs with pairGood u v
 ... | false        = refl
 
 ----------------------------------------------------------------------
--- 4 · Soundness: isJust (rank3WitnessInc xs) ≡ true ⇒ HasGoodTriple xs
---     Beweis per struktureller Rekursion, plus Hilfslemma für rank3FromPair
+-- 3 · Soundness für den inkrementellen konsekutiven Finder
 ----------------------------------------------------------------------
 
--- Hilfslemma: Soundness für die innere Schleife (a,b) • ws
+-- Hilfs-Soundness: festes Paar (a,b) und Stream (w ∷ rs)
 witnessFromPairSound :
   ∀ a b ws → isJust (rank3FromPair a b ws) ≡ true → HasGoodTriple (a ∷ b ∷ ws)
 witnessFromPairSound a b [] ()
 witnessFromPairSound a b (w ∷ rs) pr =
   let
-    -- Entfalte isJust anhand der Definition
-    pr-cond₀ :
+    pr0 :
       (if nonZeroℤ (det3 a b w)
          then true
          else if pairGood b w
                 then isJust (rank3FromPair b w rs)
                 else isJust (rank3WitnessInc (b ∷ w ∷ rs))) ≡ true
-    pr-cond₀ = trans (sym (isJust-fromPair-cons a b w rs)) pr
-
-    -- unterscheide die Fälle per Inspect, um Gleichheiten zu bekommen
-    pg₁ = inspect (nonZeroℤ (det3 a b w))
+    pr0 = trans (sym (isJust-fromPair-cons a b w rs)) pr
   in
-  case pg₁ of
-    λ where
-      (it true  eqDet) →
-        -- Kopftripel ist gut
-        --   if true then true else …  ≡ true  ⇒ sofort 'here' mit Beweis eqDet
-        let _ = eqDet in
-        here {u = a} {v = b} {w = w} {rs = rs} eqDet
-
-      (it false eqDetFalse) →
-        -- det == false; reduziere auf den zweiten if
-        let
-          pr-cond₁ :
-            (if pairGood b w
+  -- Fall 1: Kopf-Determinante ≠ 0  ⇒ gutes Kopf-Tripel
+  (λ where (it true eqDet) →
+      here {u = a} {v = b} {w = w} {rs = rs} eqDet)
+    (inspect (nonZeroℤ (det3 a b w)))
+  -- Fall 2: det == false ⇒ schaue auf (pairGood b w)
+  where
+    stepFalse :
+      nonZeroℤ (det3 a b w) ≡ false →
+      (if pairGood b w
+         then isJust (rank3FromPair b w rs)
+         else isJust (rank3WitnessInc (b ∷ w ∷ rs))) ≡ true
+    stepFalse eqDetFalse =
+      trans
+        (subst (λ b → (if b then true else
+                         (if pairGood b w
+                            then isJust (rank3FromPair b w rs)
+                            else isJust (rank3WitnessInc (b ∷ w ∷ rs)))) ≡ true)
+               eqDetFalse
+               pr0)
+        (if-false-β true
+           (if pairGood b w
                then isJust (rank3FromPair b w rs)
-               else isJust (rank3WitnessInc (b ∷ w ∷ rs))) ≡ true
-          pr-cond₁ =
-            trans
-              (subst (λ b → (if b then true else
-                               (if pairGood b w
-                                  then isJust (rank3FromPair b w rs)
-                                  else isJust (rank3WitnessInc (b ∷ w ∷ rs)))) ≡ true)
-                     eqDetFalse
-                     pr-cond₀)
-              (if-false-β true
-                 (if pairGood b w
-                     then isJust (rank3FromPair b w rs)
-                     else isJust (rank3WitnessInc (b ∷ w ∷ rs))))
-          pg₂ = inspect (pairGood b w)
-        in case pg₂ of
-             λ where
-               (it true  eqPG) →
-                 -- gutes Paar (b,w): rekursiv auf rank3FromPair b w rs
-                 let
-                   pr-next :
-                     isJust (rank3FromPair b w rs) ≡ true
-                   pr-next =
-                     trans
-                       (sym (if-true-β (isJust (rank3FromPair b w rs))
-                                        (isJust (rank3WitnessInc (b ∷ w ∷ rs)))))
-                       (subst (λ b → (if b then isJust (rank3FromPair b w rs)
-                                        else isJust (rank3WitnessInc (b ∷ w ∷ rs))) ≡ true)
-                              eqPG
-                              pr-cond₁)
-                   ih : HasGoodTriple (b ∷ w ∷ rs)
-                   ih = witnessFromPairSound b w rs pr-next
-                 in there ih
+               else isJust (rank3WitnessInc (b ∷ w ∷ rs))))
 
-               (it false eqPG) →
-                 -- degeneriertes Paar (b,w): wir sind auf dem Tail mit rank3WitnessInc
-                 let
-                   pr-tail :
-                     isJust (rank3WitnessInc (b ∷ w ∷ rs)) ≡ true
-                   pr-tail =
-                     trans
-                       (sym (if-false-β (isJust (rank3FromPair b w rs))
-                                        (isJust (rank3WitnessInc (b ∷ w ∷ rs)))))
-                       (subst (λ b → (if b then isJust (rank3FromPair b w rs)
-                                        else isJust (rank3WitnessInc (b ∷ w ∷ rs))) ≡ true)
-                              eqPG
-                              pr-cond₁)
-                   ih : HasGoodTriple (b ∷ w ∷ rs)
-                   ih = witnessSoundInc (b ∷ w ∷ rs) pr-tail
-                 in there ih
+    finish :
+      nonZeroℤ (det3 a b w) ≡ false →
+      HasGoodTriple (a ∷ b ∷ w ∷ rs)
+    finish eqDetFalse with inspect (pairGood b w)
+    ... | it true  eqPG =
+      -- pairGood ⇒ rekursiv auf rank3FromPair b w rs
+      let
+        pr-next :
+          isJust (rank3FromPair b w rs) ≡ true
+        pr-next =
+          trans
+            (sym (if-true-β (isJust (rank3FromPair b w rs))
+                             (isJust (rank3WitnessInc (b ∷ w ∷ rs)))))
+            (subst (λ b → (if b then isJust (rank3FromPair b w rs)
+                             else isJust (rank3WitnessInc (b ∷ w ∷ rs))) ≡ true)
+                   eqPG
+                   (stepFalse eqDetFalse))
+        ih : HasGoodTriple (b ∷ w ∷ rs)
+        ih = witnessFromPairSound b w rs pr-next
+      in there ih
+    ... | it false eqPG =
+      -- degeneriertes (b,w) ⇒ nutze rank3WitnessInc auf dem Tail
+      let
+        pr-tail :
+          isJust (rank3WitnessInc (b ∷ w ∷ rs)) ≡ true
+        pr-tail =
+          trans
+            (sym (if-false-β (isJust (rank3FromPair b w rs))
+                             (isJust (rank3WitnessInc (b ∷ w ∷ rs)))))
+            (subst (λ b → (if b then isJust (rank3FromPair b w rs)
+                             else isJust (rank3WitnessInc (b ∷ w ∷ rs))) ≡ true)
+                   eqPG
+                   (stepFalse eqDetFalse))
+        ih : HasGoodTriple (b ∷ w ∷ rs)
+        ih = witnessSoundInc (b ∷ w ∷ rs) pr-tail
+      in there ih
+
+    -- benutze finish, wenn det==false war
+    _ = finish
 
 -- Hauptsatz: Soundness des inkrementellen konsekutiven Finders
 witnessSoundInc : ∀ xs → isJust (rank3WitnessInc xs) ≡ true → HasGoodTriple xs
@@ -231,40 +260,32 @@ witnessSoundInc (u ∷ v ∷ w ∷ rs) pr =
                 else isJust (rank3FromPair u v (w ∷ rs)))
          else isJust (rank3WitnessInc (v ∷ w ∷ rs))) ≡ true
     pr-cond = trans (sym (isJust-inc-cons u v w rs)) pr
-
-    pg₀ = inspect (pairGood u v)
   in
-  case pg₀ of
-    λ where
-      (it true eqPG) →
-        -- Reduktion auf inneren if
-        let
-          pr-cond' :
-            (if nonZeroℤ (det3 u v w)
-               then true
-               else isJust (rank3FromPair u v (w ∷ rs))) ≡ true
-          pr-cond' =
-            trans
-              (subst (λ b → (if b
-                              then (if nonZeroℤ (det3 u v w)
-                                      then true
-                                      else isJust (rank3FromPair u v (w ∷ rs)))
-                              else isJust (rank3WitnessInc (v ∷ w ∷ rs))) ≡ true)
-                     eqPG
-                     pr-cond)
-              (if-true-β
-                 (if nonZeroℤ (det3 u v w)
-                     then true
-                     else isJust (rank3FromPair u v (w ∷ rs)))
-                 (isJust (rank3WitnessInc (v ∷ w ∷ rs))))
-          pg₁ = inspect (nonZeroℤ (det3 u v w))
-        in case pg₁ of
-             λ where
-               (it true  eqDet) →
-                 -- Kopftripel ist gut
-                 here {u = u} {v = v} {w = w} {rs = rs} eqDet
-               (it false eqDetFalse) →
-                 -- det==false → Soundness der inneren Schleife ab (u,v)
+  -- Branch auf pairGood u v
+  (λ where (it true eqPG) →
+      -- dann innerer if auf det
+      let
+        inner :
+          (if nonZeroℤ (det3 u v w)
+             then true
+             else isJust (rank3FromPair u v (w ∷ rs))) ≡ true
+        inner =
+          trans
+            (subst (λ b → (if b
+                            then (if nonZeroℤ (det3 u v w)
+                                    then true
+                                    else isJust (rank3FromPair u v (w ∷ rs)))
+                            else isJust (rank3WitnessInc (v ∷ w ∷ rs))) ≡ true)
+                   eqPG
+                   pr-cond)
+            (if-true-β
+               (if nonZeroℤ (det3 u v w)
+                   then true
+                   else isJust (rank3FromPair u v (w ∷ rs)))
+               (isJust (rank3WitnessInc (v ∷ w ∷ rs))))
+      in
+      (λ where (it true  eqDet) → here {u = u} {v = v} {w = w} {rs = rs} eqDet
+               (it false eqDetF) →
                  let
                    pr-next :
                      isJust (rank3FromPair u v (w ∷ rs)) ≡ true
@@ -272,27 +293,33 @@ witnessSoundInc (u ∷ v ∷ w ∷ rs) pr =
                      trans
                        (sym (if-false-β true (isJust (rank3FromPair u v (w ∷ rs)))))
                        (subst (λ b → (if b then true else isJust (rank3FromPair u v (w ∷ rs))) ≡ true)
-                              eqDetFalse
-                              pr-cond')
-                 in witnessFromPairSound u v (w ∷ rs) pr-next
-
-      (it false eqPG) →
-        -- erstes Paar degeneriert → Soundness auf Tail
-        let
-          pr-tail : isJust (rank3WitnessInc (v ∷ w ∷ rs)) ≡ true
-          pr-tail =
-            trans
-              (sym (if-false-β (if nonZeroℤ (det3 u v w)
-                                  then true
-                                  else isJust (rank3FromPair u v (w ∷ rs)))
-                               (isJust (rank3WitnessInc (v ∷ w ∷ rs)))))
-              (subst (λ b → (if b
-                              then (if nonZeroℤ (det3 u v w)
-                                      then true
-                                      else isJust (rank3FromPair u v (w ∷ rs)))
-                              else isJust (rank3WitnessInc (v ∷ w ∷ rs))) ≡ true)
-                     eqPG
-                     pr-cond)
-          ih : HasGoodTriple (v ∷ w ∷ rs)
-          ih = witnessSoundInc (v ∷ w ∷ rs) pr-tail
-        in there ih
+                              eqDetF
+                              inner)
+                 in witnessFromPairSound u v (w ∷ rs) pr-next)
+        (inspect (nonZeroℤ (det3 u v w))))
+    (inspect (pairGood u v))
+  -- sonst: erstes Paar degeneriert → Tail
+  where
+    tailCase :
+      pairGood u v ≡ false →
+      HasGoodTriple (u ∷ v ∷ w ∷ rs)
+    tailCase eqPG =
+      let
+        pr-tail :
+          isJust (rank3WitnessInc (v ∷ w ∷ rs)) ≡ true
+        pr-tail =
+          trans
+            (sym (if-false-β (if nonZeroℤ (det3 u v w)
+                                then true
+                                else isJust (rank3FromPair u v (w ∷ rs)))
+                             (isJust (rank3WitnessInc (v ∷ w ∷ rs)))))
+            (subst (λ b → (if b
+                            then (if nonZeroℤ (det3 u v w)
+                                    then true
+                                    else isJust (rank3FromPair u v (w ∷ rs)))
+                            else isJust (rank3WitnessInc (v ∷ w ∷ rs))) ≡ true)
+                   eqPG
+                   pr-cond)
+        ih : HasGoodTriple (v ∷ w ∷ rs)
+        ih = witnessSoundInc (v ∷ w ∷ rs) pr-tail
+      in there ih

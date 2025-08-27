@@ -64,20 +64,19 @@ soundness (_ ∷ _ ∷ []) ()
 
 -- Main case: xs = u ∷ v ∷ w ∷ rs
 soundness (u ∷ v ∷ w ∷ rs) pr
-  with b ← nonZeroℤ (det3 u v w)
+  with nonZeroℤ (det3 u v w)
 ... | true  =
-      -- b is definitionally 'true' here, so (b ≡ true) is refl.
+      -- In this branch the goal 'nonZeroℤ (det3 u v w) ≡ true' reduces to 'true ≡ true'.
       here {u = u} {v = v} {w = w} {rs = rs} refl
 ... | false =
-      -- Transform the proof to the tail using definitional b = false:
+      -- Transform the proof to the tail:
       --   pr : rank3? (u ∷ v ∷ w ∷ rs) ≡ true
-      --   rank3?-cons → (if b then true else rank3? tail) ≡ true
-      --   b = false   → (if false then true else rank3? tail) ≡ true
+      --   rank3?-cons → (if false then true else rank3? tail) ≡ true
       --   if-false-β  → rank3? tail ≡ true
       there (soundness (v ∷ w ∷ rs) pr-tail)
   where
     pr-cond :
-      (if b then true else rank3? (v ∷ w ∷ rs)) ≡ true
+      (if nonZeroℤ (det3 u v w) then true else rank3? (v ∷ w ∷ rs)) ≡ true
     pr-cond = trans (sym (rank3?-cons u v w rs)) pr
 
     pr-tail : rank3? (v ∷ w ∷ rs) ≡ true

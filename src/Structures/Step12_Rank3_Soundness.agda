@@ -32,25 +32,15 @@ open import Structures.Step11_Rank3 public using
   )
 
 ----------------------------------------------------------------------
--- 0 · Inspect utility (to capture an equality from a decision)
-----------------------------------------------------------------------
-
-data Inspect {A : Set} (x : A) : Set where
-  it : (y : A) → x ≡ y → Inspect x
-
-inspect : ∀ {A : Set} → (x : A) → Inspect x
-inspect x = it x refl
-
-----------------------------------------------------------------------
--- 1 · Tiny β-lemma for 'if'
+-- 0 · Tiny β-lemma for 'if'
 ----------------------------------------------------------------------
 
 if-false-β : ∀ {A : Set} (x y : A) → (if false then x else y) ≡ y
 if-false-β x y = refl
 
 ----------------------------------------------------------------------
--- 2 · Unfolding lemma for rank3? on lists with ≥ 3 elements
---     Matches the definition of rank3Witness / rank3? in Step 11.
+-- 1 · Unfolding lemma for rank3? on lists with ≥ 3 elements
+--     (matches the definition of rank3Witness / rank3? in Step 11)
 ----------------------------------------------------------------------
 
 rank3?-cons : ∀ (u v w : ℤ³) (rs : List ℤ³) →
@@ -63,6 +53,35 @@ rank3?-cons u v w rs with nonZeroℤ (det3 u v w)
 ... | false = refl
 
 ----------------------------------------------------------------------
+-- 2 · Stripping lemma for the false-branch
+--     If nonZeroℤ(det3 u v w) ≡ false and rank3? (u v w rs) ≡ true,
+--     then rank3? (v w rs) ≡ true.
+----------------------------------------------------------------------
+
+stripFalse :
+  ∀ {u v w rs}
+  → nonZeroℤ (det3 u v w) ≡ false
+  → rank3? (u ∷ v ∷ w ∷ rs) ≡ true
+  → rank3? (v ∷ w ∷ rs) ≡ true
+stripFalse {u} {v} {w} {rs} eqFalse pr =
+  let
+    -- unfold to conditional form
+    pr-cond :
+      (if nonZeroℤ (det3 u v w) then true else rank3? (v ∷ w ∷ rs)) ≡ true
+    pr-cond = trans (sym (rank3?-cons u v w rs)) pr
+
+    -- substitute the 'false' equality
+    pr-false :
+      (if false then true else rank3? (v ∷ w ∷ rs)) ≡ true
+    pr-false =
+      subst (λ b → (if b then true else rank3? (v ∷ w ∷ rs)) ≡ true)
+            eqFalse
+            pr-cond
+  in
+    -- β-reduce to the else-branch
+    trans (sym (if-false-β true (rank3? (v ∷ w ∷ rs)))) pr-false
+
+----------------------------------------------------------------------
 -- 3 · Soundness: rank3? xs ≡ true  ⇒  HasGoodTriple xs
 ----------------------------------------------------------------------
 
@@ -72,32 +91,11 @@ soundness []          ()
 soundness (_ ∷ [])    ()
 soundness (_ ∷ _ ∷ []) ()
 
--- Main case: xs = u ∷ v ∷ w ∷ rs
-soundness (u ∷ v ∷ w ∷ rs) pr
-  with inspect (nonZeroℤ (det3 u v w))
-... | it true  eqTrue =
-      -- We have eqTrue : nonZeroℤ (det3 u v w) ≡ true
-      here {u = u} {v = v} {w = w} {rs = rs} eqTrue
-... | it false eqFalse =
-      -- Transform 'pr' to a tail-proof using only propositional steps.
-      there (soundness (v ∷ w ∷ rs) pr-tail)
-  where
-    -- Step 1: unfold rank3? to its conditional form
-    pr-cond :
-      (if nonZeroℤ (det3 u v w) then true else rank3? (v ∷ w ∷ rs)) ≡ true
-    pr-cond = trans (sym (rank3?-cons u v w rs)) pr
-
-    -- Step 2: substitute 'nonZeroℤ (det3 u v w) ≡ false'
-    pr-false :
-      (if false then true else rank3? (v ∷ w ∷ rs)) ≡ true
-    pr-false =
-      subst (λ b → (if b then true else rank3? (v ∷ w ∷ rs)) ≡ true)
-            eqFalse
-            pr-cond
-
-    -- Step 3: β-reduce to the else-branch and obtain the tail proof
-    pr-tail : rank3? (v ∷ w ∷ rs) ≡ true
-    pr-tail = trans (sym (if-false-β true (rank3? (v ∷ w ∷ rs)))) pr-false
+-- Main case: split first on the list shape (makes decrease explicit),
+-- then on the Bool decision. Recursion only on (v ∷ w ∷ rs).
+soundness (u ∷ v ∷ w ∷ rs) pr with nonZeroℤ (det3 u v w)
+... | true  = here {u = u} {v = v} {w = w} {rs = rs} refl
+... | false = there (soundness (v ∷ w ∷ rs) (stripFalse refl pr))
 
 ----------------------------------------------------------------------
 -- 4 · Soundness specialized to histories

@@ -49,6 +49,13 @@ tailFromFalse {u} {v} {w} {rs} eqFalse pr =
   in
     trans (sym (if-false-β true (isJust (rank3Witness (v ∷ w ∷ rs))))) pr-false
 
+-- Kleine Inspect-Hilfe (lokal), um eine Gleichheit zum 'with'-Wert zu bekommen
+data Inspect {A : Set} (x : A) : Set where
+  it : (y : A) → x ≡ y → Inspect x
+
+inspect : ∀ {A : Set} → (x : A) → Inspect x
+inspect x = it x refl
+
 -- Soundness: jetzt direkt auf das Bool matchen (keine 'inspect'-Gleichheiten nötig)
 witnessSound : ∀ xs → isJust (rank3Witness xs) ≡ true → HasGoodTriple xs
 witnessSound []          ()

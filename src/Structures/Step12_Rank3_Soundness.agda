@@ -11,7 +11,7 @@ open import Agda.Primitive using (Level)
 open import Data.Bool      using (Bool; true; false; if_then_else_)
 open import Data.List      using (List; []; _∷_)
 open import Relation.Binary.PropositionalEquality
-  using (_≡_; refl; sym; trans; cong; subst)
+  using (_≡_; refl; sym; trans)
 
 -- Dist is not re-exported by Step 11, import from Step 2:
 open import Structures.Step2_VectorOperations using (Dist)
@@ -32,28 +32,14 @@ open import Structures.Step11_Rank3 public using
   )
 
 ----------------------------------------------------------------------
--- 0 · Inspect utility (to capture an equality from a decision)
-----------------------------------------------------------------------
-
-data Inspect {A : Set} (x : A) : Set where
-  it : (y : A) → x ≡ y → Inspect x
-
-inspect : ∀ {A : Set} → (x : A) → Inspect x
-inspect x = it x refl
-
-----------------------------------------------------------------------
--- 1 · Tiny β-lemmas for 'if'
+-- 0 · Tiny β-lemma for 'if'
 ----------------------------------------------------------------------
 
 if-false-β : ∀ {A : Set} (x y : A) → (if false then x else y) ≡ y
 if-false-β x y = refl
 
--- kept for symmetry (not used below)
-if-true-β  : ∀ {A : Set} (x y : A) → (if true  then x else y) ≡ x
-if-true-β x y = refl
-
 ----------------------------------------------------------------------
--- 2 · Unfolding lemma for rank3? on lists with ≥ 3 elements
+-- 1 · Unfolding lemma for rank3? on lists with ≥ 3 elements
 --     Matches the definition of rank3Witness / rank3? in Step 11.
 ----------------------------------------------------------------------
 
@@ -65,49 +51,35 @@ rank3?-cons : ∀ (u v w : ℤ³) (rs : List ℤ³) →
 rank3?-cons u v w rs with nonZeroℤ (det3 u v w)
 ... | true  = refl
 ... | false = refl
--- Explanation:
---   rank3? (u ∷ v ∷ w ∷ rs)
---   = if nonZeroℤ (det3 u v w) then true else rank3? (v ∷ w ∷ rs)
 
 ----------------------------------------------------------------------
--- 3 · Soundness: rank3? xs ≡ true  ⇒  HasGoodTriple xs
+-- 2 · Soundness: rank3? xs ≡ true  ⇒  HasGoodTriple xs
 ----------------------------------------------------------------------
 
 soundness : ∀ xs → rank3? xs ≡ true → HasGoodTriple xs
--- Lists of length < 3: rank3? reduces to false, so the equality is impossible.
+-- Lists of length < 3: impossible, since rank3? reduces to false.
 soundness []          ()
 soundness (_ ∷ [])    ()
 soundness (_ ∷ _ ∷ []) ()
 
 -- Main case: xs = u ∷ v ∷ w ∷ rs
 soundness (u ∷ v ∷ w ∷ rs) pr
-  with inspect (nonZeroℤ (det3 u v w))
-... | it true  eqTrue =
-      -- We have eqTrue : nonZeroℤ (det3 u v w) ≡ true
-      here {u = u} {v = v} {w = w} {rs = rs} eqTrue
-... | it false eqFalse =
-      -- Use local equalities (see 'where') to turn 'pr' into a tail proof.
-      there (soundness (v ∷ w ∷ rs) pr-tail)
-  where
-    -- Step 1: rewrite to the conditional shape
-    pr-cond :
-      (if nonZeroℤ (det3 u v w) then true else rank3? (v ∷ w ∷ rs)) ≡ true
-    pr-cond = trans (sym (rank3?-cons u v w rs)) pr
-
-    -- Step 2: substitute 'nonZeroℤ (det3 u v w) ≡ false'
-    pr-false :
-      (if false then true else rank3? (v ∷ w ∷ rs)) ≡ true
-    pr-false =
-      subst (λ b → (if b then true else rank3? (v ∷ w ∷ rs)) ≡ true)
-            eqFalse
-            pr-cond
-
-    -- Step 3: β-reduce 'if false … else …' to the else-branch (no rewrite; use trans)
-    pr-tail : rank3? (v ∷ w ∷ rs) ≡ true
-    pr-tail = trans (sym (if-false-β true (rank3? (v ∷ w ∷ rs)))) pr-false
+  with nonZeroℤ (det3 u v w)
+... | true  =
+      -- In this branch the type nonZeroℤ (det3 u v w) ≡ true reduces to true ≡ true
+      here {u = u} {v = v} {w = w} {rs = rs} refl
+... | false =
+      -- Transform the proof to the tail:
+      --   pr : rank3? (u ∷ v ∷ w ∷ rs) ≡ true
+      --   rank3?-cons → (if false then true else rank3? tail) ≡ true
+      --   if-false-β  → rank3? tail ≡ true
+      let pr-tail : rank3? (v ∷ w ∷ rs) ≡ true
+          pr-tail = trans (sym (if-false-β true (rank3? (v ∷ w ∷ rs))))
+                          (trans (sym (rank3?-cons u v w rs)) pr)
+      in  there (soundness (v ∷ w ∷ rs) pr-tail)
 
 ----------------------------------------------------------------------
--- 4 · Soundness specialized to histories
+-- 3 · Soundness specialized to histories
 ----------------------------------------------------------------------
 
 soundnessOnHistory :
@@ -118,7 +90,7 @@ soundnessOnHistory {n} hist pr =
   soundness (diffs (FoldMap³ {n} hist)) pr
 
 ----------------------------------------------------------------------
--- 5 · Convenience re-exports (pair the two directions)
+-- 4 · Convenience re-exports (pair the two directions)
 ----------------------------------------------------------------------
 
 -- completeness is provided by Step 11:

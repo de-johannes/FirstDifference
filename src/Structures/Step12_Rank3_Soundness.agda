@@ -1,10 +1,11 @@
-{-# OPTIONS --no-safe #-} -- Wir müssen --safe für diese Datei deaktivieren, um TERMINATING zu nutzen
+{-# OPTIONS --safe #-}
 
 ----------------------------------------------------------------------
---  Step 12 ▸ Rank-3 Soundness (Final Pragmatic Version)
---  Logic is sound via 'inspect'.
---  Termination is asserted via pragma, as the structural proof is too
---  complex for the automatic checker.
+--  Step 12 ▸ Rank-3 Soundness via Witness
+--  Idea: Separate computation and proof.
+--        We prove: if isJust (rank3Witness xs) ≡ true
+--        then xs contains a good triple (HasGoodTriple xs).
+--  No postulates. Pure structural recursion on the list.
 ----------------------------------------------------------------------
 
 module Structures.Step12_Rank3_Soundness where
@@ -15,11 +16,29 @@ open import Data.List.Base using (List; []; _∷_)
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans; subst)
 
+-- Dist only needed if you add history corollaries later.
 open import Structures.Step2_VectorOperations using (Dist)
-open import Structures.Step11_Rank3 public
+
+-- We import exactly what we need from Step 11.
+open import Structures.Step11_Rank3 public using
+  ( ℤ³
+  ; det3
+  ; nonZeroℤ
+
+  ; Maybe               -- witness carrier
+  ; just
+  ; nothing
+  ; isJust              -- Bool projection from Maybe
+  ; rank3Witness        -- PROGRAM: scans list, returns witness if found
+
+  ; HasGoodTriple       -- SPEC: logical property “there exists a good triple”
+  ; here                -- constructor: head triple is good (needs equality proof)
+  ; there               -- constructor: witness lives in the tail
+  ; pack                -- packaging used by rank3Witness (not used here directly)
+  )
 
 ----------------------------------------------------------------------
--- Inspect utility (unchanged)
+-- 0 · Inspect utility (capture equality from a decision)
 ----------------------------------------------------------------------
 
 data Inspect {A : Set} (x : A) : Set where
@@ -29,7 +48,15 @@ inspect : ∀ {A : Set} → (x : A) → Inspect x
 inspect x = it x refl
 
 ----------------------------------------------------------------------
--- Unfolding and Stripping Lemmas (adapted for isJust and rank3Witness)
+-- 1 · Tiny β-lemma for 'if' with false
+----------------------------------------------------------------------
+
+if-false-β : ∀ {A : Set} (x y : A) → (if false then x else y) ≡ y
+if-false-β x y = refl
+
+----------------------------------------------------------------------
+-- 2 · Unfolding lemma for the WITNESS (non-recursive)
+--    Behaviour of isJust (rank3Witness ...) on length ≥ 3.
 ----------------------------------------------------------------------
 
 isJust-cons :
@@ -40,8 +67,9 @@ isJust-cons u v w rs with nonZeroℤ (det3 u v w)
 ... | true  = refl
 ... | false = refl
 
-if-false-β : ∀ {A : Set} (x y : A) → (if false then x else y) ≡ y
-if-false-β x y = refl
+----------------------------------------------------------------------
+-- 3 · Tail extraction for the false branch
+----------------------------------------------------------------------
 
 tailFromFalse :
   ∀ {u v w rs} →
@@ -50,34 +78,33 @@ tailFromFalse :
   isJust (rank3Witness (v ∷ w ∷ rs)) ≡ true
 tailFromFalse {u} {v} {w} {rs} eqFalse pr =
   let
+    pr-cond :
+      (if nonZeroℤ (det3 u v w) then true else isJust (rank3Witness (v ∷ w ∷ rs))) ≡ true
     pr-cond = trans (sym (isJust-cons u v w rs)) pr
-    pr-false = subst (λ b → (if b then true else isJust (rank3Witness (v ∷ w ∷ rs))) ≡ true) eqFalse pr-cond
+
+    pr-false :
+      (if false then true else isJust (rank3Witness (v ∷ w ∷ rs))) ≡ true
+    pr-false =
+      subst (λ b → (if b then true else isJust (rank3Witness (v ∷ w ∷ rs))) ≡ true)
+            eqFalse
+            pr-cond
   in
     trans (sym (if-false-β true (isJust (rank3Witness (v ∷ w ∷ rs))))) pr-false
 
 ----------------------------------------------------------------------
--- Main theorem: "witness ⇒ spec" with TERMINATING pragma
+-- 4 · Main theorem: witness ⇒ spec
+--    If rank3Witness finds something (isJust ≡ true),
+--    then HasGoodTriple holds. Structural recursion on the list.
 ----------------------------------------------------------------------
 
-{-# TERMINATING #-}
 witnessSound : ∀ xs → isJust (rank3Witness xs) ≡ true → HasGoodTriple xs
-witnessSound []       ()
-witnessSound (_ ∷ [])   ()
+-- Lists of length < 3: rank3Witness ≡ nothing ⇒ isJust ≡ false ⇒ impossible
+witnessSound []          ()
+witnessSound (_ ∷ [])    ()
 witnessSound (_ ∷ _ ∷ []) ()
-witnessSound (u ∷ v ∷ w ∷ rs) pr with inspect (nonZeroℤ (det3 u v w))
-... | it true  eqT = here eqT
-... | it false eqF = there (witnessSound (v ∷ w ∷ rs) (tailFromFalse eqF pr))
 
-----------------------------------------------------------------------
--- Public interface (unchanged)
-----------------------------------------------------------------------
-
-soundness : ∀ xs → rank3? xs ≡ true → HasGoodTriple xs
-soundness = witnessSound
-
-soundnessOnHistory :
-  ∀ {n} (hist : List (Dist n)) →
-  rank3OnHistoryBool hist ≡ true →
-  HasGoodTriple (diffs (FoldMap³ {n} hist))
-soundnessOnHistory {n} hist pr =
-  soundness (diffs (FoldMap³ {n} hist)) pr
+-- Length ≥ 3
+witnessSound (u ∷ v ∷ w ∷ rs) pr
+  with inspect (nonZeroℤ (det3 u v w))
+... | it true  eqTrue  = here  {u = u} {v = v} {w = w} {rs = rs} eqTrue
+... | it false eqFalse = there (witnessSound (v ∷ w ∷ rs) (tailFromFalse eqFalse pr))

@@ -54,6 +54,12 @@ witnessSound : ∀ xs → isJust (rank3Witness xs) ≡ true → HasGoodTriple xs
 witnessSound []          ()
 witnessSound (_ ∷ [])    ()
 witnessSound (_ ∷ _ ∷ []) ()
-witnessSound (u ∷ v ∷ w ∷ rs) pr with nonZeroℤ (det3 u v w)
-... | true  = here  {u = u} {v = v} {w = w} {rs = rs} refl
-... | false = there (witnessSound (v ∷ w ∷ rs) (tailFromFalse refl pr))
+witnessSound (u ∷ v ∷ w ∷ rs) pr
+  with nonZeroℤ (det3 u v w)
+... | true
+  with inspect (nonZeroℤ (det3 u v w))
+... | it .true  eqTrue  = here  {u = u} {v = v} {w = w} {rs = rs} eqTrue
+
+... | false
+  with inspect (nonZeroℤ (det3 u v w))
+... | it .false eqFalse = there (witnessSound (v ∷ w ∷ rs) (tailFromFalse eqFalse pr))

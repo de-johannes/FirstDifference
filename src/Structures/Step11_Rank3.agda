@@ -199,7 +199,6 @@ diffs (p ∷ q ∷ rs)    = q minus3 p ∷ diffs (q ∷ rs)
 -- 7 · Witness search & Boolean checker
 ----------------------------------------------------------------------
 
--- Minimal witness (no proof components needed for the boolean decider)
 record GoodTriple : Set where
   constructor pack
   field a b c : ℤ³
@@ -213,12 +212,12 @@ isJust : ∀ {A} → Maybe A → Bool
 isJust nothing  = false
 isJust (just _) = true
 
--- Termination-safe: pattern on the list, then 'with' on the Bool.
--- Recursive call only in the 'false' branch on a strictly shorter list.
+-- Termination-safe: recursion only in the 'false' branch on a strictly shorter list.
 rank3Witness : List ℤ³ → Maybe GoodTriple
-rank3Witness (u ∷ v ∷ w ∷ rs) with nonZeroℤ (det3 u v w)
-... | true  = just (pack u v w rs)
-... | false = rank3Witness (v ∷ w ∷ rs)
+rank3Witness (u ∷ v ∷ w ∷ rs) =
+  if nonZeroℤ (det3 u v w)
+  then just (pack u v w rs)
+  else rank3Witness (v ∷ w ∷ rs)
 rank3Witness _ = nothing
 
 rank3? : List ℤ³ → Bool
@@ -241,9 +240,11 @@ data HasGoodTriple : List ℤ³ → Set where
 
 -- Completeness: if the spec holds, the Boolean checker is true.
 completeness : ∀ xs → HasGoodTriple xs → rank3? xs ≡ true
-completeness []        ()
-completeness (_ ∷ [])  ()
-completeness (_ ∷ _ ∷ []) ()
+-- length < 3 are impossible: show that via explicit 'there ()' forms
+completeness []               ()
+completeness (_ ∷ [])        (there ())
+completeness (_ ∷ _ ∷ [])    (there (there ()))
+-- main cases
 completeness (u ∷ v ∷ w ∷ rs) (here h) rewrite h = refl
 completeness (u ∷ v ∷ w ∷ rs) (there p)
   with nonZeroℤ (det3 u v w)

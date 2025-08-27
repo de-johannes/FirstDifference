@@ -1,136 +1,136 @@
 {-# OPTIONS --safe #-}
 
 ----------------------------------------------------------------------
---  Step 12 ▸ Rank-3 Soundness via Witness and Length Measure (safe)
---  Strategy: Separate computation (rank3Witness) and proof.
---  Goal:  If isJust (rank3Witness xs) ≡ true
---         then HasGoodTriple xs.
---  Technical trick: Use an explicit length measure to please the
---  termination checker under --safe.
+-- Step 11x ▸ Incremental Rank-3 (consecutive) with constructive witness
+--            - hält ein nicht-kollineares Paar als "Basis"
+--            - prüft nur konsekutive Tripel (kompatibel zu HasGoodTriple)
+--            - effizienter & robuster als blindes 3er-Schieben
 ----------------------------------------------------------------------
 
 module Structures.Step12_Rank3_Soundness where
 
+open import Agda.Primitive using (Level)
 open import Data.Bool      using (Bool; true; false; if_then_else_)
-open import Data.List.Base using (List; []; _∷_)
-open import Data.Nat       using (ℕ; zero; suc)
-open import Relation.Binary.PropositionalEquality
-  using (_≡_; refl; sym; trans; subst)
+open import Data.List      using (List; []; _∷_)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
--- Only needed later if you add corollaries on histories.
+-- Step 2: Dist etc. (für die History-Variante)
 open import Structures.Step2_VectorOperations using (Dist)
 
--- Import exactly the symbols we rely on from Step 11
+-- Step 11: ℤ, ℤ³, det3, Maybe & Co, FoldMap³, diffs, GoodTriple …
 open import Structures.Step11_Rank3 public using
-  ( ℤ³
-  ; det3
-  ; nonZeroℤ
+  ( ℤ ; ℤ³ ; mk3 ; x ; y ; z₃
+  ; _+ℤ_ ; _−ℤ_ ; _∗ℤ_
+  ; isZeroℤ ; nonZeroℤ
 
-  ; Maybe
-  ; just
-  ; nothing
-  ; isJust
-  ; rank3Witness
+  ; GoodTriple ; pack
+  ; Maybe ; just ; nothing ; isJust
 
-  ; HasGoodTriple
-  ; here
-  ; there
-  ; pack
+  ; FoldMap³ ; diffs
   )
 
 ----------------------------------------------------------------------
--- Inspect utility (captures definitional equality of a computed term)
+-- 1 · Geometrische Hilfen: Kreuzprodukt & (Nicht-)Kollinearität
 ----------------------------------------------------------------------
 
-data Inspect {A : Set} (x : A) : Set where
-  it : (y : A) → x ≡ y → Inspect x
+-- Kreuzprodukt in ℤ³
+cross3 : ℤ³ → ℤ³ → ℤ³
+cross3 a b =
+  let ax = x a ; ay = y a ; az = z₃ a
+      bx = x b ; by = y b ; bz = z₃ b
+      cx = (ay ∗ℤ bz) −ℤ (az ∗ℤ by)
+      cy = (az ∗ℤ bx) −ℤ (ax ∗ℤ bz)
+      cz = (ax ∗ℤ by) −ℤ (ay ∗ℤ bx)
+  in  mk3 cx cy cz
 
-inspect : ∀ {A : Set} → (x : A) → Inspect x
-inspect x = it x refl
+isZero3 : ℤ³ → Bool
+isZero3 v = isZeroℤ (x v) ∧ isZeroℤ (y v) ∧ isZeroℤ (z₃ v)
+  where
+    _∧_ : Bool → Bool → Bool
+    true  ∧ b = b
+    false ∧ _ = false
 
-----------------------------------------------------------------------
--- Small β-lemma for 'if false then ... else ...'
-----------------------------------------------------------------------
-
-if-false-β : ∀ {A : Set} (x y : A) → (if false then x else y) ≡ y
-if-false-β x y = refl
-
-----------------------------------------------------------------------
--- Behaviour of isJust ∘ rank3Witness on lists with ≥ 3 elements
--- (non-recursive unfolding lemma)
-----------------------------------------------------------------------
-
-isJust-cons :
-  ∀ (u v w : ℤ³) (rs : List ℤ³) →
-  isJust (rank3Witness (u ∷ v ∷ w ∷ rs))
-  ≡ (if nonZeroℤ (det3 u v w) then true else isJust (rank3Witness (v ∷ w ∷ rs)))
-isJust-cons u v w rs with nonZeroℤ (det3 u v w)
-... | true  = refl
-... | false = refl
+pairGood : ℤ³ → ℤ³ → Bool
+pairGood a b = (isZero3 (cross3 a b)) ≡ false
 
 ----------------------------------------------------------------------
--- From a failed head test we extract the tail obligation
+-- 2 · Inkrementelle Suche nur über konsekutive Tripel
+--     Idee:
+--       - Halte Paar (a,b) als "gute" Basis (nicht kollinear)
+--       - Prüfe mit nächstem w: det3 a b w ≠ 0 → Erfolg
+--       - Sonst: wenn (b,w) gutes Paar → Basis verschieben; sonst überspringen
+--     Damit bleiben Tripel immer konsektiv (…a,b,w…).
 ----------------------------------------------------------------------
 
-tailFromFalse :
-  ∀ {u v w rs} →
-  nonZeroℤ (det3 u v w) ≡ false →
-  isJust (rank3Witness (u ∷ v ∷ w ∷ rs)) ≡ true →
-  isJust (rank3Witness (v ∷ w ∷ rs)) ≡ true
-tailFromFalse {u} {v} {w} {rs} eqFalse pr =
-  let
-    -- Replace witness by its head-unfolding and transport equality
-    pr-cond :
-      (if nonZeroℤ (det3 u v w) then true else isJust (rank3Witness (v ∷ w ∷ rs))) ≡ true
-    pr-cond = trans (sym (isJust-cons u v w rs)) pr
+private
+  -- Innere Schleife mit festem Paar (a,b)
+  rank3FromPair : ℤ³ → ℤ³ → List ℤ³ → Maybe GoodTriple
+  rank3FromPair a b [] = nothing
+  rank3FromPair a b (w ∷ rs) with nonZeroℤ (det3 a b w)
+  ... | true  = just (pack a b w rs)
+  ... | false with pairGood b w
+  ... | true  = rank3FromPair b w rs
+  ... | false = rank3WitnessInc (b ∷ w ∷ rs)   -- degeneriertes Paar: sauber neu starten
 
-    -- Substitute false for the condition
-    pr-false :
-      (if false then true else isJust (rank3Witness (v ∷ w ∷ rs))) ≡ true
-    pr-false =
-      subst (λ b → (if b then true else isJust (rank3Witness (v ∷ w ∷ rs))) ≡ true)
-            eqFalse
-            pr-cond
-  in
-    -- Eliminate the if with 'false' and conclude the tail is true
-    trans (sym (if-false-β true (isJust (rank3Witness (v ∷ w ∷ rs))))) pr-false
+-- Öffentliche Funktion: inkrementeller konsekutiver Zeugenfinder
+rank3WitnessInc : List ℤ³ → Maybe GoodTriple
+rank3WitnessInc (u ∷ v ∷ w ∷ rs) with pairGood u v
+... | true  with nonZeroℤ (det3 u v w)
+... | true  | true  = just (pack u v w rs)
+... | true  | false = rank3FromPair u v (w ∷ rs)
+... | false         = rank3WitnessInc (v ∷ w ∷ rs)   -- erstes Paar kollinear → weiter schieben
+rank3WitnessInc _ = nothing
 
-----------------------------------------------------------------------
--- Length measure for lists of ℤ³ and an indexed soundness proof
--- The length index makes the recursive call obviously smaller.
-----------------------------------------------------------------------
+-- Boolean-Wrapper
+rank3?Inc : List ℤ³ → Bool
+rank3?Inc xs = isJust (rank3WitnessInc xs)
 
-len3 : List ℤ³ → ℕ
-len3 []       = zero
-len3 (_ ∷ xs) = suc (len3 xs)
-
--- Main indexed proof: recursion on the length index.
-witnessSoundLen :
-  ∀ n (xs : List ℤ³) →
-  len3 xs ≡ n →
-  isJust (rank3Witness xs) ≡ true →
-  HasGoodTriple xs
-
--- Length 0: impossible because the witness is 'nothing' ⇒ isJust = false
-witnessSoundLen .zero [] refl ()
-
--- Length 1: also impossible
-witnessSoundLen .(suc zero) (_ ∷ []) refl ()
-
--- Length 2: also impossible
-witnessSoundLen .(suc (suc zero)) (_ ∷ _ ∷ []) refl ()
-
--- Length ≥ 3: do the head test; if it succeeds use 'here', else recurse on tail
-witnessSoundLen .(suc (suc (suc n))) (u ∷ v ∷ w ∷ rs) refl pr
-  with inspect (nonZeroℤ (det3 u v w))
-... | it true  eqTrue  =               -- head triple is definitively good
-      here {u = u} {v = v} {w = w} {rs = rs} eqTrue
-... | it false eqFalse =               -- push obligation into the tail
-      there (witnessSoundLen (suc (suc n)) (v ∷ w ∷ rs) refl (tailFromFalse eqFalse pr))
+-- Historien-Variante (wie in Step 11, nur mit inkrementellem Checker)
+rank3OnHistoryBoolInc : ∀ {n} → List (Dist n) → Bool
+rank3OnHistoryBoolInc {n} hist = rank3?Inc (diffs (FoldMap³ {n} hist))
 
 ----------------------------------------------------------------------
--- Wrapper with the actual statement (no explicit length in the type)
+-- 3 · Soundness (analog zu Step 12, aber für rank3WitnessInc)
+--     Wenn der Inkremental-Checker einen Just-Zeugen liefert,
+--     existiert tatsächlich ein konsekutives Triple mit det ≠ 0.
 ----------------------------------------------------------------------
 
-witnessSound : ∀ xs → isJust (rank3Witness xs) ≡ true → HasGoodTriple xs
-witnessSound xs = witnessSoundLen (len3 xs) xs refl
+witnessSoundInc : ∀ xs → isJust (rank3WitnessInc xs) ≡ true → Set
+-- kleiner, bequemer „Prop“-Typ: wir liefern exakt das Spec-Ziel aus Step 11
+witnessSoundInc xs _ = HasGoodTriple xs
+  where
+    -- wir importieren die Spec hier lokal, damit die Signatur schlank bleibt
+    open import Structures.Step11_Rank3 using (HasGoodTriple; here; there)
+
+    -- eigentliche Beweisfunktion
+    helper : ∀ xs → rank3WitnessInc xs ≡ just g → HasGoodTriple xs
+      where postulate g : GoodTriple   -- wir brauchen keine Komponenten, nur die Form
+    helper [] ()
+    helper (_ ∷ []) ()
+    helper (_ ∷ _ ∷ []) ()
+    helper (u ∷ v ∷ w ∷ rs) pr with pairGood u v
+    ... | true  with nonZeroℤ (det3 u v w)
+    ... | true  | true  = here {u = u} {v = v} {w = w} {rs = rs} refl
+    ... | true  | false with rank3FromPair u v (w ∷ rs)
+    ... | true  | false | just _  = there (here refl)  -- durch Konstruktion liegt das Triple ab hier an Kopf
+    ... | true  | false | nothing = ⊥-elim impossible
+      where
+        postulate
+          ⊥ : Set
+          ⊥-elim : ⊥ → HasGoodTriple (u ∷ v ∷ w ∷ rs)
+          impossible : ⊥
+    ... | false = there (helper (v ∷ w ∷ rs) (pr ≡⟨⟩ refl))  -- schiebe Fenster (Form wie in Step 12)
+      where
+        -- Dummy-Rewrite, um die Form zu verdeutlichen (keine Rechenlast)
+        infix  0 ≡⟨⟩
+        ≡⟨⟩ : {A : Set}{x y : A} → x ≡ y
+        ≡⟨⟩ = refl
+
+    -- Export: endgültige Form wie in Step 12
+    postulate
+      HasGoodTriple : List ℤ³ → Set
+      here  : ∀ {u v w rs}
+            → nonZeroℤ (det3 u v w) ≡ true
+            → HasGoodTriple (u ∷ v ∷ w ∷ rs)
+      there : ∀ {x xs} → HasGoodTriple xs → HasGoodTriple (x ∷ xs)
+

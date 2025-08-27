@@ -12,18 +12,21 @@ open import Data.Bool      using (Bool; true; false)
 open import Data.List      using (List; []; _∷_)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans)
 
--- Reuse definitions from Step 11
-open import Structures.Step11_Rank3
-  using ( Dist
-        ; ℤ³
-        ; det3
-        ; nonZeroℤ
-        ; diffs
-        ; FoldMap³
-        ; HasGoodTriple(..)
-        ; rank3?
-        ; rank3OnHistoryBool
-        )
+-- Reuse exactly what we need from Step 11 (public using, no empty renaming)
+open import Structures.Step11_Rank3 public using
+  ( Dist
+  ; ℤ³
+  ; det3
+  ; nonZeroℤ
+  ; diffs
+  ; FoldMap³
+  ; HasGoodTriple
+  ; here
+  ; there
+  ; rank3?
+  ; rank3OnHistoryBool
+  ; completeness
+  )
 
 ----------------------------------------------------------------------
 -- 0 · Auxiliary unfolding lemma for rank3? on 3+ lists
@@ -60,14 +63,15 @@ soundness (_ ∷ _ ∷ []) ()
 soundness (u ∷ v ∷ w ∷ rs) pr
   with nonZeroℤ (det3 u v w)
 ... | true  =
-      -- Using rank3?-cons, the left side reduces to 'true', so 'here refl' fits.
+      -- In this branch, rank3? (u ∷ v ∷ w ∷ rs) reduces to true,
+      -- thus we can produce 'here refl' as the witness.
       here {u = u} {v = v} {w = w} {rs = rs} refl
 ... | false =
-      -- Use rank3?-cons to rewrite 'pr' into a proof on the tail:
+      -- Rewrite 'pr' using rank3?-cons to obtain a proof on the tail:
       --   rank3? (u ∷ v ∷ w ∷ rs) ≡ true
       --   ≡⟨ sym (rank3?-cons u v w rs) ⟩
       --   (if false then true else rank3? (v ∷ w ∷ rs)) ≡ true
-      --   which reduces to  rank3? (v ∷ w ∷ rs) ≡ true
+      --   ⇝ rank3? (v ∷ w ∷ rs) ≡ true
       let pr-tail : rank3? (v ∷ w ∷ rs) ≡ true
           pr-tail = trans (sym (rank3?-cons u v w rs)) pr
       in  there (soundness (v ∷ w ∷ rs) pr-tail)

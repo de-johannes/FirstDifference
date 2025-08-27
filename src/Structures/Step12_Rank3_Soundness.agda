@@ -64,19 +64,24 @@ soundness (_ ∷ _ ∷ []) ()
 
 -- Main case: xs = u ∷ v ∷ w ∷ rs
 soundness (u ∷ v ∷ w ∷ rs) pr
-  with nonZeroℤ (det3 u v w)
+  with b ← nonZeroℤ (det3 u v w)
 ... | true  =
-      -- In this branch the type nonZeroℤ (det3 u v w) ≡ true reduces to true ≡ true
+      -- b is definitionally 'true' here, so (b ≡ true) is refl.
       here {u = u} {v = v} {w = w} {rs = rs} refl
 ... | false =
-      -- Transform the proof to the tail:
+      -- Transform the proof to the tail using definitional b = false:
       --   pr : rank3? (u ∷ v ∷ w ∷ rs) ≡ true
-      --   rank3?-cons → (if false then true else rank3? tail) ≡ true
+      --   rank3?-cons → (if b then true else rank3? tail) ≡ true
+      --   b = false   → (if false then true else rank3? tail) ≡ true
       --   if-false-β  → rank3? tail ≡ true
-      let pr-tail : rank3? (v ∷ w ∷ rs) ≡ true
-          pr-tail = trans (sym (if-false-β true (rank3? (v ∷ w ∷ rs))))
-                          (trans (sym (rank3?-cons u v w rs)) pr)
-      in  there (soundness (v ∷ w ∷ rs) pr-tail)
+      there (soundness (v ∷ w ∷ rs) pr-tail)
+  where
+    pr-cond :
+      (if b then true else rank3? (v ∷ w ∷ rs)) ≡ true
+    pr-cond = trans (sym (rank3?-cons u v w rs)) pr
+
+    pr-tail : rank3? (v ∷ w ∷ rs) ≡ true
+    pr-tail = trans (sym (if-false-β true (rank3? (v ∷ w ∷ rs)))) pr-cond
 
 ----------------------------------------------------------------------
 -- 3 · Soundness specialized to histories

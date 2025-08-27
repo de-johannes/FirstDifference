@@ -21,7 +21,7 @@ open import Structures.Step2_VectorOperations using (Dist)
 open import Structures.Step10_FoldMap         using (FoldMap)
 
 ----------------------------------------------------------------------
--- 1 · Tiny helpers
+-- 1 · Helper functions
 ----------------------------------------------------------------------
 
 not : Bool → Bool
@@ -47,21 +47,17 @@ andCount {zero}  []       []       = zero
 andCount {suc _} (a ∷ as) (b ∷ bs) =
   (if a ∧ b then 1 else 0) + andCount as bs
 
--- alternating mask  T F T F …
-altMask : ∀ {n} → Bool → Vec Bool n
+altMask : ∀ {n} → Bool → Vec Bool n       -- T F T F …
 altMask {zero}  _ = []
 altMask {suc n} b = b ∷ altMask {n} (not b)
 
--- mode-1: all true
-mask₁ : ∀ {n} → Vec Bool n
+mask₁ : ∀ {n} → Vec Bool n                -- all true
 mask₁ {zero}  = []
 mask₁ {suc n} = true ∷ mask₁ {n}
 
--- mode-2:  T F T F …
-mask₂ : ∀ {n} → Vec Bool n
+mask₂ : ∀ {n} → Vec Bool n                -- alternation
 mask₂ {n} = altMask true
 
--- mode-3:  T T F F T T F F …
 two : ℕ
 two = suc (suc zero)
 
@@ -69,7 +65,7 @@ pred : ℕ → ℕ
 pred zero    = zero
 pred (suc k) = k
 
-mask3Aux : ∀ {n} → Bool → ℕ → Vec Bool n
+mask3Aux : ∀ {n} → Bool → ℕ → Vec Bool n  -- T T F F …
 mask3Aux {zero}  _ _ = []
 mask3Aux {suc n} b t = b ∷ mask3Aux {n} b' t'
   where
@@ -94,26 +90,22 @@ record ℤ : Set where
   field pos neg : ℕ
 open ℤ
 
--- fixities so Agda parses mixed expressions
 infixl 7 _∗ℤ_
 infixl 6 _+ℤ_ _−ℤ_
 
 zeroℤ : ℤ
 zeroℤ = z 0 0
 
-toℤ : ℕ → ℤ
-toℤ n = z n 0
+_+ℤ_ : ℤ → ℤ → ℤ
+z a b +ℤ z c d = z (a + c) (b + d)
 
 negℤ : ℤ → ℤ
 negℤ (z p n) = z n p
 
-_+ℤ_ : ℤ → ℤ → ℤ
-z a b +ℤ z c d = z (a + c) (b + d)
-
 _−ℤ_ : ℤ → ℤ → ℤ
 x −ℤ y = x +ℤ negℤ y
 
-_∗ℤ_ : ℤ → ℤ → ℤ
+_∗ℤ_ : ℤ → ℤ → ℤ            -- (a−b)(c−d)
 z a b ∗ℤ z c d = z (a * c + b * d) (a * d + b * c)
 
 isZeroℤ : ℤ → Bool
@@ -159,7 +151,17 @@ diffs (_ ∷ [])        = []
 diffs (p ∷ q ∷ rs)    = q minus3 p ∷ diffs (q ∷ rs)
 
 ----------------------------------------------------------------------
--- 6 · Witness search & Boolean checker
+-- 6 · Inspect utility
+----------------------------------------------------------------------
+
+data Inspect {A : Set} (x : A) : Set where
+  it : (y : A) → x ≡ y → Inspect x
+
+inspect : ∀ {A} → (x : A) → Inspect x
+inspect x = it x refl
+
+----------------------------------------------------------------------
+-- 7 · Witness search & Boolean checker
 ----------------------------------------------------------------------
 
 record GoodTriple : Set where
@@ -176,20 +178,22 @@ isJust : ∀ {A} → Maybe A → Bool
 isJust nothing  = false
 isJust (just _) = true
 
+-- uses inspect → explicit equality proof; recursion only in 'false' path
 rank3Witness : List ℤ³ → Maybe GoodTriple
-rank3Witness (u ∷ v ∷ w ∷ rs) with nonZeroℤ (det3 u v w)
-... | true  = just (pack u v w rs refl)
-... | false = rank3Witness (v ∷ w ∷ rs)
+rank3Witness (u ∷ v ∷ w ∷ rs)
+  with inspect (nonZeroℤ (det3 u v w))
+... | it true  eq = just (pack u v w rs eq)
+... | it false _  = rank3Witness (v ∷ w ∷ rs)
 rank3Witness _ = nothing
 
 rank3? : List ℤ³ → Bool
 rank3? xs = isJust (rank3Witness xs)
 
 rank3OnHistoryBool : ∀ {n} → List (Dist n) → Bool
-rank3OnHistoryBool {n} hist = rank3? (diffs (FoldMap {n} hist))
+rank3OnHistoryBool {n} h = rank3? (diffs (FoldMap {n} h))
 
 ----------------------------------------------------------------------
--- 7 · Spec predicate & completeness
+-- 8 · Spec predicate & completeness proof
 ----------------------------------------------------------------------
 
 data HasGoodTriple : List ℤ³ → Set where
@@ -203,7 +207,8 @@ completeness []        ()
 completeness (_ ∷ [])  ()
 completeness (_ ∷ _ ∷ []) ()
 completeness (u ∷ v ∷ w ∷ rs) (here h) rewrite h = refl
-completeness (u ∷ v ∷ w ∷ rs) (there p) with nonZeroℤ (det3 u v w)
+completeness (u ∷ v ∷ w ∷ rs) (there p)
+  with nonZeroℤ (det3 u v w)
 ... | true  = refl
 ... | false = completeness (v ∷ w ∷ rs) p
 
@@ -211,5 +216,5 @@ completenessOnHistory :
   ∀ {n} (hist : List (Dist n)) →
   HasGoodTriple (diffs (FoldMap {n} hist)) →
   rank3OnHistoryBool hist ≡ true
-completenessOnHistory {n} hist pr =
-  completeness (diffs (FoldMap {n} hist)) pr
+completenessOnHistory {n} h pr =
+  completeness (diffs (FoldMap {n} h)) pr

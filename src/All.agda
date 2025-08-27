@@ -24,6 +24,7 @@ open import Structures.Step8_TemporalFunctor public
 open import Structures.Step9_SpatialStructure public
 open import Structures.Step10_FoldMap public
 open import Structures.Step11_Rank3 public
+open import Structures.Step12_Rank3_Soundness public
 
 ------------------------------------------------------------------------
 -- Examples and demonstrations

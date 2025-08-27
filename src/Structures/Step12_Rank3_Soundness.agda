@@ -102,9 +102,9 @@ soundness (u ∷ v ∷ w ∷ rs) pr
             eqFalse
             pr-cond
 
-    -- Step 3: β-reduce 'if false … else …' to the else-branch
+    -- Step 3: β-reduce 'if false … else …' to the else-branch (no rewrite; use trans)
     pr-tail : rank3? (v ∷ w ∷ rs) ≡ true
-    pr-tail rewrite if-false-β true (rank3? (v ∷ w ∷ rs)) = pr-false
+    pr-tail = trans (sym (if-false-β true (rank3? (v ∷ w ∷ rs)))) pr-false
 
 ----------------------------------------------------------------------
 -- 4 · Soundness specialized to histories

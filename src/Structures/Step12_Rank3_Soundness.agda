@@ -3,7 +3,8 @@
 ----------------------------------------------------------------------
 --  Step 12 ▸ Rank-3 Soundness (Bool ⇒ Spec) and History corollaries
 --            Uses the Step 11 checker and spec; no postulates.
---  Key idea: explicit structural recursion on the length 'n'.
+--  Final version: explicit structural recursion on 'n' combined
+--                 with 'inspect' for a fully sound and terminating proof.
 ----------------------------------------------------------------------
 
 module Structures.Step12_Rank3_Soundness where
@@ -34,14 +35,24 @@ open import Structures.Step11_Rank3 public using
   )
 
 ----------------------------------------------------------------------
--- 0 · Tiny β-lemma for 'if'
+-- 0 · Inspect utility (to capture an equality from a decision)
+----------------------------------------------------------------------
+
+data Inspect {A : Set} (x : A) : Set where
+  it : (y : A) → x ≡ y → Inspect x
+
+inspect : ∀ {A : Set} → (x : A) → Inspect x
+inspect x = it x refl
+
+----------------------------------------------------------------------
+-- 1 · Tiny β-lemma for 'if'
 ----------------------------------------------------------------------
 
 if-false-β : ∀ {A : Set} (x y : A) → (if false then x else y) ≡ y
 if-false-β x y = refl
 
 ----------------------------------------------------------------------
--- 1 · Unfolding lemma for rank3? on lists with ≥ 3 elements
+-- 2 · Unfolding lemma for rank3? on lists with ≥ 3 elements
 --     (matches the definition of rank3Witness / rank3? in Step 11)
 ----------------------------------------------------------------------
 
@@ -55,7 +66,7 @@ rank3?-cons u v w rs with nonZeroℤ (det3 u v w)
 ... | false = refl
 
 ----------------------------------------------------------------------
--- 2 · Stripping lemma for the false-branch
+-- 3 · Stripping lemma for the false-branch
 --     If nonZeroℤ(det3 u v w) ≡ false and rank3? (u v w rs) ≡ true,
 --     then rank3? (v w rs) ≡ true.
 ----------------------------------------------------------------------
@@ -81,7 +92,7 @@ stripFalse {u} {v} {w} {rs} eqFalse pr =
     trans (sym (if-false-β true (rank3? (v ∷ w ∷ rs)))) pr-false
 
 ----------------------------------------------------------------------
--- 3 · Soundness with an explicit length parameter (structural recursion)
+-- 4 · Soundness with an explicit length parameter (structural recursion)
 ----------------------------------------------------------------------
 
 soundnessLen : ∀ (n : ℕ) (xs : List ℤ³) →
@@ -90,46 +101,48 @@ soundnessLen : ∀ (n : ℕ) (xs : List ℤ³) →
                HasGoodTriple xs
 
 -- n = 0
-soundnessLen zero []          _   ()
-soundnessLen zero (_ ∷ _)     ()
+soundnessLen zero []       _   ()
+soundnessLen zero (_ ∷ _)  ()
 
 -- n = 1
-soundnessLen (suc zero) []            ()
-soundnessLen (suc zero) (_ ∷ [])      _  ()
-soundnessLen (suc zero) (_ ∷ _ ∷ _)   ()
+soundnessLen (suc zero) []           ()
+soundnessLen (suc zero) (_ ∷ [])     _  ()
+soundnessLen (suc zero) (_ ∷ _ ∷ _)  ()
 
 -- n = 2
-soundnessLen (suc (suc zero)) []                 ()
-soundnessLen (suc (suc zero)) (_ ∷ [])           ()
-soundnessLen (suc (suc zero)) (_ ∷ _ ∷ [])       _  ()
-soundnessLen (suc (suc zero)) (_ ∷ _ ∷ _ ∷ _)    ()
+soundnessLen (suc (suc zero)) []              ()
+soundnessLen (suc (suc zero)) (_ ∷ [])        ()
+soundnessLen (suc (suc zero)) (_ ∷ _ ∷ [])      _  ()
+soundnessLen (suc (suc zero)) (_ ∷ _ ∷ _ ∷ _)  ()
 
 -- n ≥ 3, but list too short (impossible by length equation)
-soundnessLen (suc (suc (suc n′))) []                   ()
-soundnessLen (suc (suc (suc n′))) (_ ∷ [])             ()
-soundnessLen (suc (suc (suc n′))) (_ ∷ _ ∷ [])         ()
+soundnessLen (suc (suc (suc n′))) []              ()
+soundnessLen (suc (suc (suc n′))) (_ ∷ [])        ()
+soundnessLen (suc (suc (suc n′))) (_ ∷ _ ∷ [])      ()
 
--- Main case: n = suc (suc (suc n′)) and xs = u ∷ v ∷ w ∷ rs, with definitional length equality
+-- Main case: n ≥ 3 and xs has at least 3 elements
 soundnessLen (suc (suc (suc n′))) (u ∷ v ∷ w ∷ rs) refl pr
-  with nonZeroℤ (det3 u v w)
-... | true  =
-      -- In this branch, nonZeroℤ (det3 u v w) ≡ true reduces to 'true ≡ true'
-      here {u = u} {v = v} {w = w} {rs = rs} refl
-... | false =
-      -- Tail recursion on strictly smaller length: suc (suc n′)
-      let pr-tail : rank3? (v ∷ w ∷ rs) ≡ true
-          pr-tail = stripFalse refl pr
-      in  there (soundnessLen (suc (suc n′)) (v ∷ w ∷ rs) refl pr-tail)
+  with inspect (nonZeroℤ (det3 u v w))
+... | it true eqT =
+      -- Case 1: The determinant is non-zero.
+      -- 'inspect' provides the proof 'eqT', which we use for 'here'.
+      here eqT
+... | it false eqF =
+      -- Case 2: The determinant is zero.
+      -- 'inspect' provides the proof 'eqF'. We use it to strip the head
+      -- and recurse on a structurally smaller number 'n′'.
+      let pr-tail = stripFalse eqF pr
+      in there (soundnessLen (suc (suc n′)) (v ∷ w ∷ rs) refl pr-tail)
 
 ----------------------------------------------------------------------
--- 4 · Public soundness (derives 'n' from length xs, then calls soundnessLen)
+-- 5 · Public soundness (derives 'n' from length xs, then calls soundnessLen)
 ----------------------------------------------------------------------
 
 soundness : ∀ xs → rank3? xs ≡ true → HasGoodTriple xs
-soundness xs = soundnessLen (length xs) xs refl
+soundness xs pr = soundnessLen (length xs) xs refl pr
 
 ----------------------------------------------------------------------
--- 5 · Soundness specialized to histories
+-- 6 · Soundness specialized to histories
 ----------------------------------------------------------------------
 
 soundnessOnHistory :
@@ -140,7 +153,7 @@ soundnessOnHistory {n} hist pr =
   soundness (diffs (FoldMap³ {n} hist)) pr
 
 ----------------------------------------------------------------------
--- 6 · Convenience re-exports (pair the two directions)
+-- 7 · Convenience re-exports (pair the two directions)
 ----------------------------------------------------------------------
 
 -- completeness is provided by Step 11:

@@ -52,6 +52,7 @@ open import Physics.Step14_EFI_Core public
 -- Examples
 ------------------------------------------------------------------------
 
-import Examples.DriftWithTPProof as DriftTP
--- open import Core.Demo          public
--- open import Examples.DriftSim  public
+-- import Examples.Demo                     as ExDemo
+-- import Examples.DriftSim                 as ExDriftSim
+-- import Examples.DriftWithTPProof         as ExDriftTP
+import Examples.EFI_FoldMap_SmokeTest    as ExEfiSmoke

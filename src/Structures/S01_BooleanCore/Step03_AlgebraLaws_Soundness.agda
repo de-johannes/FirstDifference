@@ -11,7 +11,7 @@
 -- |   Simple aliasing of theorems (no new proofs). Keeps the pattern
 -- |   consistent with Step01/02 and makes All.agda imports ergonomic.
 
-module Structures.S01_BooleanCore.Step03_Soundness where
+module Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness where
 
 open import Structures.S01_BooleanCore.Step01_BooleanFoundation                -- Bool + ops
 open import Structures.S01_BooleanCore.Step01_BooleanFoundation_Soundness      -- scalar ∧/∨ laws

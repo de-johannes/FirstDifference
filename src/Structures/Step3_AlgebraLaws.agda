@@ -7,7 +7,7 @@ module Structures.Step3_AlgebraLaws where
 
 open import Data.Vec using (Vec; []; _∷_)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong₂)
-open import Structures.Step1_BooleanFoundation
+open import Structures.01_BooleanCore.Step01_BooleanFoundation
 open import Structures.Step2_VectorOperations
 
 ------------------------------------------------------------------------

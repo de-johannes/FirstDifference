@@ -1,40 +1,48 @@
+-- src/Structures/S01_BooleanCore/Step01_BooleanFoundation_Soundness.agda
 {-# OPTIONS --safe #-}
 
--- | Step 01: Boolean Foundation – Soundness Verification
--- |
--- | Purpose:
--- |   Collect and re-export all Boolean properties from Step01_BooleanFoundation
--- |   as a verified "soundness layer".
--- |
--- | Method:
--- |   Import the construction module, re-state each theorem, 
--- |   and prove soundness explicitly (here trivial by refl).
---
+-- | Step 01 Soundness: Boolean algebra laws from pure D₀-Bool
 module Structures.S01_BooleanCore.Step01_BooleanFoundation_Soundness where
 
 open import Structures.S01_BooleanCore.Step01_BooleanFoundation
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
--- | Soundness certificate: conjunction associativity
-sound-∧-assoc : ∀ x y z → (x ∧ y) ∧ z ≡ x ∧ (y ∧ z)
-sound-∧-assoc = ∧-assoc
+-- Associativity of ∧
+∧-assoc : ∀ x y z → (x ∧ y) ∧ z ≡ x ∧ (y ∧ z)
+∧-assoc true  true  true  = refl
+∧-assoc true  true  false = refl
+∧-assoc true  false true  = refl
+∧-assoc true  false false = refl
+∧-assoc false true  true  = refl
+∧-assoc false true  false = refl
+∧-assoc false false true  = refl
+∧-assoc false false false = refl
 
--- | Soundness certificate: conjunction commutativity
-sound-∧-comm : ∀ x y → x ∧ y ≡ y ∧ x
-sound-∧-comm = ∧-comm
+-- Commutativity of ∧
+∧-comm : ∀ x y → x ∧ y ≡ y ∧ x
+∧-comm true  true  = refl
+∧-comm true  false = refl
+∧-comm false true  = refl
+∧-comm false false = refl
 
--- | Soundness certificate: conjunction right identity
-sound-∧-identityʳ : ∀ x → x ∧ true ≡ x
-sound-∧-identityʳ = ∧-identityʳ
+-- Right identity of ∧
+∧-identityʳ : ∀ x → x ∧ true ≡ x
+∧-identityʳ true  = refl
+∧-identityʳ false = refl
 
--- | Soundness certificate: conjunction idempotence
-sound-∧-idem : ∀ x → x ∧ x ≡ x
-sound-∧-idem = ∧-idem
+-- Idempotence of ∧
+∧-idem : ∀ x → x ∧ x ≡ x
+∧-idem true  = refl
+∧-idem false = refl
 
--- | Soundness certificate: conjunction zero
-sound-∧-zeroʳ : ∀ x → x ∧ false ≡ false
-sound-∧-zeroʳ = ∧-zeroʳ
+-- Zero element of ∧
+∧-zeroʳ : ∀ x → x ∧ false ≡ false
+∧-zeroʳ true  = refl
+∧-zeroʳ false = refl
 
--- | Soundness certificate: disjunction commutativity
-sound-∨-comm : ∀ x y → x ∨ y ≡ y ∨ x
-sound-∨-comm = ∨-comm
+-- Commutativity of ∨
+∨-comm : ∀ x y → x ∨ y ≡ y ∨ x
+∨-comm true  true  = refl
+∨-comm true  false = refl
+∨-comm false true  = refl
+∨-comm false false = refl

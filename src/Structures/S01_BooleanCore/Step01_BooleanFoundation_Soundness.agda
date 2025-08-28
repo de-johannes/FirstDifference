@@ -10,9 +10,9 @@
 -- |   Import the construction module, re-state each theorem, 
 -- |   and prove soundness explicitly (here trivial by refl).
 --
-module Structures.01_BooleanCore.Step01_BooleanFoundation_Soundness where
+module Structures.S01_BooleanCore.Step01_BooleanFoundation_Soundness where
 
-open import Structures.01_BooleanCore.Step01_BooleanFoundation
+open import Structures.S01_BooleanCore.Step01_BooleanFoundation
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
 -- | Soundness certificate: conjunction associativity

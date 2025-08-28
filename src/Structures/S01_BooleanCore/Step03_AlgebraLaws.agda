@@ -160,6 +160,23 @@ join-complement []       = refl
 join-complement (x ∷ xs) =
   cong₂ _∷_ (∨-complement x) (join-complement xs)
 
+
+------------------------------------------------------------------------
+-- ABSORPTION (vector level)
+------------------------------------------------------------------------
+
+  -- | Absorption (vector level): drift xs (join xs ys) = xs
+drift-absorb : ∀ {n} (xs ys : Dist n) → drift xs (join xs ys) ≡ xs
+drift-absorb {zero} []       []       = refl
+drift-absorb {suc n} (x ∷ xs) (y ∷ ys) =
+  cong₂ _∷_ (∧-absorb x y) (drift-absorb xs ys)
+
+-- | Absorption (vector level): join xs (drift xs ys) = xs
+join-absorb : ∀ {n} (xs ys : Dist n) → join xs (drift xs ys) ≡ xs
+join-absorb {zero} []       []       = refl
+join-absorb {suc n} (x ∷ xs) (y ∷ ys) =
+  cong₂ _∷_ (∨-absorb x y) (join-absorb xs ys)
+
 ------------------------------------------------------------------------
 -- Summary
 ------------------------------------------------------------------------

@@ -56,9 +56,9 @@ record EFI (ℓΘ ℓV ℓW ℓQT ℓQF ℓQS : Level)
     Comb     : WeightCombiner ℓW ℓQT ℓQF ℓQS
                              (Semiring.Carrier WR) WQTop WQFld WQSem
 
-  -- sauber öffnen: nur das, was wir wirklich brauchen
-  open Semiring SR using (zero; _+_) renaming (Carrier to V)
-  open Semiring WR using ()            renaming (Carrier to W)
+  -- sauber öffnen und klar benennen (keine Überladung)
+  open Semiring SR using () renaming (Carrier to V; zero to zeroV; _+_ to _+V_)
+  open Semiring WR using () renaming (Carrier to W)
   open WeightCombiner Comb renaming (combine to combineW)
 
   -- Skalarwirkung W × V → V (z. B. identisch, falls V ≡ W)
@@ -74,5 +74,5 @@ record EFI (ℓΘ ℓV ℓW ℓQT ℓQF ℓQS : Level)
   expect = fold μ
     where
       fold : List Θ → V
-      fold []       = zero
-      fold (θ ∷ ts) = _+_ (scale (totalWeight θ) (O θ)) (fold ts)
+      fold []       = zeroV
+      fold (θ ∷ ts) = _+V_ (scale (totalWeight θ) (O θ)) (fold ts)

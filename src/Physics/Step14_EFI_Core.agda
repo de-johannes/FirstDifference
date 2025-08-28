@@ -3,7 +3,6 @@
 module Physics.Step14_EFI_Core where
 
 open import Agda.Primitive using (Level; _⊔_; lsuc)
-open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import Data.List using (List; []; _∷_)
 
 ------------------------------------------------------------------------
@@ -47,7 +46,7 @@ record EFI (ℓΘ ℓV ℓW ℓQT ℓQF ℓQS : Level)
     Sfield   : Θ → WQFld
     Xi       : Θ → WQSem
 
-    -- Trägermaß (diskret) und Observable direkt im Träger von SR
+    -- Observable und Trägermaß (diskret)
     O        : Θ → Semiring.Carrier SR
     μ        : List Θ
 
@@ -55,23 +54,39 @@ record EFI (ℓΘ ℓV ℓW ℓQT ℓQF ℓQS : Level)
     Comb     : WeightCombiner ℓW ℓQT ℓQF ℓQS
                              (Semiring.Carrier WR) WQTop WQFld WQSem
 
-  -- sauber öffnen und klar benennen (keine Überladung)
-  open Semiring SR using () renaming (Carrier to V; zero to zeroV; _+_ to _+V_)
-  open Semiring WR using () renaming (Carrier to W)
-  open WeightCombiner Comb renaming (combine to combineW)
+    -- Skalarwirkung W × V → V (z. B. identisch, falls V ≡ W)
+    scale    : Semiring.Carrier WR → Semiring.Carrier SR → Semiring.Carrier SR
 
-  -- Skalarwirkung W × V → V
-  field
-    scale : W → V → V
+------------------------------------------------------------------------
+-- Exportierte Hilfsfunktionen (von außen nutzbar)
+------------------------------------------------------------------------
 
-  -- Gesamtgewicht
-  totalWeight : Θ → W
-  totalWeight θ = combineW (Q θ) (Sfield θ) (Xi θ)
+-- Gesamtgewicht einer Konfiguration θ
+totalWeight
+  : ∀ {ℓΘ ℓV ℓW ℓQT ℓQF ℓQS}
+  → (efi : EFI ℓΘ ℓV ℓW ℓQT ℓQF ℓQS)
+  → (θ   : EFI.Θ efi)
+  → Semiring.Carrier (EFI.WR efi)
+totalWeight efi θ =
+  let open WeightCombiner (EFI.Comb efi) renaming (combine to combineW)
+  in combineW (EFI.Q efi θ) (EFI.Sfield efi θ) (EFI.Xi efi θ)
 
-  -- Erwartungswert: Σ_{θ∈μ} w[θ] ⋅ O[θ]
-  expect : V
-  expect = fold μ
-    where
-      fold : List Θ → V
-      fold []       = zeroV
-      fold (θ ∷ ts) = _+V_ (scale (totalWeight θ) (O θ)) (fold ts)
+-- Faltung über eine Liste von Zuständen (mit fixer EFI-Instanz)
+fold
+  : ∀ {ℓΘ ℓV ℓW ℓQT ℓQF ℓQS}
+  → (efi : EFI ℓΘ ℓV ℓW ℓQT ℓQF ℓQS)
+  → List (EFI.Θ efi)
+  → Semiring.Carrier (EFI.SR efi)
+fold efi [] =
+  Semiring.zero (EFI.SR efi)
+fold efi (θ ∷ ts) =
+  let _+V_ = Semiring._+_ (EFI.SR efi)
+      sc   = EFI.scale efi
+  in  _+V_ (sc (totalWeight efi θ) (EFI.O efi θ)) (fold efi ts)
+
+-- Erwartungswert: Faltung über das im Record gespeicherte μ
+expect
+  : ∀ {ℓΘ ℓV ℓW ℓQT ℓQF ℓQS}
+  → (efi : EFI ℓΘ ℓV ℓW ℓQT ℓQF ℓQS)
+  → Semiring.Carrier (EFI.SR efi)
+expect efi = fold efi (EFI.μ efi)

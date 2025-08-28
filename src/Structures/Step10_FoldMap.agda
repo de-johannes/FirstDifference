@@ -224,11 +224,6 @@ andCount {zero}  []       []       = 0
 andCount {suc _} (a ∷ as) (b ∷ bs) =
   (if a ∧ b then 1 else 0) + andCount as bs
 
--- Hilfsfunktionen für Masken
-not : Bool → Bool
-not true  = false
-not false = true
-
 eqℕ : ℕ → ℕ → Bool
 eqℕ zero    zero    = true
 eqℕ zero    (suc _) = false

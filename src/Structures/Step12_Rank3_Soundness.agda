@@ -48,14 +48,9 @@ isJust (just _) = true
 ----------------------------------------------------------------------
 
 soundness : ∀ (xs : List ℤ³) → rank3? xs ≡ true → HasGoodTriple xs
--- Längen < 3: unmöglich, da rank3? = false per Definition
-soundness []            pr = let impossible : false ≡ true
-                                 impossible = pr       -- rank3? [] = false
-                             in  case impossible of λ ()
-soundness (_ ∷ [])      pr = let impossible = pr       -- ebenso
-                             in  case impossible of λ ()
-soundness (_ ∷ _ ∷ [])  pr = let impossible = pr
-                             in  case impossible of λ ()
+soundness []           ()
+soundness (_ ∷ [])     ()
+soundness (_ ∷ _ ∷ []) ()
 
 -- Hauptfall: mindestens drei Punkte
 soundness (u ∷ v ∷ w ∷ rs) pr with nonZeroℤ (det3 u v w)

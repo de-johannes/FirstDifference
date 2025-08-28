@@ -13,7 +13,7 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import Relation.Nullary                      using (Dec; yes; no)
 open import Data.Nat                              using (ℕ; _≟_; zero; suc; _+_; _≤?_)
 open import Data.List                             using (List; []; _∷_; map; _++_; length)
-open import Data.Bool                             using (Bool; true; false; not; _∨_)
+open import Data.Bool                             using (Bool; true; false; not; _∨_; _∧_; if_then_else_)
 open import Data.Product                          using (_×_; _,_)
 open import Data.Maybe                            using (Maybe; just; nothing)
 
@@ -195,3 +195,113 @@ buildFold G rank = mkFoldMap π (mkFolded cells uEdges)
 
     uEdges : List (Cell × Cell)
     uEdges = buildUEdges comps
+
+------------------------------------------------------------------------
+-- 7.   Export: Slice und History (Zeit-Slice → Dist 2)
+------------------------------------------------------------------------
+
+sliceAt : DriftGraph → ℕ → List Node
+sliceAt G rank = same-rank-nodes G rank
+
+historyAt : DriftGraph → ℕ → List (Dist 2)
+historyAt G rank = map node-to-dist (sliceAt G rank)
+
+------------------------------------------------------------------------
+-- 8.   Numerische Fold-Map (ℕ-basiert, gewichtet)
+--      Liefert 3D-Punkte als ℕ-Triple; Gewicht = popcount
+------------------------------------------------------------------------
+
+-- Hilfen: Bool, Nat, List sind oben bereits importiert
+
+-- Bitzählung
+popcount : ∀ {n} → Dist n → ℕ
+popcount {zero}  []       = 0
+popcount {suc _} (b ∷ xs) = (if b then 1 else 0) + popcount xs
+
+-- maskierte And-Zählung
+andCount : ∀ {n} → Dist n → Dist n → ℕ
+andCount {zero}  []       []       = 0
+andCount {suc _} (a ∷ as) (b ∷ bs) =
+  (if a ∧ b then 1 else 0) + andCount as bs
+
+-- Hilfsfunktionen für Masken
+not : Bool → Bool
+not true  = false
+not false = true
+
+eqℕ : ℕ → ℕ → Bool
+eqℕ zero    zero    = true
+eqℕ zero    (suc _) = false
+eqℕ (suc _) zero    = false
+eqℕ (suc m) (suc n) = eqℕ m n
+
+-- alternierende Maske
+altMask : ∀ {n} → Bool → Vec Bool n
+altMask {zero}  _ = []
+altMask {suc n} b = b ∷ altMask {n} (not b)
+
+-- Mode-Masken
+mask₁ : ∀ {n} → Dist n
+mask₁ {zero}  = []
+mask₁ {suc n} = true ∷ mask₁ {n}
+
+mask₂ : ∀ {n} → Dist n
+mask₂ {n} = altMask true
+
+two : ℕ
+two = suc (suc zero)
+
+pred : ℕ → ℕ
+pred zero    = zero
+pred (suc k) = k
+
+mask3Aux : ∀ {n} → Bool → ℕ → Vec Bool n
+mask3Aux {zero}  _ _ = []
+mask3Aux {suc n} b t = b ∷ mask3Aux {n} b' t'
+  where
+    done? = eqℕ t zero
+    b'    = if done? then not b else b
+    t'    = if done? then two    else pred t
+
+mask₃ : ∀ {n} → Dist n
+mask₃ {n} = mask3Aux {n} true two
+
+mode₁ mode₂ mode₃ : ∀ {n} → Dist n → ℕ
+mode₁ {n} d = andCount d (mask₁ {n})
+mode₂ {n} d = andCount d (mask₂ {n})
+mode₃ {n} d = andCount d (mask₃ {n})
+
+-- exclusive prefix sums
+scanSum : ℕ → List ℕ → List ℕ
+scanSum _   []       = []
+scanSum acc (n ∷ ns) with acc + n | scanSum (acc + n) ns
+... | acc′ | rest = acc′ ∷ rest
+
+-- Zipper
+zip⁴ : ∀ {ℓA ℓB ℓC ℓD ℓE}
+       {A : Set ℓA} {B : Set ℓB} {C : Set ℓC} {D : Set ℓD} {E : Set ℓE}
+     → (A → B → C → D → E)
+     → List A → List B → List C → List D → List E
+zip⁴ _ []         _          _          _          = []
+zip⁴ _ _          []         _          _          = []
+zip⁴ _ _          _          []         _          = []
+zip⁴ _ _          _          _          []         = []
+zip⁴ f (a ∷ as) (b ∷ bs) (c ∷ cs) (d ∷ ds) =
+  f a b c d ∷ zip⁴ f as bs cs ds
+
+-- ℕ-Triple
+record Tripleℕ : Set where
+  constructor mk3N
+  field x y z : ℕ
+
+-- Einbettung „Embed3Nat“: History (Dist 2) → gewichtete ℕ-3D-Punkte
+Embed3Nat : List (Dist 2) → List Tripleℕ
+Embed3Nat hist =
+  let s₁ = scanSum 0 (map mode₁ hist)
+      s₂ = scanSum 0 (map mode₂ hist)
+      s₃ = scanSum 0 (map mode₃ hist)
+      fs = scanSum 0 (map popcount hist)
+
+      point : ℕ → ℕ → ℕ → ℕ → Tripleℕ
+      point a b c f = mk3N (a * f) (b * f) (c * f)
+  in  zip⁴ point s₁ s₂ s₃ fs

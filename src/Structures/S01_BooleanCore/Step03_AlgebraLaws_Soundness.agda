@@ -1,4 +1,4 @@
--- src/Structures/S01_BooleanCore/Step03_Soundness.agda
+-- src/Structures/S01_BooleanCore/Step03_AlgebraLaws_Soundness.agda
 {-# OPTIONS --safe #-}
 
 -- | Step 03: Vector Algebra — Soundness Wrapper
@@ -13,14 +13,15 @@
 
 module Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness where
 
+open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+open import Data.Nat using (ℕ)
+open import Data.Vec using (Vec)
+
 open import Structures.S01_BooleanCore.Step01_BooleanFoundation                -- Bool + ops
 open import Structures.S01_BooleanCore.Step01_BooleanFoundation_Soundness      -- scalar ∧/∨ laws
 open import Structures.S01_BooleanCore.Step01_BooleanFoundation_Completeness   -- scalar completeness
 open import Structures.S01_BooleanCore.Step02_VectorOperations                  -- Dist, drift, join, neg
 open import Structures.S01_BooleanCore.Step03_AlgebraLaws
-
-open import Data.Nat using (ℕ)
-open import Data.Vec using (Vec)
 
 -- Drift (∧) — extras
 sound-drift-idempotent : ∀ {n} (a : Dist n) → drift a a ≡ a
@@ -54,7 +55,7 @@ sound-join-oneˡ = join-oneˡ
 sound-join-absorb : ∀ {n} (xs ys : Dist n) → join xs (drift xs ys) ≡ xs
 sound-join-absorb = join-absorb
 
--- Distributivität (beide Richtungen)
+-- Distributivity (both directions)
 sound-drift-join-distrib-right : ∀ {n} (a b c : Dist n) →
   drift (join a b) c ≡ join (drift a c) (drift b c)
 sound-drift-join-distrib-right = drift-join-distrib-right
@@ -63,7 +64,7 @@ sound-join-drift-distrib-right : ∀ {n} (a b c : Dist n) →
   join a (drift b c) ≡ drift (join a b) (join a c)
 sound-join-drift-distrib-right = join-drift-distrib-right
 
--- De Morgan (vektoriell) & Komplemente
+-- De Morgan (vector) & complements
 sound-demorgan-drift-join : ∀ {n} (xs ys : Dist n) →
   neg (drift xs ys) ≡ join (neg xs) (neg ys)
 sound-demorgan-drift-join = demorgan-drift-join

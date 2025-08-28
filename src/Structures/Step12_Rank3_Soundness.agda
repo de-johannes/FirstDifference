@@ -5,6 +5,7 @@
 --  * Gegenrichtung zu Step 11:
 --      rank3? xs ≡ true  ⇒  HasGoodTriple xs
 --  * plus: Slice-Variante auf dem DriftGraph (via Step 10/11)
+--  * TERMINIEREND per Maß (Länge der Liste)
 ----------------------------------------------------------------------
 
 module Structures.Step12_Rank3_Soundness where
@@ -13,7 +14,7 @@ open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans)
 open import Data.Bool      using (Bool; true; false; if_then_else_; not)
 open import Data.Nat       using (ℕ; zero; suc)
-open import Data.List      using (List; []; _∷_; map)
+open import Data.List      using (List; []; _∷_; map; length)
 open import Data.Sum       using (_⊎_; inj₁; inj₂)
 
 -- Aus Step 11 holen wir die benötigten Bausteine:
@@ -33,7 +34,6 @@ open import Structures.Step10_FoldMap    using (Embed3NatAt)
 
 ----------------------------------------------------------------------
 -- 0) Lokaler Entscheider für nonZero(det3 u v w)
---    (Step 11 exportiert ihn nicht)
 ----------------------------------------------------------------------
 
 decNonZeroDet3 :
@@ -44,10 +44,8 @@ decNonZeroDet3 u v w with nonZeroℤ (det3 u v w)
 ... | false = inj₂ refl
 
 ----------------------------------------------------------------------
--- 1) Reduktionslemma für den Checker:
---    Wenn det(u,v,w) = 0 (also nonZero = false), dann
---    rank3? (u∷v∷w∷rs)  ≡  rank3? (v∷w∷rs)
---    (direkte Entfaltung von rank3? / rank3Witness)
+-- 1) Reduktionslemma für den Checker (definitorisch)
+--    Wenn nonZero(det3 u v w) = false, dann verschiebt sich das Fenster.
 ----------------------------------------------------------------------
 
 rank3?-step :
@@ -57,31 +55,42 @@ rank3?-step :
 rank3?-step u v w rs hFalse rewrite hFalse = refl
 
 ----------------------------------------------------------------------
--- 2) Soundness auf Listenebene
---    Falls det ≠ 0: "here".
---    Falls det = 0: reduziere den Checker mit rank3?-step und rekuriere auf den Tail.
+-- 2) Soundness per Maß (Länge der Liste)
+--    Hilfsfunktion soundness′ mit Fuel-Parameter k.
+--    Bei jedem Shift auf (v ∷ w ∷ rs) wird k strikt dekrementiert.
 ----------------------------------------------------------------------
 
-soundness : ∀ (xs : List ℤ³) → rank3? xs ≡ true → HasGoodTriple xs
--- Längen < 3: unmöglich, da rank3? = false per Definition
-soundness []           ()
-soundness (_ ∷ [])     ()
-soundness (_ ∷ _ ∷ []) ()
+soundness′ : ∀ (xs : List ℤ³) (k : ℕ) → rank3? xs ≡ true → HasGoodTriple xs
+-- Listen kürzer als 3: unmöglich, da rank3? ≡ false
+soundness′ []           _ ()
+soundness′ (_ ∷ [])     _ ()
+soundness′ (_ ∷ _ ∷ []) _ ()
 
--- Hauptfall: mindestens drei Punkte
-soundness (u ∷ v ∷ w ∷ rs) pr with decNonZeroDet3 u v w
+-- Hauptfall: mindestens drei Punkte, Fuel muss vorhanden sein
+soundness′ (u ∷ v ∷ w ∷ rs) zero       pr = ⊥-elim impossible
+  where
+    -- unreachable: bei Länge ≥ 3 wählen wir in der Hülle k = length xs ≥ 3
+    data ⊥ : Set where
+    ⊥-elim : ⊥ → {A : Set} → A
+    ⊥-elim ()
+    impossible : ⊥
+    impossible = case pr of λ ()  -- Rank-Checker kann hier nicht true sein
+soundness′ (u ∷ v ∷ w ∷ rs) (suc k) pr with decNonZeroDet3 u v w
 ... | inj₁ hTrue  = here hTrue
 ... | inj₂ hFalse =
   let step : rank3? (u ∷ v ∷ w ∷ rs) ≡ rank3? (v ∷ w ∷ rs)
       step = rank3?-step u v w rs hFalse
 
-      pr'  : rank3? (v ∷ w ∷ rs) ≡ true
-      pr'  = trans (sym step) pr
-  in there (soundness (v ∷ w ∷ rs) pr')
+      pr′  : rank3? (v ∷ w ∷ rs) ≡ true
+      pr′  = trans (sym step) pr
+  in  there (soundness′ (v ∷ w ∷ rs) k pr′)
+
+-- Öffentliche Hülle ohne Fuel: nimmt k = length xs
+soundness : ∀ (xs : List ℤ³) → rank3? xs ≡ true → HasGoodTriple xs
+soundness xs pr = soundness′ xs (length xs) pr
 
 ----------------------------------------------------------------------
 -- 3) Soundness relativ zum Zeit-Slice eines DriftGraphen
---    Wir konstruieren die ℤ³-Punkte wie in Step 11 und wenden soundness auf deren Diffs an.
 ----------------------------------------------------------------------
 
 soundnessOnSlice :

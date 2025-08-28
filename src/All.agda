@@ -21,6 +21,7 @@ open import Structures.S01_BooleanCore.Step02_VectorOperations                  
 open import Structures.S01_BooleanCore.Step02_VectorOperations_Soundness                    public
 
 open import Structures.S01_BooleanCore.Step03_AlgebraLaws                                   public
+open import Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness                         public
 
 -- (B) Order & Categories — Drift order and categorical scaffolding
 open import Structures.Step4_PartialOrder      public

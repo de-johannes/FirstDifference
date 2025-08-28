@@ -229,12 +229,14 @@ rank3? xs = isJust (rank3Witness xs)
 rank3OnHistoryBool : ∀ {n} → List (Dist n) → Bool
 rank3OnHistoryBool {n} hist = rank3? (diffs (FoldMap³ {n} hist))
 
-decNonZeroDet3 : ∀ (u v w : ℤ³)
-               → (nonZeroℤ (det3 u v w) ≡ true)
-               ⊎ (nonZeroℤ (det3 u v w) ≡ false)
-decNonZeroDet3 u v w with nonZeroℤ (det3 u v w)
-... | true  = inj₁ refl
-... | false = inj₂ refl
+abstract
+  -- Boolean-Entscheidung mit Gleichheitszeugnis (opak nach außen).
+  decNonZeroDet3 : ∀ (u v w : ℤ³)
+                 → (nonZeroℤ (det3 u v w) ≡ true)
+                 ⊎ (nonZeroℤ (det3 u v w) ≡ false)
+  decNonZeroDet3 u v w with nonZeroℤ (det3 u v w)
+  ... | true  = inj₁ refl
+  ... | false = inj₂ refl
 
 ----------------------------------------------------------------------
 -- 8 · Spec predicate & completeness (Boolean meets spec)

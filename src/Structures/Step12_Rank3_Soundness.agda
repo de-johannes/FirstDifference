@@ -33,7 +33,7 @@ open import Structures.Step10_FoldMap    using (Embed3NatAt ; historyAt)
 --    (nur für Bequemlichkeit; wir entfalten rank3? direkt)
 ----------------------------------------------------------------------
 
-data Maybe (A : Set) : Set where
+data Maybe {a} (A : Set a) : Set a where
   nothing : Maybe A
   just    : A → Maybe A
 

@@ -1,3 +1,4 @@
+-- src/Structures/S02_OrderCategories/Step04_PartialOrder.agda
 {-# OPTIONS --safe #-}
 
 -- | Step 04: Drift-Induced Partial Order
@@ -51,16 +52,12 @@ open import Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness
 -- Technical helpers for vectors
 ------------------------------------------------------------------------
 
--- Head/tail projections (needed for cong on zipWith equalities)
 headV : ∀ {n A} → Vec A (suc n) → A
 headV (x ∷ xs) = x
 
 tailV : ∀ {n A} → Vec A (suc n) → Vec A n
 tailV (x ∷ xs) = xs
 
--- From p : zipWith _∧_ (x ∷ xs) (y ∷ ys) ≡ (x ∷ xs)
--- we can extract:  headV p : x ∧ y ≡ x
---                  tailV p : zipWith _∧_ xs ys ≡ xs
 head-of-drift≡a :
   ∀ {n} {x y : Bool} {xs ys : Vec Bool n} →
   zipWith _∧_ (x ∷ xs) (y ∷ ys) ≡ (x ∷ xs) → x ∧ y ≡ x
@@ -87,33 +84,36 @@ a ≤ᵈ b = drift a b ≡ a
 ≤ᵈ-antisym {a = a} {b} a≤b b≤a =
   trans (sym a≤b) (trans (drift-comm a b) b≤a)
 
--- Transitivity (componentwise)
+-- Transitivity (componentwise) — use a where-block (not let) for pattern-matching defs
 ≤ᵈ-trans : ∀ {n} {a b c : Dist n} → a ≤ᵈ b → b ≤ᵈ c → a ≤ᵈ c
 ≤ᵈ-trans {n = zero} {[]} {[]} {[]} refl refl = refl
 ≤ᵈ-trans {n = suc n} {x ∷ xs} {y ∷ ys} {z ∷ zs} a≤b b≤c =
-  let
+  cong₂ _∷_ head tail
+  where
+    xy≡x : x ∧ y ≡ x
     xy≡x = head-of-drift≡a a≤b
+
+    yz≡y : y ∧ z ≡ y
     yz≡y = head-of-drift≡a b≤c
+
     -- Boolean transitivity: if x∧y≡x and y∧z≡y, then x∧z≡x
-    component-trans : x ∧ z ≡ x
-    component-trans with x
+    head : x ∧ z ≡ x
+    head with x
     ... | false = refl
     ... | true  =
       let
         y≡true = trans (sym (∧-identityˡ y)) xy≡x
         step1  = cong (λ u → u ∧ z) (sym y≡true)
         step2  = trans step1 yz≡y
-        step3  = trans step2 y≡true
-      in step3
+      in trans step2 y≡true
 
+    tail : zipWith _∧_ xs zs ≡ xs
     tail = ≤ᵈ-trans (tail-of-drift≡a a≤b) (tail-of-drift≡a b≤c)
-  in cong₂ _∷_ component-trans tail
 
 ------------------------------------------------------------------------
 -- Decidability and bounds
 ------------------------------------------------------------------------
 
--- Decidable equality for vectors
 _≟ᵈ_ : ∀ {n} → (a b : Dist n) → Dec (a ≡ b)
 _≟ᵈ_ [] [] = yes refl
 _≟ᵈ_ (false ∷ xs) (false ∷ ys) with xs ≟ᵈ ys
@@ -122,7 +122,7 @@ _≟ᵈ_ (false ∷ xs) (false ∷ ys) with xs ≟ᵈ ys
 _≟ᵈ_ (true ∷ xs) (true ∷ ys) with xs ≟ᵈ ys
 ... | yes p = yes (cong (true ∷_) p)
 ... | no ¬p = no λ { refl → ¬p refl }
-_≟ᵈ_ (false ∷ xs) (true ∷ ys) = no (λ ())
+_≟ᵈ_ (false ∷ xs) (true  ∷ ys) = no (λ ())
 _≟ᵈ_ (true  ∷ xs) (false ∷ ys) = no (λ ())
 
 ≤ᵈ-dec : ∀ {n} (a b : Dist n) → Dec (a ≤ᵈ b)
@@ -131,7 +131,6 @@ _≟ᵈ_ (true  ∷ xs) (false ∷ ys) = no (λ ())
 ≤ᵈ? : ∀ {n} → Dist n → Dist n → Bool
 ≤ᵈ? a b = ⌊ ≤ᵈ-dec a b ⌋
 
--- Bottom and top elements
 ⊥ᵈ : ∀ {n} → Dist n
 ⊥ᵈ {n} = all-false n
 

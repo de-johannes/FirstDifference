@@ -82,19 +82,16 @@ soundness′ (u ∷ v ∷ w ∷ rs) zero     le pr = case-impossible
     ... | ()  -- suc (length (v ∷ w ∷ rs)) ≤ 0 ist unmöglich
 
 -- ≥ 3 Punkte, k = suc k': normaler Beweisschritt
-soundness′ (u ∷ v ∷ w ∷ rs) (suc k) le pr with decNonZeroDet3 u v w
-... | inj₁ hTrue  = here hTrue
-... | inj₂ hFalse =
+soundness′ (u ∷ v ∷ w ∷ rs) (suc k) le pr
+  with decNonZeroDet3 u v w | le
+... | inj₁ hTrue  | _        = here hTrue
+... | inj₂ hFalse | s≤s le0  =
   let step : rank3? (u ∷ v ∷ w ∷ rs) ≡ rank3? (v ∷ w ∷ rs)
       step = rank3?-step u v w rs hFalse
 
       pr′  : rank3? (v ∷ w ∷ rs) ≡ true
       pr′  = trans (sym step) pr
-
-      le′  : length (v ∷ w ∷ rs) ≤ k
-      le′  with le
-      ... | s≤s le0 = tail≤ (s≤s le0)
-  in  there (soundness′ (v ∷ w ∷ rs) k le′ pr′)
+  in there (soundness′ (v ∷ w ∷ rs) k le0 pr′)
 
 -- Öffentliche Hülle: k := length xs und Reflexivität als Beweis
 soundness : ∀ (xs : List ℤ³) → rank3? xs ≡ true → HasGoodTriple xs

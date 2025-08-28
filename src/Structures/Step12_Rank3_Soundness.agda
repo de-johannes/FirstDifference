@@ -2,21 +2,22 @@
 
 module Structures.Step12_Rank3_Soundness where
 
-open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; trans; cong)
 open import Data.Bool      using (Bool; true; false; if_then_else_; not)
 open import Data.Nat       using (ℕ; zero; suc; _+_)
 open import Data.List      using (List; []; _∷_; map; length)
 open import Data.Sum       using (_⊎_; inj₁; inj₂)
+open import Data.Maybe     using (Maybe; just; nothing)
+open import Function       using (_∘_)
 
 -- Aus Step 11
 open import Structures.Step11_Rank3 using
-  ( ℤ ; ℤ³ ; mk3
-  ; nonZeroℤ ; det3 ; diffs
+  ( ℤ ; ℤ³ ; mk3 ; nonZeroℤ ; det3 ; diffs
   ; GoodTriple ; HasGoodTriple ; here ; there
-  ; rank3? ; toZ3
+  ; rank3? ; rank3Witness ; toZ3
   )
 
--- Für die Slice-Variante
+-- Für Slice-Variante  
 open import Structures.Step7_DriftGraph  using (DriftGraph)
 open import Structures.Step10_FoldMap    using (Embed3NatAt)
 
@@ -32,29 +33,43 @@ decNonZeroDet3 u v w with nonZeroℤ (det3 u v w)
 ... | false = inj₂ refl
 
 ----------------------------------------------------------------------
--- Fuel-basierte Soundness (terminierend)
+-- Schlüssellemma: rank3? reduziert bei false-Determinante
 ----------------------------------------------------------------------
 
-soundnessFuel : ℕ → (xs : List ℤ³) → rank3? xs ≡ true → HasGoodTriple xs
-soundnessFuel zero    _               ()          -- Fuel aufgebraucht
-soundnessFuel (suc f) []              ()          -- Unmöglich
-soundnessFuel (suc f) (_ ∷ [])        ()          -- Unmöglich  
-soundnessFuel (suc f) (_ ∷ _ ∷ [])    ()          -- Unmöglich
-soundnessFuel (suc f) (u ∷ v ∷ w ∷ rs) pr with decNonZeroDet3 u v w
-... | inj₁ hTrue  = here hTrue                     -- Gefunden!
-... | inj₂ hFalse = there (soundnessFuel f (v ∷ w ∷ rs) pr')
+rank3?-reduction : ∀ (u v w : ℤ³) (rs : List ℤ³) →
+                   nonZeroℤ (det3 u v w) ≡ false →
+                   rank3? (u ∷ v ∷ w ∷ rs) ≡ rank3? (v ∷ w ∷ rs)
+rank3?-reduction u v w rs hFalse = 
+  -- rank3? ist isJust ∘ rank3Witness
+  -- rank3Witness (u∷v∷w∷rs) = if nonZeroℤ(det3 u v w) then ... else rank3Witness (v∷w∷rs)
+  -- Also bei hFalse: rank3Witness (u∷v∷w∷rs) ≡ rank3Witness (v∷w∷rs)
+  cong isJust (rank3Witness-reduction u v w rs hFalse)
   where
-    -- Beweise, dass rank3? (v ∷ w ∷ rs) ≡ true aus der ursprünglichen Prämisse
-    pr' : rank3? (v ∷ w ∷ rs) ≡ true
-    pr' = pr  -- Da rank3? (u∷v∷w∷rs) definitorisch zu rank3? (v∷w∷rs) 
-              -- reduziert wenn nonZeroℤ (det3 u v w) ≡ false
+    isJust : ∀ {A : Set} → Maybe A → Bool
+    isJust nothing = false
+    isJust (just _) = true
+    
+    rank3Witness-reduction : ∀ (u v w : ℤ³) (rs : List ℤ³) →
+                             nonZeroℤ (det3 u v w) ≡ false →
+                             rank3Witness (u ∷ v ∷ w ∷ rs) ≡ rank3Witness (v ∷ w ∷ rs)
+    rank3Witness-reduction u v w rs hFalse with nonZeroℤ (det3 u v w)
+    ... | true  rewrite hFalse = refl  -- Widerspruch, aber Agda löst es auf
+    ... | false = refl                 -- Direkte Gleichheit per Definition
 
 ----------------------------------------------------------------------
--- Hauptfunktion mit automatischem Fuel
+-- Soundness mit explizitem Reduktionsbeweis
 ----------------------------------------------------------------------
 
 soundness : ∀ (xs : List ℤ³) → rank3? xs ≡ true → HasGoodTriple xs
-soundness xs pr = soundnessFuel (length xs) xs pr
+soundness []              ()
+soundness (_ ∷ [])        ()  
+soundness (_ ∷ _ ∷ [])    ()
+soundness (u ∷ v ∷ w ∷ rs) pr with decNonZeroDet3 u v w
+... | inj₁ hTrue  = here hTrue
+... | inj₂ hFalse = there (soundness (v ∷ w ∷ rs) pr')
+  where
+    pr' : rank3? (v ∷ w ∷ rs) ≡ true  
+    pr' = trans (rank3?-reduction u v w rs hFalse) pr
 
 ----------------------------------------------------------------------
 -- Slice-Variante

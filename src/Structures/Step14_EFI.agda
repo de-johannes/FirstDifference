@@ -47,10 +47,9 @@ record EFI (ℓΘ ℓV ℓW ℓQT ℓQF ℓQS : Level)
     Sfield   : Θ → WQFld
     Xi       : Θ → WQSem
 
-    -- Observable und Trägermaß (diskret)
-    Observable : Set ℓV
-    O          : Θ → Observable
-    μ          : List Θ
+    -- Trägermaß (diskret) und Observable direkt im Träger von SR
+    O        : Θ → Semiring.Carrier SR
+    μ        : List Θ
 
     -- Kombinator (nutzt die obigen Typen)
     Comb     : WeightCombiner ℓW ℓQT ℓQF ℓQS
@@ -61,7 +60,7 @@ record EFI (ℓΘ ℓV ℓW ℓQT ℓQF ℓQS : Level)
   open Semiring WR using () renaming (Carrier to W)
   open WeightCombiner Comb renaming (combine to combineW)
 
-  -- Skalarwirkung W × V → V (z. B. identisch, falls V ≡ W)
+  -- Skalarwirkung W × V → V
   field
     scale : W → V → V
 

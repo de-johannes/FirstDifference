@@ -11,7 +11,7 @@ open import Function using (id; _∘_)
 open import Data.Product using (_×_; _,_)
 
 -- Step imports
-open import Structures.Step1_BooleanFoundation
+open import Structures.01_BooleanCore.Step01_BooleanFoundation
 open import Structures.Step2_VectorOperations  
 open import Structures.Step3_AlgebraLaws
 open import Structures.Step4_PartialOrder

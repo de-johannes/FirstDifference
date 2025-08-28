@@ -10,6 +10,7 @@
 
 module Structures.Step12_Rank3_Soundness where
 
+open import Agda.Primitive using (Level)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans)
 open import Data.Bool      using (Bool; true; false; if_then_else_; not)
 open import Data.Nat       using (ℕ; zero; suc; _≤_; z≤n; s≤s)
@@ -56,8 +57,8 @@ rank3?-step u v w rs hFalse rewrite hFalse = refl
 tail≤ : ∀ {n k} → suc n ≤ suc k → n ≤ k
 tail≤ (s≤s p) = p
 
--- Länge ≤ Länge (Reflexivität) – per Struktur auf der Liste
-len≤len : ∀ {A} (xs : List A) → length xs ≤ length xs
+-- Länge ≤ Länge (Reflexivität) – level-polymorph!
+len≤len : ∀ {a} {A : Set a} (xs : List A) → length xs ≤ length xs
 len≤len []       = z≤n
 len≤len (_ ∷ xs) = s≤s (len≤len xs)
 

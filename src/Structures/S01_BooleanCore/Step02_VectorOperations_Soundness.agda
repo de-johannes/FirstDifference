@@ -72,17 +72,6 @@ join-assoc : ∀ {n} (xs ys zs : Dist n) →
 join-assoc []       []       []       = refl
 join-assoc (x ∷ xs) (y ∷ ys) (z ∷ zs) =
   cong₂ _∷_ (∨-assoc x y z) (join-assoc xs ys zs)
-  where
-    -- local proof: associativity of ∨ on Bool
-    ∨-assoc : ∀ x y z → (x ∨ y) ∨ z ≡ x ∨ (y ∨ z)
-    ∨-assoc true  true  true  = refl
-    ∨-assoc true  true  false = refl
-    ∨-assoc true  false true  = refl
-    ∨-assoc true  false false = refl
-    ∨-assoc false true  true  = refl
-    ∨-assoc false true  false = refl
-    ∨-assoc false false true  = refl
-    ∨-assoc false false false = refl
 
 -- | Join is commutative
 join-comm : ∀ {n} (xs ys : Dist n) →

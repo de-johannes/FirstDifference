@@ -74,24 +74,24 @@ soundness′ []           _ _  ()
 soundness′ (_ ∷ [])     _ _  ()
 soundness′ (_ ∷ _ ∷ []) _ _  ()
 
--- ≥ 3 Punkte, k = 0: unmöglich, da length xs ≤ 0 hier nicht konstruierbar
-soundness′ (u ∷ v ∷ w ∷ rs) zero     le pr = case-impossible
-  where
-    case-impossible : HasGoodTriple (u ∷ v ∷ w ∷ rs)
-    case-impossible with le
-    ... | ()  -- suc (length (v ∷ w ∷ rs)) ≤ 0 ist unmöglich
+-- ≥ 3 Punkte, k = 0: unmöglich, da length (u∷v∷w∷rs) = suc (…) ≤ 0 nicht konstruierbar
+soundness′ (u ∷ v ∷ w ∷ rs) zero     () pr
 
 -- ≥ 3 Punkte, k = suc k': normaler Beweisschritt
-soundness′ (u ∷ v ∷ w ∷ rs) (suc k) le pr
-  with decNonZeroDet3 u v w | le
-... | inj₁ hTrue  | _        = here hTrue
-... | inj₂ hFalse | s≤s le0  =
+soundness′ (u ∷ v ∷ w ∷ rs) (suc k) le pr with decNonZeroDet3 u v w
+... | inj₁ hTrue  = here hTrue
+... | inj₂ hFalse =
   let step : rank3? (u ∷ v ∷ w ∷ rs) ≡ rank3? (v ∷ w ∷ rs)
       step = rank3?-step u v w rs hFalse
 
       pr′  : rank3? (v ∷ w ∷ rs) ≡ true
       pr′  = trans (sym step) pr
-  in there (soundness′ (v ∷ w ∷ rs) k le0 pr′)
+
+      -- length (u ∷ v ∷ w ∷ rs) ≡ suc (length (v ∷ w ∷ rs))
+      -- ⇒ tail≤ le : length (v ∷ w ∷ rs) ≤ k
+      le′  : length (v ∷ w ∷ rs) ≤ k
+      le′  = tail≤ le
+  in  there (soundness′ (v ∷ w ∷ rs) k le′ pr′)
 
 -- Öffentliche Hülle: k := length xs und Reflexivität als Beweis
 soundness : ∀ (xs : List ℤ³) → rank3? xs ≡ true → HasGoodTriple xs

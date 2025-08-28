@@ -16,6 +16,7 @@ open import Data.List                             using (List; []; _∷_; map; _
 open import Data.Bool                             using (Bool; true; false; not; _∨_; _∧_; if_then_else_)
 open import Data.Product                          using (_×_; _,_)
 open import Data.Maybe                            using (Maybe; just; nothing)
+open import Data.Vec                              using (Vec; []; _∷_)
 
 open import Structures.Step1_BooleanFoundation
 open import Structures.Step2_VectorOperations      using (Dist)

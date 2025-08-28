@@ -1,29 +1,23 @@
 {-# OPTIONS --safe #-}
 
-----------------------------------------------------------------------
--- Step 13 ▸ Operadic Cohesion
---  * Endo-Operad auf Cells (Operationen: Cell → Cell)
---  * punktweise Gesetze (Einheit/Assoziativität) als definitorische Gleichheiten
---  * Lift der Operationen auf Nodes via Step-10-Projektion π : Node → Cell
-----------------------------------------------------------------------
-
 module Structures.Step13_OperadicCohesion where
 
+open import Agda.Primitive using (Level; _⊔_; lsuc; lzero)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
 open import Structures.Step7_DriftGraph using (DriftGraph ; Node)
 open import Structures.Step10_FoldMap   using (Cell ; FoldMap)
 
-----------------------------------------------------------------------
--- 1) Abstrakte Operad-Hülle über einem Träger X
-----------------------------------------------------------------------
+------------------------------------------------------------------------
+-- 1) Universe-polymorphe Operade
+------------------------------------------------------------------------
 
-record Operad (X : Set) : Set where
+record Operad (ℓX ℓO : Level) (X : Set ℓX) : Set (lsuc (ℓX ⊔ ℓO)) where
   field
-    Op    : Set            -- Operationen
-    idO   : Op             -- Einheit
-    _∘_   : Op → Op → Op   -- Komposition (erst links, dann rechts anwenden)
-    act   : Op → X → X     -- Wirkung auf X
+    Op    : Set ℓO
+    idO   : Op
+    _∘_   : Op → Op → Op
+    act   : Op → X → X
 
     unitL : ∀ f x → act (idO ∘ f) x ≡ act f x
     unitR : ∀ f x → act (f ∘ idO) x ≡ act f x
@@ -31,33 +25,32 @@ record Operad (X : Set) : Set where
 
 open Operad public
 
-----------------------------------------------------------------------
--- 2) Konkrete Instanz: Endo-Operad auf Cells
-----------------------------------------------------------------------
+------------------------------------------------------------------------
+-- 2) Endo-Operad auf Cells (gleicher Level für Träger & Ops)
+------------------------------------------------------------------------
 
-CellOperad : Operad Cell
+CellOperad : Operad lzero lzero Cell
 CellOperad = record
   { Op    = Cell → Cell
   ; idO   = λ c → c
-  ; _∘_   = λ f g → λ c → g (f c)   -- Komposition: erst f, dann g
+  ; _∘_   = λ f g → λ c → g (f c)       -- erst f, dann g
   ; act   = λ f c → f c
   ; unitL = λ f c → refl
   ; unitR = λ f c → refl
   ; assoc = λ f g h c → refl
   }
 
-----------------------------------------------------------------------
--- 3) Lift der Cell-Operationen auf Nodes über die FoldMap-Projektion π
-----------------------------------------------------------------------
+------------------------------------------------------------------------
+-- 3) Lift der Cell-Operationen auf Nodes via π aus FoldMap
+------------------------------------------------------------------------
 
 nodeAct
   : ∀ {G : DriftGraph} {rank}
   → FoldMap G rank
-  → (Cell → Cell)     -- Operation (aus CellOperad.Op)
-  → Node → Cell       -- Wirkung auf Nodes: f ∘ π
+  → (Cell → Cell)
+  → Node → Cell
 nodeAct fm f n = let open FoldMap fm in f (π n)
 
--- Einheits-/Kompositionsgesetze punktweise (definitorisch)
 nodeAct-id
   : ∀ {G rank} (fm : FoldMap G rank) (n : Node)
   → nodeAct fm (Operad.idO CellOperad) n
@@ -70,9 +63,9 @@ nodeAct-comp
     ≡ g (nodeAct fm f n)
 nodeAct-comp fm f g n = refl
 
-----------------------------------------------------------------------
--- 4) (Optional) Bündelung als „Algebra“ der Operad-Instanz
-----------------------------------------------------------------------
+------------------------------------------------------------------------
+-- 4) Bündelung als NodeAction-„Algebra“
+------------------------------------------------------------------------
 
 record NodeAction (G : DriftGraph) (rank : _) : Set where
   field

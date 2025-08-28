@@ -15,7 +15,7 @@
 -- |   Every proof is total and covers all cases explicitly,
 -- |   ensuring machine-checked soundness without external axioms.
 --
-module Structures.01_BooleanCore.Step01_BooleanFoundation where
+module Structures.S01_BooleanCore.Step01_BooleanFoundation where
 
 open import Data.Bool using (Bool; true; false; _∧_; _∨_; not)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)

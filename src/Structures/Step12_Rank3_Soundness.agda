@@ -13,6 +13,7 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import Data.Bool      using (Bool; true; false; if_then_else_; not)
 open import Data.Nat       using (ℕ; zero; suc)
 open import Data.List      using (List; []; _∷_; map)
+open import Data.Sum       using (_⊎_; inj₁; inj₂)
 
 -- Aus Step 11 holen wir genau die benötigten Bausteine:
 open import Structures.Step11_Rank3 using
@@ -23,12 +24,23 @@ open import Structures.Step11_Rank3 using
   ; GoodTriple ; HasGoodTriple ; here ; there
   ; rank3?     -- Bool-Checker
   ; toZ3
-  ; decNonZeroDet3   -- Entscheider: nonZero(det3 u v w) ≡ true ⊎ ≡ false
   )
 
 -- Für die Slice-Variante nutzen wir Step 10:
 open import Structures.Step7_DriftGraph  using (DriftGraph)
 open import Structures.Step10_FoldMap    using (Embed3NatAt)
+
+----------------------------------------------------------------------
+-- 0) Lokaler Entscheider für nonZero(det3 u v w)
+--    (da Step 11 ihn nicht exportiert)
+----------------------------------------------------------------------
+
+decNonZeroDet3 :
+  (u v w : ℤ³) →
+  (nonZeroℤ (det3 u v w) ≡ true) ⊎ (nonZeroℤ (det3 u v w) ≡ false)
+decNonZeroDet3 u v w with nonZeroℤ (det3 u v w)
+... | true  = inj₁ refl
+... | false = inj₂ refl
 
 ----------------------------------------------------------------------
 -- 1) Soundness auf Listenebene
@@ -44,7 +56,7 @@ soundness (_ ∷ _ ∷ []) ()
 
 -- Hauptfall: mindestens drei Punkte
 soundness (u ∷ v ∷ w ∷ rs) pr with decNonZeroDet3 u v w
-... | inj₁ hTrue = here hTrue
+... | inj₁ hTrue  = here hTrue
 ... | inj₂ hFalse
   -- Im false-Zweig reduziert rank3? (u∷v∷w∷rs) definitorisch zu rank3? (v∷w∷rs).
   -- Das erzwingen wir per rewrite; dann passt 'pr' exakt als Induktionsvoraussetzung.

@@ -15,7 +15,7 @@ open import Data.Empty using (⊥; ⊥-elim)
 open import Function using (id; _∘_)
 
 -- Import aus vorherigen Schritten
-open import Structures.Step2_VectorOperations using (Dist; drift)
+open import Structures.S01_BooleanCore.Step02_VectorOperations using (Dist; drift)
 
 ------------------------------------------------------------------------
 -- 1. List-Mitgliedschaft

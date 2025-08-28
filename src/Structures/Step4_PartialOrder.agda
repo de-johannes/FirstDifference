@@ -6,7 +6,7 @@
 module Structures.Step4_PartialOrder where
 
 open import Structures.S01_BooleanCore.Step01_BooleanFoundation
-open import Structures.Step2_VectorOperations using (Dist; drift; all-true; all-false; join; neg)
+oopen import Structures.S01_BooleanCore.Step02_VectorOperations using (Dist; drift; all-true; all-false; join; neg)
 open import Structures.Step3_AlgebraLaws
   using (drift-idempotent; drift-comm; drift-assoc
        ; join-comm; join-assoc; join-idempotent

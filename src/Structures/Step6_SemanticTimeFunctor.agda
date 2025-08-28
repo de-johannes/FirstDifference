@@ -13,7 +13,7 @@ open import Data.Product using (_×_; _,_)
 
 -- Explizite Importe aller benötigten Module
 open import Structures.S01_BooleanCore.Step01_BooleanFoundation
-open import Structures.Step2_VectorOperations  
+open import Structures.S01_BooleanCore.Step02_VectorOperations
 open import Structures.Step3_AlgebraLaws
 open import Structures.Step4_PartialOrder
 open import Structures.Step5_CategoryStructure

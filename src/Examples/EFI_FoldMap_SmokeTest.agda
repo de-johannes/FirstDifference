@@ -3,20 +3,23 @@
 module Examples.EFI_FoldMap_SmokeTest where
 
 open import Agda.Primitive using (lzero)
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
--- Nat-Operatoren nur QUALIFIZIERT nutzen, um Kollisionen zu vermeiden
+-- Nat-Operatoren nur QUALIFIZIERT nutzen
 open import Data.Nat as Nat using (ℕ; zero; suc)
 open import Data.List using (List; []; _∷_; length)
 
 open import Structures.Step7_DriftGraph using (DriftGraph ; Node)
 open import Structures.Step10_FoldMap   using (FoldMap)
 
--- Wir aliasen das Core-Modul, damit wir seine Projektionen leicht referenzieren
+-- Wir aliasen das Core-Modul, um an EFI und Semiring zu kommen
 import Physics.Step14_EFI_Core as EFIcore
 open EFIcore using (Semiring ; EFI)
 
--- Ein einfacher ℕ-Semiring
+------------------------------------------------------------------------
+-- Nat-Semiring als einfachste Trägerstruktur
+------------------------------------------------------------------------
+
 natSemiring : Semiring lzero
 natSemiring = record
   { Carrier = ℕ
@@ -26,7 +29,10 @@ natSemiring = record
   ; _*_     = Nat._*_
   }
 
--- EFI-Instanz auf FoldMap mit Dummy-Gewichten/Observable = 1
+------------------------------------------------------------------------
+-- EFI auf FoldMap mit Dummy-Gewichten/Observable = 1
+------------------------------------------------------------------------
+
 EFI-on-FoldMap
   : ∀ {G : DriftGraph} {rank : _}
   → (fm : FoldMap G rank)
@@ -48,20 +54,14 @@ EFI-on-FoldMap {G} {rank} fm μ = record
   ; scale    = λ w v → Nat._*_ w v
   }
 
--- Kernaussage: Für EINE FIXE Instanz efi stimmt ihre lokale Faltung mit length überein.
-fold≡length
-  : ∀ {G : DriftGraph} {rank : _}
-  → (fm  : FoldMap G rank)
-  → (μ₀  : List Node)                                    -- efi bleibt fix!
-  → (μ   : List Node)                                    -- über diese Liste falten wir
-  → EFIcore.EFI.fold (EFI-on-FoldMap fm μ₀) μ ≡ length μ
-fold≡length fm μ₀ []       = refl
-fold≡length fm μ₀ (_ ∷ μ′) = cong suc (fold≡length fm μ₀ μ′)
+------------------------------------------------------------------------
+-- Lemma: Erwartungswert = Länge des Maßes μ
+------------------------------------------------------------------------
 
--- Hauptlemma: Erwartungswert = Länge des gespeicherten Maßes μ
 expect≡length
   : ∀ {G : DriftGraph} {rank : _}
   → (fm : FoldMap G rank)
   → (μ  : List Node)
   → EFIcore.EFI.expect (EFI-on-FoldMap fm μ) ≡ length μ
-expect≡length fm μ = fold≡length fm μ μ
+expect≡length fm []       = refl
+expect≡length fm (_ ∷ μ′) rewrite expect≡length fm μ′ = refl

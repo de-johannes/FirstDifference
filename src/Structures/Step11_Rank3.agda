@@ -13,6 +13,8 @@ open import Data.Bool      using (Bool; true; false; if_then_else_; not)
 open import Data.Nat       using (ℕ; zero; suc; _+_; _*_)
 open import Data.List      using (List; []; _∷_; map)
 open import Data.Maybe     using (Maybe; just; nothing)
+open import Agda.Primitive using (Level)
+
 
 open import Structures.Step7_DriftGraph  using (DriftGraph)
 open import Structures.Step10_FoldMap    using (historyAt ; Tripleℕ ; Embed3Nat)
@@ -112,7 +114,7 @@ rank3Witness (u ∷ v ∷ w ∷ rs) =
   else rank3Witness (v ∷ w ∷ rs)
 rank3Witness _ = nothing
 
-isJust : ∀ {A} → Maybe A → Bool
+isJust : ∀ {a} {A : Set a} → Maybe A → Bool
 isJust nothing  = false
 isJust (just _) = true
 

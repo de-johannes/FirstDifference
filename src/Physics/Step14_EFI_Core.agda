@@ -1,6 +1,6 @@
 {-# OPTIONS --safe #-}
 
-module Examples.EFI where
+module Physics.Step14_EFI_Core where
 
 open import Agda.Primitive using (Level; _⊔_; lsuc)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)

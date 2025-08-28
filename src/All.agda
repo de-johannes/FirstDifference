@@ -13,7 +13,8 @@ open import Core.Irrefutable public
 ------------------------------------------------------------------------
 
 -- (A) Boolean Core — Distinction → Boolean algebra (constructive)
-open import Structures.Step1_BooleanFoundation public
+open import Structures.BooleanCore.Step01_BooleanFoundation           public
+open import Structures.BooleanCore.Step01_Soundness                   public
 open import Structures.Step2_VectorOperations  public
 open import Structures.Step3_AlgebraLaws       public
 

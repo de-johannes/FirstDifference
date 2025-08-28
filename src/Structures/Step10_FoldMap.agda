@@ -11,7 +11,7 @@ module Structures.Step10_FoldMap where
 
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import Relation.Nullary                      using (Dec; yes; no)
-open import Data.Nat                              using (ℕ; _≟_; zero; suc; _+_; _≤?_)
+open import Data.Nat                              using (ℕ; _≟_; zero; suc; _+_; _*_; _≤?_)
 open import Data.List                             using (List; []; _∷_; map; _++_; length)
 open import Data.Bool                             using (Bool; true; false; not; _∨_; _∧_; if_then_else_)
 open import Data.Product                          using (_×_; _,_)

@@ -1,111 +1,160 @@
 {-# OPTIONS --safe #-}
 
+----------------------------------------------------------------------
+--  Step 11 ▸ Rank-3 detection on time-slices (builds on Step 10)
+--  * benutzt historyAt / Embed3Nat aus Step 10
+--  * macht nur noch Diffs + Determinante + Checker/Beweis
+----------------------------------------------------------------------
+
 module Structures.Step11_Rank3 where
 
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
-open import Data.Bool      using (Bool; true; false; if_then_else_)
+open import Data.Bool      using (Bool; true; false; if_then_else_; not)
 open import Data.Nat       using (ℕ; zero; suc; _+_; _*_)
--- KORRIGIERT: Importiere alles aus Data.Integer (das re-exportiert Data.Integer.Base)
-open import Data.Integer   using (ℤ; +_; -[1+_]; _+_; _-_; _*_)
 open import Data.List      using (List; []; _∷_; map)
 open import Data.Maybe     using (Maybe; just; nothing)
-open import Data.Maybe.Base using (is-just)
-open import Data.Product   using (_×_; _,_)
+open import Agda.Primitive using (Level)
 
--- Korrekte Module-Imports
-open import Structures.Step7_DriftGraph using (DriftGraph)
-open import Structures.Step9_SpatialStructure using 
-  ( SpatialSlice; build-spatial-slice; same-rank-nodes )
+
+open import Structures.Step7_DriftGraph  using (DriftGraph)
+open import Structures.Step10_FoldMap    using (historyAt ; Tripleℕ ; Embed3Nat)
 
 ----------------------------------------------------------------------
--- 1) 3D-Koordinaten
+-- ℤ (als Differenz zweier ℕ) + Grundrechenarten
+----------------------------------------------------------------------
+
+record ℤ : Set where
+  constructor z
+  field pos neg : ℕ
+open ℤ
+
+infixl 7 _∗ℤ_
+infixl 6 _+ℤ_ _−ℤ_
+
+toℤ : ℕ → ℤ
+toℤ n = z n 0
+
+negℤ : ℤ → ℤ
+negℤ (z p n) = z n p
+
+_+ℤ_ : ℤ → ℤ → ℤ
+z a b +ℤ z c d = z (a + c) (b + d)
+
+_−ℤ_ : ℤ → ℤ → ℤ
+x −ℤ y = x +ℤ negℤ y
+
+_∗ℤ_ : ℤ → ℤ → ℤ                -- (a−b)(c−d) = (ac+bd) − (ad+bc)
+z a b ∗ℤ z c d = z (a * c + b * d) (a * d + b * c)
+
+isZeroℤ : ℤ → Bool
+isZeroℤ (z p n) = if p == n then true else false
+  where
+    -- kleiner Gleichheitstest über ℕ (nur für isZeroℤ gebraucht)
+    _==_ : ℕ → ℕ → Bool
+    0     == 0     = true
+    0     == (suc _) = false
+    (suc _) == 0     = false
+    (suc m) == (suc n) = m == n
+
+nonZeroℤ : ℤ → Bool
+nonZeroℤ x = not (isZeroℤ x)
+
+----------------------------------------------------------------------
+-- ℤ³ + Determinante
 ----------------------------------------------------------------------
 
 record ℤ³ : Set where
   constructor mk3
-  field
-    x  : ℤ
-    y  : ℤ 
-    z₃ : ℤ
+  field x y z₃ : ℤ
+open ℤ³ public
 
-toZ3 : ℕ × ℕ × ℕ → ℤ³
-toZ3 (a , b , c) = mk3 (+_ a) (+_ b) (+_ c)
+infixl 6 _minus3_
 
-----------------------------------------------------------------------
--- 2) ℤ-Arithmetik - KORRIGIERT: Nutze die standard Operatoren
-----------------------------------------------------------------------
+_minus3_ : ℤ³ → ℤ³ → ℤ³
+mk3 a b c minus3 mk3 d e f = mk3 (a −ℤ d) (b −ℤ e) (c −ℤ f)
 
-negℤ : ℤ → ℤ
-negℤ (+_ zero) = +_ zero
-negℤ (+_ (suc n)) = -[1+ n ]  
-negℤ (-[1+ n ]) = +_ (suc n)
-
--- KORRIGIERT: Die Operatoren heißen einfach _+_, _-_, _*_ in Data.Integer
-_∗ℤ_ : ℤ → ℤ → ℤ
-_∗ℤ_ = _*_
-
-_−ℤ_ : ℤ → ℤ → ℤ  
-_−ℤ_ = _-_
-
-_+ℤ_ : ℤ → ℤ → ℤ
-_+ℤ_ = _+_
-
--- 3D-Determinante
 det3 : ℤ³ → ℤ³ → ℤ³ → ℤ
-det3 u v w = 
-  (ℤ³.x u) ∗ℤ ((ℤ³.y v) ∗ℤ (ℤ³.z₃ w) −ℤ (ℤ³.z₃ v) ∗ℤ (ℤ³.y w)) −ℤ
-  (ℤ³.y u) ∗ℤ ((ℤ³.x v) ∗ℤ (ℤ³.z₃ w) −ℤ (ℤ³.z₃ v) ∗ℤ (ℤ³.x w)) +ℤ
-  (ℤ³.z₃ u) ∗ℤ ((ℤ³.x v) ∗ℤ (ℤ³.y w) −ℤ (ℤ³.y v) ∗ℤ (ℤ³.x w))
-
-nonZeroℤ : ℤ → Bool
-nonZeroℤ (+_ zero) = false
-nonZeroℤ _ = true
+det3 r₁ r₂ r₃ =
+  let a = x r₁ ; b = y r₁ ; c = z₃ r₁
+      d = x r₂ ; e = y r₂ ; f = z₃ r₂
+      g = x r₃ ; h = y r₃ ; i = z₃ r₃
+      ei = e ∗ℤ i ; fh = f ∗ℤ h
+      di = d ∗ℤ i ; fg = f ∗ℤ g
+      dh = d ∗ℤ h ; eg = e ∗ℤ g
+      t₁ = a ∗ℤ (ei −ℤ fh)
+      t₂ = b ∗ℤ (di −ℤ fg)
+      t₃ = c ∗ℤ (dh −ℤ eg)
+  in  (t₁ −ℤ t₂) +ℤ t₃
 
 ----------------------------------------------------------------------
--- 3) Rest bleibt gleich...
+-- Umwandlung der Step-10-Punkte (ℕ³) nach ℤ³
 ----------------------------------------------------------------------
+
+toZ3 : Tripleℕ → ℤ³
+toZ3 t = mk3 (toℤ (Tripleℕ.x t)) (toℤ (Tripleℕ.y t)) (toℤ (Tripleℕ.z t))
+
+----------------------------------------------------------------------
+-- Diffs, Witness-Suche und Bool-Checker
+----------------------------------------------------------------------
+
+diffs : List ℤ³ → List ℤ³
+diffs []           = []
+diffs (_ ∷ [])     = []
+diffs (p ∷ q ∷ rs) = q minus3 p ∷ diffs (q ∷ rs)
 
 record GoodTriple : Set where
-  constructor pack  
-  field
-    u v w : ℤ³
-    rest : List ℤ³
-    proof : nonZeroℤ (det3 u v w) ≡ true
-
-data HasGoodTriple : List ℤ³ → Set where
-  here  : ∀ {u v w rest} → 
-          nonZeroℤ (det3 u v w) ≡ true → 
-          HasGoodTriple (u ∷ v ∷ w ∷ rest)
-  there : ∀ {u rest} → 
-          HasGoodTriple rest → 
-          HasGoodTriple (u ∷ rest)
+  constructor pack
+  field a b c : ℤ³
+        rest  : List ℤ³
 
 rank3Witness : List ℤ³ → Maybe GoodTriple
 rank3Witness (u ∷ v ∷ w ∷ rs) =
   if nonZeroℤ (det3 u v w)
-  then just (pack u v w rs refl)
+  then just (pack u v w rs)
   else rank3Witness (v ∷ w ∷ rs)
 rank3Witness _ = nothing
 
+isJust : ∀ {a} {A : Set a} → Maybe A → Bool
+isJust nothing  = false
+isJust (just _) = true
+
 rank3? : List ℤ³ → Bool
-rank3? xs = is-just (rank3Witness xs)
+rank3? xs = isJust (rank3Witness xs)
 
-diffs : List ℤ³ → List ℤ³
-diffs [] = []
-diffs (_ ∷ []) = []  
-diffs (u ∷ v ∷ rest) = (diff u v) ∷ diffs (v ∷ rest)
-  where
-    diff : ℤ³ → ℤ³ → ℤ³
-    diff u v = mk3 (ℤ³.x v −ℤ ℤ³.x u) (ℤ³.y v −ℤ ℤ³.y u) (ℤ³.z₃ v −ℤ ℤ³.z₃ u)
+----------------------------------------------------------------------
+-- Öffentliche API: Rank-3 auf dem Zeit-Slice (Step 10)
+----------------------------------------------------------------------
 
-Embed3NatAt : DriftGraph → ℕ → List ℤ³  
-Embed3NatAt G t = 
-  let spatialSlice = build-spatial-slice G t
-      placeholder3D = map (λ _ → mk3 (+_ 0) (+_ 0) (+_ 0)) spatialSlice
-  in  placeholder3D
+rank3At : DriftGraph → ℕ → Bool
+rank3At G t =
+  let ptsZ = map toZ3 (Embed3Nat (historyAt G t))
+  in  rank3? (diffs ptsZ)
 
-rank3AtTime : DriftGraph → ℕ → Bool  
-rank3AtTime G t = 
-  let points3D = Embed3NatAt G t
-      diffs3D = diffs points3D
-  in  rank3? diffs3D
+----------------------------------------------------------------------
+-- Spezifikation & Vollständigkeit
+----------------------------------------------------------------------
+
+data HasGoodTriple : List ℤ³ → Set where
+  here  : ∀ {u v w rs}
+        → nonZeroℤ (det3 u v w) ≡ true
+        → HasGoodTriple (u ∷ v ∷ w ∷ rs)
+  there : ∀ {x xs} → HasGoodTriple xs → HasGoodTriple (x ∷ xs)
+
+completeness : ∀ xs → HasGoodTriple xs → rank3? xs ≡ true
+completeness []               ()
+completeness (_ ∷ [])        (there ())
+completeness (_ ∷ _ ∷ [])    (there (there ()))
+completeness (u ∷ v ∷ w ∷ rs) (here h) rewrite h = refl
+completeness (u ∷ v ∷ w ∷ rs) (there p)
+  with nonZeroℤ (det3 u v w)
+... | true  = refl
+... | false = completeness (v ∷ w ∷ rs) p
+
+completenessOnSlice :
+  (G : DriftGraph) (t : ℕ)
+  → let ptsZ = map toZ3 (Embed3Nat (historyAt G t))
+     in HasGoodTriple (diffs ptsZ)
+     → rank3At G t ≡ true
+completenessOnSlice G t pr =
+  let ptsZ = map toZ3 (Embed3Nat (historyAt G t))
+  in  completeness (diffs ptsZ) pr

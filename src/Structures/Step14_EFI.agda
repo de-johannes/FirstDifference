@@ -56,11 +56,10 @@ record EFI (ℓΘ ℓV ℓW ℓQT ℓQF ℓQS : Level)
     Comb     : WeightCombiner ℓW ℓQT ℓQF ℓQS
                              (Semiring.Carrier WR) WQTop WQFld WQSem
 
-  -- sauber öffnen: KEIN doppeltes 'Carrier' in using+renaming
-  private
-    open Semiring SR using (zero; one; _+_; _*_) renaming (Carrier to V)
-    open Semiring WR using (zero; one; _+_; _*_) renaming (Carrier to W)
-    open WeightCombiner Comb using (combine)
+  -- sauber öffnen: nur das, was wir wirklich brauchen
+  open Semiring SR using (zero; _+_) renaming (Carrier to V)
+  open Semiring WR using ()            renaming (Carrier to W)
+  open WeightCombiner Comb renaming (combine to combineW)
 
   -- Skalarwirkung W × V → V (z. B. identisch, falls V ≡ W)
   field
@@ -68,7 +67,7 @@ record EFI (ℓΘ ℓV ℓW ℓQT ℓQF ℓQS : Level)
 
   -- Gesamtgewicht
   totalWeight : Θ → W
-  totalWeight θ = combine (Q θ) (Sfield θ) (Xi θ)
+  totalWeight θ = combineW (Q θ) (Sfield θ) (Xi θ)
 
   -- Erwartungswert: Σ_{θ∈μ} w[θ] ⋅ O[θ]
   expect : V

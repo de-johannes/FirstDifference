@@ -12,12 +12,15 @@ open import Core.Irrefutable public
 -- Structures
 ------------------------------------------------------------------------
 
--- (A) Boolean Core — Distinction → Boolean algebra (constructive)
+-- (Step01) Boolean Core — Distinction → Boolean algebra (constructive)
 open import Structures.S01_BooleanCore.Step01_BooleanFoundation                             public
 open import Structures.S01_BooleanCore.Step01_BooleanFoundation_Soundness                   public
+open import Structures.S01_BooleanCore.Step01_BooleanFoundation_Completeness                public
+
 open import Structures.S01_BooleanCore.Step02_VectorOperations                              public
 open import Structures.S01_BooleanCore.Step02_VectorOperations_Soundness                    public
-open import Structures.Step3_AlgebraLaws       public
+
+open import Structures.S01_BooleanCore.Step03_AlgebraLaws                                   public
 
 -- (B) Order & Categories — Drift order and categorical scaffolding
 open import Structures.Step4_PartialOrder      public

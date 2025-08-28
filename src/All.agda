@@ -26,6 +26,7 @@ open import Structures.Step10_FoldMap public
 open import Structures.Step11_Rank3 public
 open import Structures.Step12_Rank3_Soundness public
 open import Structures.Step13_OperadicCohesion public
+open import Structures.Step14_EFI public
 
 ------------------------------------------------------------------------
 -- Examples and demonstrations

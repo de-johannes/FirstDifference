@@ -12,9 +12,9 @@ open import Data.List using (List; []; _∷_; length)
 open import Structures.Step7_DriftGraph using (DriftGraph ; Node)
 open import Structures.Step10_FoldMap   using (FoldMap)
 
--- Physik-Core qualifiziert einbinden, damit wir gezielt auf Projektionen zugreifen können
-import Physics.Step14_EFI_Core as P
-open P using (Semiring ; EFI)
+-- Physik-Core qualifiziert einbinden (wir nutzen Semiring, EFI, fold, expect)
+open import Physics.Step14_EFI_Core as P using (Semiring; EFI)
+import Physics.Step14_EFI_Core as Core  -- für Core.fold / Core.expect
 
 ------------------------------------------------------------------------
 -- Nat-Semiring als einfachste Trägerstruktur
@@ -55,8 +55,7 @@ EFI-on-FoldMap {G} {rank} fm μ = record
   }
 
 ------------------------------------------------------------------------
--- Lemma über die lokale Faltung einer FIXEN EFI-Instanz
--- Für eine feste efi (mit festem μ₀) gilt: fold efi μ = length μ
+-- Lemma über die Faltung: Für eine FIXE EFI-Instanz gilt fold efi μ = length μ
 ------------------------------------------------------------------------
 
 fold≡length
@@ -64,7 +63,7 @@ fold≡length
   → (fm  : FoldMap G rank)
   → (μ₀  : List Node)                          -- EFI-Instanz bleibt FIX
   → (μ   : List Node)                          -- über diese Liste falten wir
-  → P.EFI.fold (EFI-on-FoldMap fm μ₀) μ ≡ length μ
+  → Core.fold (EFI-on-FoldMap fm μ₀) μ ≡ length μ
 fold≡length fm μ₀ []       = refl
 fold≡length fm μ₀ (_ ∷ μ′) = cong suc (fold≡length fm μ₀ μ′)
 
@@ -76,5 +75,5 @@ expect≡length
   : ∀ {G : DriftGraph} {rank : _}
   → (fm : FoldMap G rank)
   → (μ  : List Node)
-  → P.EFI.expect (EFI-on-FoldMap fm μ) ≡ length μ
+  → Core.expect (EFI-on-FoldMap fm μ) ≡ length μ
 expect≡length fm μ = fold≡length fm μ μ

@@ -27,6 +27,12 @@ open import Structures.S01_BooleanCore.Step03_AlgebraLaws
 sound-drift-idempotent : ∀ {n} (a : Dist n) → drift a a ≡ a
 sound-drift-idempotent = drift-idempotent
 
+sound-drift-absorb : ∀ {n} (xs ys : Dist n) → drift xs (join xs ys) ≡ xs
+sound-drift-absorb = drift-absorb
+
+sound-join-absorb : ∀ {n} (xs ys : Dist n) → join xs (drift xs ys) ≡ xs
+sound-join-absorb = join-absorb
+
 sound-drift-identityˡ : ∀ {n} (xs : Dist n) → drift (all-true n) xs ≡ xs
 sound-drift-identityˡ = drift-identityˡ
 

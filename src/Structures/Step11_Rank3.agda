@@ -1,8 +1,8 @@
 {-# OPTIONS --safe #-}
 
 ----------------------------------------------------------------------
---  Step 11 ▸ Rank-3 detection with constructive witnesses
---            (self-contained: local FoldMap³, no conflicts)
+--  Step 11 ▸ Rank-3 detection, slice/time-aware (replaces old Step 11)
+--            No local FoldMap³; binds to Step 8/9/10
 ----------------------------------------------------------------------
 
 module Structures.Step11_Rank3 where
@@ -11,17 +11,27 @@ module Structures.Step11_Rank3 where
 -- 0 · Imports
 ----------------------------------------------------------------------
 
-open import Data.Bool      using (Bool; true; false; _∧_; if_then_else_)
+open import Agda.Primitive using (Level)
+
+open import Data.Bool      using (Bool; true; false; _∧_)
 open import Data.Nat       using (ℕ; zero; suc; _+_; _*_)
 open import Data.List      using (List; []; _∷_; map)
 open import Data.Vec       using (Vec; []; _∷_)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
-open import Agda.Primitive using (Level)
+open import Data.Sum.Base  using (_⊎_; inj₁; inj₂)
 
+-- Dist (Bit-Vektor) wie bisher
 open import Structures.Step2_VectorOperations using (Dist)
 
+-- Zeit/Graph/Slice (Step 8/9)
+open import Structures.Step7_DriftGraph       using (DriftGraph)
+open import Structures.Step9_SpatialStructure using (same-rank-nodes ; node-to-dist)
+
+-- FoldMap³ (Step 10) – liefert die eingebetteten Punkte als ℤ³-Liste
+open import Structures.Step10_FoldMap         using (FoldMap³)
+
 ----------------------------------------------------------------------
--- 1 · Tiny helpers
+-- 1 · Kleine Helfer (unverändert)
 ----------------------------------------------------------------------
 
 not : Bool → Bool
@@ -35,7 +45,7 @@ eqℕ (suc _) zero    = false
 eqℕ (suc m) (suc n) = eqℕ m n
 
 ----------------------------------------------------------------------
--- 2 · Mode masks
+-- 2 · Mode-Masken & Zähler (wie gehabt; verwendet Step2 Dist)
 ----------------------------------------------------------------------
 
 popcount : ∀ {n} → Dist n → ℕ
@@ -52,7 +62,7 @@ altMask : ∀ {n} → Bool → Vec Bool n
 altMask {zero}  _ = []
 altMask {suc n} b = b ∷ altMask {n} (not b)
 
--- mode-1: all true
+-- mode-1: alle true
 mask₁ : ∀ {n} → Vec Bool n
 mask₁ {zero}  = []
 mask₁ {suc n} = true ∷ mask₁ {n}
@@ -86,7 +96,7 @@ mode₂ {n} d = andCount d (mask₂ {n})
 mode₃ {n} d = andCount d (mask₃ {n})
 
 ----------------------------------------------------------------------
--- 3 · Integers ℤ
+-- 3 · Ganze Zahlen ℤ (wie zuvor)
 ----------------------------------------------------------------------
 
 record ℤ : Set where
@@ -94,7 +104,6 @@ record ℤ : Set where
   field pos neg : ℕ
 open ℤ
 
--- fixities (so mixed expressions parse deterministically)
 infixl 7 _∗ℤ_
 infixl 6 _+ℤ_ _−ℤ_
 
@@ -123,7 +132,7 @@ nonZeroℤ : ℤ → Bool
 nonZeroℤ x = not (isZeroℤ x)
 
 ----------------------------------------------------------------------
--- 4 · Triples ℤ³  + determinant (fully parenthesised)
+-- 4 · Triples ℤ³  + Determinante
 ----------------------------------------------------------------------
 
 record ℤ³ : Set where
@@ -150,53 +159,16 @@ det3 r₁ r₂ r₃ =
   in  (t₁ −ℤ t₂) +ℤ t₃
 
 ----------------------------------------------------------------------
--- 5 · Local FoldMap³ (no conflict with Step 10)
-----------------------------------------------------------------------
-
--- prefix sums (exclusive)
-scanSum : ℕ → List ℕ → List ℕ
-scanSum _   []       = []
-scanSum acc (n ∷ ns) with acc + n | scanSum (acc + n) ns
-... | acc′ | rest = acc′ ∷ rest
-
--- 4-way zipper (total & level-polymorphic)
-zip⁴ : ∀ {ℓA ℓB ℓC ℓD ℓE}
-       {A : Set ℓA} {B : Set ℓB} {C : Set ℓC} {D : Set ℓD} {E : Set ℓE}
-     → (A → B → C → D → E)
-     → List A → List B → List C → List D → List E
-zip⁴ _ []         _          _          _          = []
-zip⁴ _ _          []         _          _          = []
-zip⁴ _ _          _          []         _          = []
-zip⁴ _ _          _          _          []         = []
-zip⁴ f (a ∷ as) (b ∷ bs) (c ∷ cs) (d ∷ ds) =
-  f a b c d ∷ zip⁴ f as bs cs ds
-
--- FoldMap³: History → ℤ³ using the 3 mode-counters and popcount as weight
-FoldMap³ : ∀ {n} → List (Dist n) → List ℤ³
-FoldMap³ {n} hist =
-  let s₁ = scanSum 0 (map (mode₁ {n}) hist)
-      s₂ = scanSum 0 (map (mode₂ {n}) hist)
-      s₃ = scanSum 0 (map (mode₃ {n}) hist)
-      fs = scanSum 0 (map (popcount {n}) hist)
-
-      mul : ℕ → ℕ → ℤ
-      mul a b = toℤ (a * b)
-
-      point : ℕ → ℕ → ℕ → ℕ → ℤ³
-      point a b c f = mk3 (mul a f) (mul b f) (mul c f)
-  in  zip⁴ point s₁ s₂ s₃ fs
-
-----------------------------------------------------------------------
--- 6 · Differences of FoldMap points
+-- 5 · Differenzen der FoldMap-Punkte
 ----------------------------------------------------------------------
 
 diffs : List ℤ³ → List ℤ³
-diffs []              = []
-diffs (_ ∷ [])        = []
-diffs (p ∷ q ∷ rs)    = q minus3 p ∷ diffs (q ∷ rs)
+diffs []           = []
+diffs (_ ∷ [])     = []
+diffs (p ∷ q ∷ rs) = q minus3 p ∷ diffs (q ∷ rs)
 
 ----------------------------------------------------------------------
--- 7 · Witness search & Boolean checker
+-- 6 · Zeugen-Suche & Bool-Checker (wie gehabt)
 ----------------------------------------------------------------------
 
 record GoodTriple : Set where
@@ -212,7 +184,7 @@ isJust : ∀ {A} → Maybe A → Bool
 isJust nothing  = false
 isJust (just _) = true
 
--- Termination-safe: recursion only in the 'false' branch on a strictly shorter list.
+-- Termination-safe: rekursiv nur auf kürzerer Liste
 rank3Witness : List ℤ³ → Maybe GoodTriple
 rank3Witness (u ∷ v ∷ w ∷ rs) =
   if nonZeroℤ (det3 u v w)
@@ -223,38 +195,52 @@ rank3Witness _ = nothing
 rank3? : List ℤ³ → Bool
 rank3? xs = isJust (rank3Witness xs)
 
--- Public checker specialized to histories (uses the local FoldMap³)
-rank3OnHistoryBool : ∀ {n} → List (Dist n) → Bool
-rank3OnHistoryBool {n} hist = rank3? (diffs (FoldMap³ {n} hist))
+-- Zentrale öffentliche API (NEU):
+-- Rank-3 auf dem ZEIT-SLICE eines DriftGraphen bei t
+rank3At : ∀ {n} → DriftGraph → ℕ → Bool
+rank3At {n} G t =
+  let hist : List (Dist n)
+      hist = map (node-to-dist {n}) (same-rank-nodes G t)
+  in  rank3? (diffs (FoldMap³ {n} hist))
+
+abstract
+  -- Dezidierbarkeit als opakes Lemma
+  decNonZeroDet3 : ∀ (u v w : ℤ³)
+                 → (nonZeroℤ (det3 u v w) ≡ true)
+                 ⊎ (nonZeroℤ (det3 u v w) ≡ false)
+  decNonZeroDet3 u v w with nonZeroℤ (det3 u v w)
+  ... | true  = inj₁ refl
+  ... | false = inj₂ refl
 
 ----------------------------------------------------------------------
--- 8 · Spec predicate & completeness (Boolean meets spec)
+-- 7 · Spezifikation & Vollständigkeit relativ zum Slice
 ----------------------------------------------------------------------
 
--- Logical spec: “there exists a consecutive triple with det ≠ 0”
+-- Spezifikation (unverändert): „es gibt ein aufeinanderfolgendes Triple mit det ≠ 0“
 data HasGoodTriple : List ℤ³ → Set where
   here  : ∀ {u v w rs}
         → nonZeroℤ (det3 u v w) ≡ true
         → HasGoodTriple (u ∷ v ∷ w ∷ rs)
   there : ∀ {x xs} → HasGoodTriple xs → HasGoodTriple (x ∷ xs)
 
--- Completeness: if the spec holds, the Boolean checker is true.
+-- Vollständigkeit des Listen-Checkers
 completeness : ∀ xs → HasGoodTriple xs → rank3? xs ≡ true
--- length < 3 are impossible: show that via explicit 'there ()' forms
 completeness []               ()
 completeness (_ ∷ [])        (there ())
 completeness (_ ∷ _ ∷ [])    (there (there ()))
--- main cases
 completeness (u ∷ v ∷ w ∷ rs) (here h) rewrite h = refl
 completeness (u ∷ v ∷ w ∷ rs) (there p)
   with nonZeroℤ (det3 u v w)
 ... | true  = refl
 ... | false = completeness (v ∷ w ∷ rs) p
 
--- Specialized to histories via the local FoldMap³
-completenessOnHistory :
-  ∀ {n} (hist : List (Dist n)) →
-  HasGoodTriple (diffs (FoldMap³ {n} hist)) →
-  rank3OnHistoryBool hist ≡ true
-completenessOnHistory {n} hist pr =
-  completeness (diffs (FoldMap³ {n} hist)) pr
+-- Vollständigkeit relativ zum SLICE bei Zeit t
+-- (Benutzt Step9→Step10, kein lokales FoldMap³ mehr)
+completenessOnSlice :
+  ∀ {n} (G : DriftGraph) (t : ℕ)
+  → let hist = map (node-to-dist {n}) (same-rank-nodes G t)
+     in HasGoodTriple (diffs (FoldMap³ {n} hist))
+     → rank3At {n} G t ≡ true
+completenessOnSlice {n} G t pr =
+  let hist = map (node-to-dist {n}) (same-rank-nodes G t)
+  in  completeness (diffs (FoldMap³ {n} hist)) pr

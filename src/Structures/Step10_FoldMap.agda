@@ -301,3 +301,8 @@ Embed3Nat hist =
       point : ℕ → ℕ → ℕ → ℕ → Tripleℕ
       point a b c f = mk3N (a * f) (b * f) (c * f)
   in  zip⁴ point s₁ s₂ s₃ fs
+
+-- Komfort: direkt Punkte für einen Zeit-Slice liefern
+Embed3NatAt : DriftGraph → ℕ → List Tripleℕ
+Embed3NatAt G t = Embed3Nat (historyAt G t)
+

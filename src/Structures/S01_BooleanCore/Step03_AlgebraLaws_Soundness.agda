@@ -1,88 +1,113 @@
--- src/Structures/S01_BooleanCore/Step03_AlgebraLaws_Soundness.agda
 {-# OPTIONS --safe #-}
 
--- | Step 03: Vector Algebra — Soundness Wrapper
+-- | Step 03: Vector Algebra Laws — Soundness Layer (Certificates)
 -- |
 -- | Purpose:
--- |   Re-export the completeness-level vector laws proven in
--- |   Step03_AlgebraLaws as soundness certificates with stable names.
+-- |   Provide explicit "soundness certificates" for all vector-level
+-- |   Boolean laws proven in Step03_AlgebraLaws. Using distinct names
+-- |   (sound-…) avoids clashes when opening both modules publicly.
 -- |
 -- | Method:
--- |   Simple aliasing of theorems (no new proofs). Keeps the pattern
--- |   consistent with Step01/02 and makes All.agda imports ergonomic.
+-- |   Each certificate is a direct alias to the corresponding theorem
+-- |   from Step03_AlgebraLaws. No new proofs are introduced here.
+-- |
+-- | Guarantee:
+-- |   Fully machine-checked under --safe; zero postulates/axioms.
 
 module Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness where
 
-open import Relation.Binary.PropositionalEquality using (_≡_; refl)
-open import Data.Nat using (ℕ)
-open import Data.Vec using (Vec)
-
-open import Structures.S01_BooleanCore.Step01_BooleanFoundation                -- Bool + ops
-open import Structures.S01_BooleanCore.Step01_BooleanFoundation_Soundness      -- scalar ∧/∨ laws
-open import Structures.S01_BooleanCore.Step01_BooleanFoundation_Completeness   -- scalar completeness
-open import Structures.S01_BooleanCore.Step02_VectorOperations                  -- Dist, drift, join, neg
+open import Relation.Binary.PropositionalEquality using (_≡_)
+open import Structures.S01_BooleanCore.Step02_VectorOperations using (Dist; drift; join; neg; all-true; all-false)
 open import Structures.S01_BooleanCore.Step03_AlgebraLaws
 
--- Drift (∧) — extras
-sound-drift-idempotent : ∀ {n} (a : Dist n) → drift a a ≡ a
+------------------------------------------------------------------------
+-- DRIFT (component-wise ∧)
+------------------------------------------------------------------------
+
+sound-drift-idempotent :
+  ∀ {n} (a : Dist n) → drift a a ≡ a
 sound-drift-idempotent = drift-idempotent
 
-sound-drift-absorb : ∀ {n} (xs ys : Dist n) → drift xs (join xs ys) ≡ xs
-sound-drift-absorb = drift-absorb
-
-sound-join-absorb : ∀ {n} (xs ys : Dist n) → join xs (drift xs ys) ≡ xs
-sound-join-absorb = join-absorb
-
-sound-drift-identityˡ : ∀ {n} (xs : Dist n) → drift (all-true n) xs ≡ xs
+sound-drift-identityˡ :
+  ∀ {n} (xs : Dist n) → drift (all-true n) xs ≡ xs
 sound-drift-identityˡ = drift-identityˡ
 
-sound-drift-zeroˡ : ∀ {n} (xs : Dist n) → drift (all-false n) xs ≡ all-false n
+sound-drift-zeroˡ :
+  ∀ {n} (xs : Dist n) → drift (all-false n) xs ≡ all-false n
 sound-drift-zeroˡ = drift-zeroˡ
 
-sound-drift-absorb : ∀ {n} (xs ys : Dist n) → drift xs (join xs ys) ≡ xs
+sound-drift-absorb :
+  ∀ {n} (xs ys : Dist n) → drift xs (join xs ys) ≡ xs
 sound-drift-absorb = drift-absorb
 
--- Join (∨) — extras
-sound-join-idempotent : ∀ {n} (a : Dist n) → join a a ≡ a
+------------------------------------------------------------------------
+-- JOIN (component-wise ∨)
+------------------------------------------------------------------------
+
+sound-join-idempotent :
+  ∀ {n} (a : Dist n) → join a a ≡ a
 sound-join-idempotent = join-idempotent
 
-sound-join-identityʳ : ∀ {n} (xs : Dist n) → join xs (all-false n) ≡ xs
+sound-join-identityʳ :
+  ∀ {n} (xs : Dist n) → join xs (all-false n) ≡ xs
 sound-join-identityʳ = join-identityʳ
 
-sound-join-identityˡ : ∀ {n} (xs : Dist n) → join (all-false n) xs ≡ xs
+sound-join-identityˡ :
+  ∀ {n} (xs : Dist n) → join (all-false n) xs ≡ xs
 sound-join-identityˡ = join-identityˡ
 
-sound-join-oneʳ : ∀ {n} (xs : Dist n) → join xs (all-true n) ≡ all-true n
+sound-join-oneʳ :
+  ∀ {n} (xs : Dist n) → join xs (all-true n) ≡ all-true n
 sound-join-oneʳ = join-oneʳ
 
-sound-join-oneˡ : ∀ {n} (xs : Dist n) → join (all-true n) xs ≡ all-true n
+sound-join-oneˡ :
+  ∀ {n} (xs : Dist n) → join (all-true n) xs ≡ all-true n
 sound-join-oneˡ = join-oneˡ
 
-sound-join-absorb : ∀ {n} (xs ys : Dist n) → join xs (drift xs ys) ≡ xs
+sound-join-absorb :
+  ∀ {n} (xs ys : Dist n) → join xs (drift xs ys) ≡ xs
 sound-join-absorb = join-absorb
 
--- Distributivity (both directions)
-sound-drift-join-distrib-right : ∀ {n} (a b c : Dist n) →
+------------------------------------------------------------------------
+-- DISTRIBUTIVITY (lifted)
+------------------------------------------------------------------------
+
+sound-drift-join-distrib-right :
+  ∀ {n} (a b c : Dist n) →
   drift (join a b) c ≡ join (drift a c) (drift b c)
 sound-drift-join-distrib-right = drift-join-distrib-right
 
-sound-join-drift-distrib-right : ∀ {n} (a b c : Dist n) →
+sound-join-drift-distrib-right :
+  ∀ {n} (a b c : Dist n) →
   join a (drift b c) ≡ drift (join a b) (join a c)
 sound-join-drift-distrib-right = join-drift-distrib-right
 
--- De Morgan (vector) & complements
-sound-demorgan-drift-join : ∀ {n} (xs ys : Dist n) →
+------------------------------------------------------------------------
+-- DE MORGAN & COMPLEMENTS (lifted)
+------------------------------------------------------------------------
+
+sound-demorgan-drift-join :
+  ∀ {n} (xs ys : Dist n) →
   neg (drift xs ys) ≡ join (neg xs) (neg ys)
 sound-demorgan-drift-join = demorgan-drift-join
 
-sound-demorgan-join-drift : ∀ {n} (xs ys : Dist n) →
+sound-demorgan-join-drift :
+  ∀ {n} (xs ys : Dist n) →
   neg (join xs ys) ≡ drift (neg xs) (neg ys)
 sound-demorgan-join-drift = demorgan-join-drift
 
-sound-drift-complement : ∀ {n} (xs : Dist n) →
+sound-drift-complement :
+  ∀ {n} (xs : Dist n) →
   drift xs (neg xs) ≡ all-false n
 sound-drift-complement = drift-complement
 
-sound-join-complement : ∀ {n} (xs : Dist n) →
+sound-join-complement :
+  ∀ {n} (xs : Dist n) →
   join xs (neg xs) ≡ all-true n
 sound-join-complement = join-complement
+
+------------------------------------------------------------------------
+-- Summary
+------------------------------------------------------------------------
+-- This module provides stable, uniquely named certificates for all
+-- Step03 vector laws, enabling `open … public`.

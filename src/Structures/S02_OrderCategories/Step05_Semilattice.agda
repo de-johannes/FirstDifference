@@ -3,19 +3,19 @@
 -- | Step 05: Semilattice
 -- |
 -- | Purpose:
--- |   Provide meet/join semilattice certificates on Dist-vectors, reusing
--- |   drift/join and their verified laws.
+-- |   Provide semilattice certificates on Dist-vectors for the two
+-- |   operations `drift` (meet-like) and `join` (join-like).
 -- |
 -- | Method:
--- |   Reuse of Step03 results:
--- |     • laws (Dist-level): sound-drift-assoc/comm, sound-join-assoc/comm
--- |     • idempotence:      sound-drift-idempotent, sound-join-idempotent
+-- |   Reuse:
+-- |     • Associativity/Commutativity:  from Step02_VectorOperations_Soundness
+-- |     • Idempotence:                  from Step03_AlgebraLaws_Soundness
 -- |
 -- | Guarantee:
--- |   All fields are inhabited by existing proofs; no new axioms or re-proofs.
+-- |   All fields are inhabited by previously verified proofs; no new axioms.
 -- |
 -- | Notes:
--- |   Bounds (⊥/⊤) handled elsewhere; Step05 focuses on semilattice laws only.
+-- |   Bounds (⊥/⊤) are intentionally not part of this API; focus is on laws.
 
 module Structures.S02_OrderCategories.Step05_Semilattice where
 
@@ -27,33 +27,24 @@ open import Agda.Primitive using (Level)
 open import Data.Nat using (ℕ)
 open import Relation.Binary.PropositionalEquality using (_≡_)
 
--- Core ops on distinction vectors
+-- Dist, drift, join
 open import Structures.S01_BooleanCore.Step02_VectorOperations
   using (Dist; drift; join)
 
--- Dist-level law certificates + idempotence
+-- Assoc/Comm certificates
+open import Structures.S01_BooleanCore.Step02_VectorOperations_Soundness
+  using ( drift-assoc
+        ; drift-comm
+        ; join-assoc
+        ; join-comm)
+
+-- Idempotence certificates (soundness layer)
 open import Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness
-  using ( sound-drift-assoc
-        ; sound-drift-comm
-        ; sound-join-assoc
-        ; sound-join-comm
-        ; sound-drift-idempotent
+  using ( sound-drift-idempotent
         ; sound-join-idempotent)
 
 ------------------------------------------------------------------------
--- Public API: operation aliases
-------------------------------------------------------------------------
-
-infixl 6 _∧_ _∨_
-
-_∧_ : ∀ {n : ℕ} → Dist n → Dist n → Dist n
-_∧_ = drift
-
-_∨_ : ∀ {n : ℕ} → Dist n → Dist n → Dist n
-_∨_ = join
-
-------------------------------------------------------------------------
--- Semilattice records (minimal; no external theory)
+-- Semilattice record (minimal; no external theories)
 ------------------------------------------------------------------------
 
 record IsSemilattice {ℓ : Level} {A : Set ℓ} (_∙_ : A → A → A) : Set ℓ where
@@ -63,13 +54,13 @@ record IsSemilattice {ℓ : Level} {A : Set ℓ} (_∙_ : A → A → A) : Set �
     idempotent : ∀ x     → _∙_ x x ≡ x
 
 ------------------------------------------------------------------------
--- Drift-side semilattice (meet)
+-- Drift-side semilattice
 ------------------------------------------------------------------------
 
-isDriftSemilattice : ∀ {n : ℕ} → IsSemilattice (_∧_ {n})
+isDriftSemilattice : ∀ {n : ℕ} → IsSemilattice (drift {n})
 isDriftSemilattice {n} = record
-  { assoc      = sound-drift-assoc  {n}
-  ; comm       = sound-drift-comm   {n}
+  { assoc      = drift-assoc {n}
+  ; comm       = drift-comm  {n}
   ; idempotent = sound-drift-idempotent {n}
   }
 
@@ -82,7 +73,7 @@ record DriftSemilattice (n : ℕ) : Set₁ where
 mkDriftSemilattice : ∀ (n : ℕ) → DriftSemilattice n
 mkDriftSemilattice n = record
   { Carrier       = Dist n
-  ; _∙_           = λ x y → _∧_ {n} x y
+  ; _∙_           = λ x y → drift {n} x y
   ; isSemilattice = isDriftSemilattice {n}
   }
 
@@ -90,10 +81,10 @@ mkDriftSemilattice n = record
 -- Join-side semilattice
 ------------------------------------------------------------------------
 
-isJoinSemilattice : ∀ {n : ℕ} → IsSemilattice (_∨_ {n})
+isJoinSemilattice : ∀ {n : ℕ} → IsSemilattice (join {n})
 isJoinSemilattice {n} = record
-  { assoc      = sound-join-assoc  {n}
-  ; comm       = sound-join-comm   {n}
+  { assoc      = join-assoc {n}
+  ; comm       = join-comm  {n}
   ; idempotent = sound-join-idempotent {n}
   }
 
@@ -106,6 +97,6 @@ record JoinSemilattice (n : ℕ) : Set₁ where
 mkJoinSemilattice : ∀ (n : ℕ) → JoinSemilattice n
 mkJoinSemilattice n = record
   { Carrier       = Dist n
-  ; _∙_           = λ x y → _∨_ {n} x y
+  ; _∙_           = λ x y → join {n} x y
   ; isSemilattice = isJoinSemilattice {n}
   }

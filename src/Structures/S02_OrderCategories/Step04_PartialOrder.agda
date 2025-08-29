@@ -1,4 +1,3 @@
--- src/Structures/S02_OrderCategories/Step04_PartialOrder.agda
 {-# OPTIONS --safe #-}
 
 -- | Step 04: Drift-Induced Partial Order
@@ -42,11 +41,11 @@ open import Structures.S01_BooleanCore.Step02_VectorOperations
 open import Structures.S01_BooleanCore.Step02_VectorOperations_Soundness
   using (drift-assoc; drift-comm; drift-identityʳ; drift-zeroʳ; join-assoc; join-comm)
 open import Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness
-  using (sound-drift-idempotent
-       ; sound-drift-identityˡ; sound-drift-zeroˡ; sound-drift-absorb
-       ; sound-join-idempotent; sound-join-identityʳ; sound-join-identityˡ
-       ; sound-join-oneʳ; sound-join-oneˡ; sound-join-absorb
-       ; sound-drift-join-distrib-right; sound-join-drift-distrib-right)
+  using ( sound-drift-idempotent
+        ; sound-drift-identityˡ; sound-drift-zeroˡ; sound-drift-absorb
+        ; sound-join-idempotent; sound-join-identityʳ; sound-join-identityˡ
+        ; sound-join-oneʳ; sound-join-oneˡ; sound-join-absorb
+        ; sound-drift-join-distrib-right; sound-join-drift-distrib-right )
 
 ------------------------------------------------------------------------
 -- Technical helpers for vectors
@@ -84,7 +83,7 @@ a ≤ᵈ b = drift a b ≡ a
 ≤ᵈ-antisym {a = a} {b} a≤b b≤a =
   trans (sym a≤b) (trans (drift-comm a b) b≤a)
 
--- Transitivity (componentwise) — use a where-block (not let) for pattern-matching defs
+-- Transitivity
 ≤ᵈ-trans : ∀ {n} {a b c : Dist n} → a ≤ᵈ b → b ≤ᵈ c → a ≤ᵈ c
 ≤ᵈ-trans {n = zero} {[]} {[]} {[]} refl refl = refl
 ≤ᵈ-trans {n = suc n} {x ∷ xs} {y ∷ ys} {z ∷ zs} a≤b b≤c =
@@ -96,16 +95,18 @@ a ≤ᵈ b = drift a b ≡ a
     yz≡y : y ∧ z ≡ y
     yz≡y = head-of-drift≡a b≤c
 
-    -- Boolean transitivity: if x∧y≡x and y∧z≡y, then x∧z≡x
-    head : x ∧ z ≡ x
-    head with x
-    ... | false = refl
-    ... | true  =
+    -- helper: if x∧y≡x and y∧z≡y then x∧z≡x
+    helper : ∀ (x y z : Bool) → x ∧ y ≡ x → y ∧ z ≡ y → x ∧ z ≡ x
+    helper false y z _      _      = refl
+    helper true  y z xy≡x  yz≡y =
       let
         y≡true = trans (sym (∧-identityˡ y)) xy≡x
         step1  = cong (λ u → u ∧ z) (sym y≡true)
         step2  = trans step1 yz≡y
       in trans step2 y≡true
+
+    head : x ∧ z ≡ x
+    head = helper x y z xy≡x yz≡y
 
     tail : zipWith _∧_ xs zs ≡ xs
     tail = ≤ᵈ-trans (tail-of-drift≡a a≤b) (tail-of-drift≡a b≤c)

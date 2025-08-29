@@ -1,113 +1,213 @@
+-- src/Structures/S02_OrderCategories/Step04_PartialOrder.agda
 {-# OPTIONS --safe #-}
 
--- | Step 03: Vector Algebra Laws — Soundness Layer (Certificates)
+-- | Step 04: Drift-Induced Partial Order
+-- |
+-- | Definition:
+-- |   a ≤ᵈ b  :≡  drift a b ≡ a   (componentwise implication)
 -- |
 -- | Purpose:
--- |   Provide explicit "soundness certificates" for all vector-level
--- |   Boolean laws proven in Step03_AlgebraLaws. Using distinct names
--- |   (sound-…) avoids clashes when opening both modules publicly.
+-- |   Define and verify that ≤ᵈ is a partial order on distinction vectors.
+-- |   Show that drift is the greatest lower bound (GLB, meet)
+-- |   and join is the least upper bound (LUB, join).
 -- |
 -- | Method:
--- |   Each certificate is a direct alias to the corresponding theorem
--- |   from Step03_AlgebraLaws. No new proofs are introduced here.
+-- |   Structural induction on vectors, combined with Boolean laws
+-- |   from Step01–Step03. No axioms or postulates, --safe throughout.
 -- |
 -- | Guarantee:
--- |   Fully machine-checked under --safe; zero postulates/axioms.
+-- |   ≤ᵈ is reflexive, antisymmetric, and transitive.
+-- |   ⊥ᵈ and ⊤ᵈ exist as least/greatest elements.
+-- |   Drift/join form a bounded lattice structure.
 
-module Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness where
+module Structures.S02_OrderCategories.Step04_PartialOrder where
 
-open import Relation.Binary.PropositionalEquality using (_≡_)
-open import Structures.S01_BooleanCore.Step02_VectorOperations using (Dist; drift; join; neg; all-true; all-false)
-open import Structures.S01_BooleanCore.Step03_AlgebraLaws
+open import Agda.Primitive using (Level)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong; cong₂)
+open import Relation.Nullary using (Dec; yes; no)
 
-------------------------------------------------------------------------
--- DRIFT (component-wise ∧)
-------------------------------------------------------------------------
+open import Data.Nat using (ℕ; zero; suc)
+open import Data.Vec using (Vec; []; _∷_; zipWith)
 
-sound-drift-idempotent :
-  ∀ {n} (a : Dist n) → drift a a ≡ a
-sound-drift-idempotent = drift-idempotent
+-- Scalar Booleans and laws (ours)
+open import Structures.S01_BooleanCore.Step01_BooleanFoundation
+open import Structures.S01_BooleanCore.Step01_BooleanFoundation_Soundness
+  using (∧-assoc; ∧-comm; ∧-identityʳ; ∧-idem; ∧-zeroʳ)
+open import Structures.S01_BooleanCore.Step01_BooleanFoundation_Completeness
+  using (∧-identityˡ; ∧-zeroˡ; ∧-complement; ∨-complement; DeMorgan-∧∨; DeMorgan-∨∧)
 
-sound-drift-identityˡ :
-  ∀ {n} (xs : Dist n) → drift (all-true n) xs ≡ xs
-sound-drift-identityˡ = drift-identityˡ
-
-sound-drift-zeroˡ :
-  ∀ {n} (xs : Dist n) → drift (all-false n) xs ≡ all-false n
-sound-drift-zeroˡ = drift-zeroˡ
-
-sound-drift-absorb :
-  ∀ {n} (xs ys : Dist n) → drift xs (join xs ys) ≡ xs
-sound-drift-absorb = drift-absorb
-
-------------------------------------------------------------------------
--- JOIN (component-wise ∨)
-------------------------------------------------------------------------
-
-sound-join-idempotent :
-  ∀ {n} (a : Dist n) → join a a ≡ a
-sound-join-idempotent = join-idempotent
-
-sound-join-identityʳ :
-  ∀ {n} (xs : Dist n) → join xs (all-false n) ≡ xs
-sound-join-identityʳ = join-identityʳ
-
-sound-join-identityˡ :
-  ∀ {n} (xs : Dist n) → join (all-false n) xs ≡ xs
-sound-join-identityˡ = join-identityˡ
-
-sound-join-oneʳ :
-  ∀ {n} (xs : Dist n) → join xs (all-true n) ≡ all-true n
-sound-join-oneʳ = join-oneʳ
-
-sound-join-oneˡ :
-  ∀ {n} (xs : Dist n) → join (all-true n) xs ≡ all-true n
-sound-join-oneˡ = join-oneˡ
-
-sound-join-absorb :
-  ∀ {n} (xs ys : Dist n) → join xs (drift xs ys) ≡ xs
-sound-join-absorb = join-absorb
+-- Distinction vectors and vector laws
+open import Structures.S01_BooleanCore.Step02_VectorOperations
+  using (Dist; drift; join; neg; all-true; all-false)
+open import Structures.S01_BooleanCore.Step02_VectorOperations_Soundness
+  using (drift-assoc; drift-comm; drift-identityʳ; drift-zeroʳ; join-assoc; join-comm)
+open import Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness
+  using ( sound-drift-idempotent
+        ; sound-drift-identityˡ; sound-drift-zeroˡ; sound-drift-absorb
+        ; sound-join-idempotent; sound-join-identityʳ; sound-join-identityˡ
+        ; sound-join-oneʳ; sound-join-oneˡ; sound-join-absorb
+        ; sound-drift-join-distrib-right; sound-join-drift-distrib-right )
 
 ------------------------------------------------------------------------
--- DISTRIBUTIVITY (lifted)
+-- Vector utilities
 ------------------------------------------------------------------------
 
-sound-drift-join-distrib-right :
-  ∀ {n} (a b c : Dist n) →
-  drift (join a b) c ≡ join (drift a c) (drift b c)
-sound-drift-join-distrib-right = drift-join-distrib-right
+headV : ∀ {ℓ n} {A : Set ℓ} → Vec A (suc n) → A
+headV (x ∷ xs) = x
 
-sound-join-drift-distrib-right :
-  ∀ {n} (a b c : Dist n) →
-  join a (drift b c) ≡ drift (join a b) (join a c)
-sound-join-drift-distrib-right = join-drift-distrib-right
+tailV : ∀ {ℓ n} {A : Set ℓ} → Vec A (suc n) → Vec A n
+tailV (x ∷ xs) = xs
 
 ------------------------------------------------------------------------
--- DE MORGAN & COMPLEMENTS (lifted)
+-- Definition: Partial Order
 ------------------------------------------------------------------------
 
-sound-demorgan-drift-join :
-  ∀ {n} (xs ys : Dist n) →
-  neg (drift xs ys) ≡ join (neg xs) (neg ys)
-sound-demorgan-drift-join = demorgan-drift-join
+_≤ᵈ_ : ∀ {n} → Dist n → Dist n → Set
+a ≤ᵈ b = drift a b ≡ a
 
-sound-demorgan-join-drift :
-  ∀ {n} (xs ys : Dist n) →
-  neg (join xs ys) ≡ drift (neg xs) (neg ys)
-sound-demorgan-join-drift = demorgan-join-drift
+-- Reflexivity
+≤ᵈ-refl : ∀ {n} (a : Dist n) → a ≤ᵈ a
+≤ᵈ-refl a = sound-drift-idempotent a
 
-sound-drift-complement :
-  ∀ {n} (xs : Dist n) →
-  drift xs (neg xs) ≡ all-false n
-sound-drift-complement = drift-complement
+-- Antisymmetry
+≤ᵈ-antisym : ∀ {n} {a b : Dist n} → a ≤ᵈ b → b ≤ᵈ a → a ≡ b
+≤ᵈ-antisym {a = a} {b} a≤b b≤a =
+  trans (sym a≤b) (trans (drift-comm a b) b≤a)
 
-sound-join-complement :
-  ∀ {n} (xs : Dist n) →
-  join xs (neg xs) ≡ all-true n
-sound-join-complement = join-complement
+-- Transitivity
+≤ᵈ-trans : ∀ {n} {a b c : Dist n} → a ≤ᵈ b → b ≤ᵈ c → a ≤ᵈ c
+≤ᵈ-trans {n = zero} {[]} {[]} {[]} refl refl = refl
+≤ᵈ-trans {n = suc n} {x ∷ xs} {y ∷ ys} {z ∷ zs} a≤b b≤c =
+  cong₂ _∷_ head tail
+  where
+    xy≡x : x ∧ y ≡ x
+    xy≡x = cong headV a≤b
+
+    yz≡y : y ∧ z ≡ y
+    yz≡y = cong headV b≤c
+
+    -- helper: if x∧y≡x and y∧z≡y then x∧z≡x
+    helper : ∀ (x y z : Bool) → x ∧ y ≡ x → y ∧ z ≡ y → x ∧ z ≡ x
+    helper false y z _      _      = refl
+    helper true  y z xy≡x  yz≡y =
+      let
+        y≡true = trans (sym (∧-identityˡ y)) xy≡x
+        step1  = cong (λ u → u ∧ z) (sym y≡true)
+        step2  = trans step1 yz≡y
+      in trans step2 y≡true
+
+    head : x ∧ z ≡ x
+    head = helper x y z xy≡x yz≡y
+
+    tail : zipWith _∧_ xs zs ≡ xs
+    tail = ≤ᵈ-trans (cong tailV a≤b) (cong tailV b≤c)
 
 ------------------------------------------------------------------------
--- Summary
+-- Decidability and bounds
 ------------------------------------------------------------------------
--- This module provides stable, uniquely named certificates for all
--- Step03 vector laws, enabling `open … public`.
+
+_≟ᵈ_ : ∀ {n} → (a b : Dist n) → Dec (a ≡ b)
+_≟ᵈ_ [] [] = yes refl
+_≟ᵈ_ (false ∷ xs) (false ∷ ys) with xs ≟ᵈ ys
+... | yes p = yes (cong (false ∷_) p)
+... | no ¬p = no λ { refl → ¬p refl }
+_≟ᵈ_ (true ∷ xs) (true ∷ ys) with xs ≟ᵈ ys
+... | yes p = yes (cong (true ∷_) p)
+... | no ¬p = no λ { refl → ¬p refl }
+_≟ᵈ_ (false ∷ xs) (true  ∷ ys) = no (λ ())
+_≟ᵈ_ (true  ∷ xs) (false ∷ ys) = no (λ ())
+
+≤ᵈ-dec : ∀ {n} (a b : Dist n) → Dec (a ≤ᵈ b)
+≤ᵈ-dec a b = (drift a b) ≟ᵈ a
+
+-- Convert Dec to OUR Bool (avoid builtin Bool)
+fromDec : ∀ {ℓ} {P : Set ℓ} → Dec P → Bool
+fromDec (yes _) = true
+fromDec (no  _) = false
+
+≤ᵈ? : ∀ {n} → Dist n → Dist n → Bool
+≤ᵈ? a b = fromDec (≤ᵈ-dec a b)
+
+⊥ᵈ : ∀ {n} → Dist n
+⊥ᵈ {n} = all-false n
+
+⊥ᵈ-least : ∀ {n} (a : Dist n) → ⊥ᵈ ≤ᵈ a
+⊥ᵈ-least {zero} [] = refl
+⊥ᵈ-least {suc n} (x ∷ xs) =
+  cong₂ _∷_ (∧-zeroˡ x) (⊥ᵈ-least xs)
+
+⊤ᵈ : ∀ {n} → Dist n
+⊤ᵈ {n} = all-true n
+
+⊤ᵈ-greatest : ∀ {n} (a : Dist n) → a ≤ᵈ ⊤ᵈ
+⊤ᵈ-greatest {zero} [] = refl
+⊤ᵈ-greatest {suc n} (x ∷ xs) =
+  cong₂ _∷_ (∧-identityʳ x) (⊤ᵈ-greatest xs)
+
+------------------------------------------------------------------------
+-- Meet: drift as GLB
+------------------------------------------------------------------------
+
+meet≤₁ : ∀ {n} (a b : Dist n) → drift a b ≤ᵈ a
+meet≤₁ a b =
+  let s₁ = drift-assoc a b a
+      s₂ = cong (λ t → drift a t) (drift-comm b a)
+      s₃ = sym (drift-assoc a a b)
+      s₄ = cong (λ t → drift t b) (sound-drift-idempotent a)
+  in trans s₁ (trans s₂ (trans s₃ s₄))
+
+meet≤₂ : ∀ {n} (a b : Dist n) → drift a b ≤ᵈ b
+meet≤₂ a b =
+  let s₁ = cong (λ t → drift t b) (drift-comm a b)
+      s₂ = meet≤₁ b a
+      s₃ = sym (drift-comm a b)
+  in trans s₁ (trans s₂ s₃)
+
+glb-≤ᵈ : ∀ {n} {a b c : Dist n} → c ≤ᵈ a → c ≤ᵈ b → c ≤ᵈ drift a b
+glb-≤ᵈ {a = a} {b} {c} c≤a c≤b =
+  let t₁ = sym (drift-assoc c a b)
+      t₂ = cong (λ t → drift t b) c≤a
+      t₃ = c≤b
+  in trans t₁ (trans t₂ t₃)
+
+------------------------------------------------------------------------
+-- Join: join as LUB
+------------------------------------------------------------------------
+
+ub-join₁ : ∀ {n} (a b : Dist n) → a ≤ᵈ join a b
+ub-join₁ a b = sound-drift-absorb a b
+
+ub-join₂ : ∀ {n} (a b : Dist n) → b ≤ᵈ join a b
+ub-join₂ a b =
+  let s = cong (λ t → drift b t) (join-comm a b)
+  in trans s (sound-drift-absorb b a)
+
+lub-≤ᵈ : ∀ {n} {a b c : Dist n} → a ≤ᵈ c → b ≤ᵈ c → join a b ≤ᵈ c
+lub-≤ᵈ {a = a} {b} {c} a≤c b≤c =
+  let d₁ = sound-drift-join-distrib-right a b c
+      d₂ = cong₂ join a≤c b≤c
+  in trans d₁ d₂
+
+------------------------------------------------------------------------
+-- Complements & De Morgan (vector form)
+------------------------------------------------------------------------
+
+compl-meet-bot : ∀ {n} (a : Dist n) → drift a (neg a) ≡ all-false n
+compl-meet-bot {zero} []       = refl
+compl-meet-bot {suc n} (x ∷ xs) =
+  cong₂ _∷_ (∧-complement x) (compl-meet-bot xs)
+
+compl-join-top : ∀ {n} (a : Dist n) → join a (neg a) ≡ all-true n
+compl-join-top {zero} []       = refl
+compl-join-top {suc n} (x ∷ xs) =
+  cong₂ _∷_ (∨-complement x) (compl-join-top xs)
+
+deMorgan₁ : ∀ {n} (a b : Dist n) → neg (drift a b) ≡ join (neg a) (neg b)
+deMorgan₁ {zero} []       []       = refl
+deMorgan₁ {suc n} (x ∷ xs) (y ∷ ys) =
+  cong₂ _∷_ (DeMorgan-∧∨ x y) (deMorgan₁ xs ys)
+
+deMorgan₂ : ∀ {n} (a b : Dist n) → neg (join a b) ≡ drift (neg a) (neg b)
+deMorgan₂ {zero} []       []       = refl
+deMorgan₂ {suc n} (x ∷ xs) (y ∷ ys) =
+  cong₂ _∷_ (DeMorgan-∨∧ x y) (deMorgan₂ xs ys)

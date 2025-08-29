@@ -8,8 +8,8 @@
 -- |   (sound-…) avoids clashes when opening both modules publicly.
 -- |
 -- | Method:
--- |   Each certificate is a direct alias to the corresponding theorem
--- |   from Step03_AlgebraLaws (or Step02 soundness where those reside).
+-- |   Certificates are either direct renamings of Step02 soundness results
+-- |   (for assoc/comm) or direct aliases to theorems from Step03_AlgebraLaws.
 -- |   No new proofs are introduced here.
 -- |
 -- | Guarantee:
@@ -18,24 +18,25 @@
 module Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness where
 
 open import Relation.Binary.PropositionalEquality using (_≡_)
+
+-- Dist-level operations and constants
 open import Structures.S01_BooleanCore.Step02_VectorOperations
   using (Dist; drift; join; neg; all-true; all-false)
+
+-- Bring in assoc/comm from Step02 soundness, but expose them under sound-* names.
+-- This avoids accidental picking of vector-level variants and keeps Step05 clean.
 open import Structures.S01_BooleanCore.Step02_VectorOperations_Soundness
-  using (drift-assoc; drift-comm; join-assoc; join-comm)
+  renaming ( drift-assoc to sound-drift-assoc
+           ; drift-comm  to sound-drift-comm
+           ; join-assoc  to sound-join-assoc
+           ; join-comm   to sound-join-comm)
+
+-- Remaining algebraic laws live in Step03_AlgebraLaws; we re-expose them as sound-*
 open import Structures.S01_BooleanCore.Step03_AlgebraLaws
 
 ------------------------------------------------------------------------
 -- DRIFT (component-wise ∧)
 ------------------------------------------------------------------------
-
--- Associativity and commutativity (Dist-level aliases)
-sound-drift-assoc :
-  ∀ {n} (x y z : Dist n) → drift x (drift y z) ≡ drift (drift x y) z
-sound-drift-assoc = drift-assoc
-
-sound-drift-comm :
-  ∀ {n} (x y : Dist n) → drift x y ≡ drift y x
-sound-drift-comm = drift-comm
 
 -- Idempotence, identity, zero, absorption
 sound-drift-idempotent :
@@ -57,15 +58,6 @@ sound-drift-absorb = drift-absorb
 ------------------------------------------------------------------------
 -- JOIN (component-wise ∨)
 ------------------------------------------------------------------------
-
--- Associativity and commutativity (Dist-level aliases)
-sound-join-assoc :
-  ∀ {n} (x y z : Dist n) → join x (join y z) ≡ join (join x y) z
-sound-join-assoc = join-assoc
-
-sound-join-comm :
-  ∀ {n} (x y : Dist n) → join x y ≡ join y x
-sound-join-comm = join-comm
 
 -- Idempotence, identities, ones, absorption
 sound-join-idempotent :
@@ -134,4 +126,5 @@ sound-join-complement = join-complement
 -- Summary
 ------------------------------------------------------------------------
 -- This module provides stable, uniquely named certificates for the vector
--- algebra laws at Dist level, enabling `open … public` without clashes.
+-- algebra laws at Dist level. Assoc/comm are imported from Step02 soundness
+-- under sound-* names; all other laws are aliased from Step03_AlgebraLaws.

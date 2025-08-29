@@ -17,28 +17,31 @@
 
 module Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness where
 
+------------------------------------------------------------------------
+-- Imports
+------------------------------------------------------------------------
+
 open import Relation.Binary.PropositionalEquality using (_≡_)
 
--- Dist-level operations and constants
+-- Dist-level ops/constants for types of the certificates
 open import Structures.S01_BooleanCore.Step02_VectorOperations
   using (Dist; drift; join; neg; all-true; all-false)
 
--- Bring in assoc/comm from Step02 soundness, but expose them under sound-* names.
--- This avoids accidental picking of vector-level variants and keeps Step05 clean.
+-- Assoc/Comm: import from Step02 soundness and RE-EXPORT under sound-* names
 open import Structures.S01_BooleanCore.Step02_VectorOperations_Soundness
+  public
   renaming ( drift-assoc to sound-drift-assoc
            ; drift-comm  to sound-drift-comm
            ; join-assoc  to sound-join-assoc
            ; join-comm   to sound-join-comm)
 
--- Remaining algebraic laws live in Step03_AlgebraLaws; we re-expose them as sound-*
+-- Remaining algebraic laws come from Step03_AlgebraLaws; we alias them to sound-*
 open import Structures.S01_BooleanCore.Step03_AlgebraLaws
 
 ------------------------------------------------------------------------
 -- DRIFT (component-wise ∧)
 ------------------------------------------------------------------------
 
--- Idempotence, identity, zero, absorption
 sound-drift-idempotent :
   ∀ {n} (a : Dist n) → drift a a ≡ a
 sound-drift-idempotent = drift-idempotent
@@ -59,7 +62,6 @@ sound-drift-absorb = drift-absorb
 -- JOIN (component-wise ∨)
 ------------------------------------------------------------------------
 
--- Idempotence, identities, ones, absorption
 sound-join-idempotent :
   ∀ {n} (a : Dist n) → join a a ≡ a
 sound-join-idempotent = join-idempotent
@@ -125,6 +127,6 @@ sound-join-complement = join-complement
 ------------------------------------------------------------------------
 -- Summary
 ------------------------------------------------------------------------
--- This module provides stable, uniquely named certificates for the vector
--- algebra laws at Dist level. Assoc/comm are imported from Step02 soundness
--- under sound-* names; all other laws are aliased from Step03_AlgebraLaws.
+-- This module re-exports assoc/comm from the Step02 soundness layer under
+-- sound-* names and aliases all remaining Step03 laws to sound-* names.
+-- Downstream steps (e.g., Step05) should import ONLY these sound-* names.

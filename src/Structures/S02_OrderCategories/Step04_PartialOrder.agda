@@ -1,3 +1,4 @@
+-- src/Structures/S02_OrderCategories/Step04_PartialOrder.agda
 {-# OPTIONS --safe #-}
 
 -- | Step 04: Drift-Induced Partial Order
@@ -21,6 +22,7 @@
 
 module Structures.S02_OrderCategories.Step04_PartialOrder where
 
+open import Agda.Primitive using (Level)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong; cong₂)
 open import Relation.Nullary using (Dec; yes; no)
 
@@ -50,10 +52,10 @@ open import Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness
 -- Vector utilities
 ------------------------------------------------------------------------
 
-headV : ∀ {n A} → Vec A (suc n) → A
+headV : ∀ {ℓ n} {A : Set ℓ} → Vec A (suc n) → A
 headV (x ∷ xs) = x
 
-tailV : ∀ {n A} → Vec A (suc n) → Vec A n
+tailV : ∀ {ℓ n} {A : Set ℓ} → Vec A (suc n) → Vec A n
 tailV (x ∷ xs) = xs
 
 ------------------------------------------------------------------------
@@ -118,8 +120,8 @@ _≟ᵈ_ (true  ∷ xs) (false ∷ ys) = no (λ ())
 ≤ᵈ-dec : ∀ {n} (a b : Dist n) → Dec (a ≤ᵈ b)
 ≤ᵈ-dec a b = (drift a b) ≟ᵈ a
 
--- Convert Dec to OUR Bool
-fromDec : ∀ {P : Set} → Dec P → Bool
+-- Convert Dec to OUR Bool (avoid builtin Bool)
+fromDec : ∀ {ℓ} {P : Set ℓ} → Dec P → Bool
 fromDec (yes _) = true
 fromDec (no  _) = false
 

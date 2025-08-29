@@ -26,6 +26,7 @@ open import Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness             
 -- (B) Order & Categories — Drift order and categorical scaffolding
 open import Structures.S02_OrderCategories.Step04_PartialOrder                              public
 open import Structures.S02_OrderCategories.Step04_PartialOrder_Soundness                    public
+open import Structures.S02_OrderCategories.Step04_PartialOrder_Completeness                 public
 
 open import Structures.Step5_CategoryStructure public
 

@@ -29,12 +29,17 @@ open import Agda.Primitive using (Level; _⊔_; lsuc; lzero)
 -- Natural numbers for vector lengths / indices
 open import Data.Nat.Base using (ℕ)
 
--- Equality (shape matches certificates from earlier steps)
+-- Equality
 open import Relation.Binary.PropositionalEquality using (_≡_)
 
--- Core ops on distinction vectors
+-- Core ops on distinction vectors (incl. Dist constructor + vector constants)
 open import Structures.S01_BooleanCore.Step02_VectorOperations
-  using (Dist; drift; join; all-false; all-true)
+  using ( Dist
+        ; mkDist
+        ; drift
+        ; join
+        ; all-false
+        ; all-true)
 
 -- Vector-level algebraic laws (certificates) — includes right zero for drift
 open import Structures.S01_BooleanCore.Step02_VectorOperations_Soundness
@@ -66,12 +71,12 @@ _∧_ = drift
 _∨_ : ∀ {n : ℕ} → Dist n → Dist n → Dist n
 _∨_ = join
 
--- Bounds
+-- Bounds: lift vector-level constants to Dist via the constructor
 ⊥ : ∀ {n : ℕ} → Dist n
-⊥ = all-false
+⊥ {n} = mkDist {n} all-false
 
 ⊤ : ∀ {n : ℕ} → Dist n
-⊤ = all-true
+⊤ {n} = mkDist {n} all-true
 
 ------------------------------------------------------------------------
 -- Law records (local, minimal; no external theory)

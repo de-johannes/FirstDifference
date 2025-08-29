@@ -1,75 +1,71 @@
 {-# OPTIONS --safe #-}
 
+-- | Step 05: Join-Semilattice on Dist
+-- |
+-- | Goal:
+-- |   Show that (Dist n, ⊑, join) is a join-semilattice.
+-- |   Proof uses:
+-- |     • Algebra laws on Dist (Step03)
+-- |     • Order structure (Step04)
+-- |
+-- | Result:
+-- |   join is the least upper bound (LUB).
+-- |   Laws: idempotence, commutativity, associativity.
+-- |
+-- | All machine-checked under --safe.
+
 module Structures.S02_OrderCategories.Step05_JoinSemilattice where
 
-open import Agda.Primitive using (Level; _⊔_; lsuc)
+open import Data.Nat using (ℕ)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
-open import Relation.Unary using (Pred)
-open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Structures.S01_BooleanCore.Step02_VectorOperations using (Dist; join)
+open import Structures.S01_BooleanCore.Step03_AlgebraLaws
+open import Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness
+open import Structures.S02_OrderCategories.Step04_PartialOrder
 
-variable
-  ℓ : Level
-  A : Set ℓ
+------------------------------------------------------------------------
+-- Upper Bound / Least Upper Bound
+------------------------------------------------------------------------
 
--- Subset relation
-_⊆_ : Pred A ℓ → Pred A ℓ → Set (ℓ ⊔ lsuc ℓ)
-P ⊆ Q = ∀ {x} → P x → Q x
+record IsUpperBound {n : ℕ} (x y j : Dist n) : Set where
+  constructor mkUB
+  field
+    leftUB  : x ⊑ j
+    rightUB : y ⊑ j
 
--- Extensional equality
-_≈_ : Pred A ℓ → Pred A ℓ → Set (ℓ ⊔ lsuc ℓ)
-P ≈ Q = (P ⊆ Q) × (Q ⊆ P)
-
-infix 4 _⊆_ _≈_
-
--- Join (union)
-_⊔P_ : Pred A ℓ → Pred A ℓ → Pred A ℓ
-(P ⊔P Q) x = P x ⊎ Q x
-infixr 6 _⊔P_
-
--- Canonical injections
-left≤join  : ∀ {P Q} → P ⊆ (P ⊔P Q)
-left≤join  {P} {Q} p = inj₁ p
-
-right≤join : ∀ {P Q} → Q ⊆ (P ⊔P Q)
-right≤join {P} {Q} q = inj₂ q
-
--- Least upper bound
-join-least : ∀ {P Q R} → P ⊆ R → Q ⊆ R → (P ⊔P Q) ⊆ R
-join-least p≤r q≤r {x} (inj₁ p) = p≤r p
-join-least p≤r q≤r {x} (inj₂ q) = q≤r q
-
--- Soundness packaging
-record IsJoinOf (P Q J : Pred A ℓ) : Set (ℓ ⊔ lsuc ℓ) where
+record IsJoin {n : ℕ} (x y j : Dist n) : Set where
   constructor mkJoin
   field
-    leftUB  : P ⊆ J
-    rightUB : Q ⊆ J
-    least   : ∀ {R} → P ⊆ R → Q ⊆ R → J ⊆ R
+    isUB  : IsUpperBound x y j
+    least : ∀ {r} → IsUpperBound x y r → j ⊑ r
 
-open IsJoinOf public
+open IsUpperBound public
+open IsJoin public
 
-join-soundness : ∀ {P Q} → IsJoinOf P Q (P ⊔P Q)
-join-soundness = mkJoin left≤join right≤join join-least
+------------------------------------------------------------------------
+-- Proof: join is the LUB
+------------------------------------------------------------------------
 
--- Completeness: uniqueness up to ≈
-join-completeness : ∀ {P Q J} → IsJoinOf P Q J → J ≈ (P ⊔P Q)
-join-completeness j =
-  let open IsJoinOf j in
-  (least left≤join right≤join , join-least leftUB rightUB)
+join-isUB : ∀ {n} (x y : Dist n) → IsUpperBound x y (join x y)
+join-isUB x y = mkUB (join-upper₁ x y) (join-upper₂ x y)
 
--- Algebraic laws
-join-idem : ∀ {P} → (P ⊔P P) ≈ P
-join-idem = (λ {x} {y} → case y of λ where { inj₁ p → p ; inj₂ p → p } , left≤join)
+join-least : ∀ {n} (x y j : Dist n) →
+             IsUpperBound x y j → join x y ⊑ j
+join-least x y j (mkUB x≤j y≤j) = join-lub x y j x≤j y≤j
 
-join-comm : ∀ {P Q} → (P ⊔P Q) ≈ (Q ⊔P P)
-join-comm = (λ { (inj₁ p) → inj₂ p ; (inj₂ q) → inj₁ q }
-           , λ { (inj₁ q) → inj₂ q ; (inj₂ p) → inj₁ p })
+join-isJoin : ∀ {n} (x y : Dist n) → IsJoin x y (join x y)
+join-isJoin x y = mkJoin (join-isUB x y) (join-least x y)
 
-join-assoc : ∀ {P Q R} → ((P ⊔P Q) ⊔P R) ≈ (P ⊔P (Q ⊔P R))
-join-assoc =
-  (λ { (inj₁ (inj₁ p)) → inj₁ p
-     ; (inj₁ (inj₂ q)) → inj₂ (inj₁ q)
-     ; (inj₂ r)        → inj₂ (inj₂ r) }
-  , λ { (inj₁ p)        → inj₁ (inj₁ p)
-     ; (inj₂ (inj₁ q)) → inj₁ (inj₂ q)
-     ; (inj₂ (inj₂ r)) → inj₂ r })
+------------------------------------------------------------------------
+-- Algebraic laws (from Step03, lifted to Dist)
+------------------------------------------------------------------------
+
+join-idem : ∀ {n} (x : Dist n) → join x x ≡ x
+join-idem = sound-join-idem
+
+join-comm : ∀ {n} (x y : Dist n) → join x y ≡ join y x
+join-comm = sound-join-comm
+
+join-assoc : ∀ {n} (x y z : Dist n) →
+             join (join x y) z ≡ join x (join y z)
+join-assoc = sound-join-assoc

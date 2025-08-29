@@ -67,18 +67,19 @@ bigJoin {n} (a ∷ as) = join a (bigJoin as)
 bigMeet-lower : ∀ {n} (xs : List (Dist n)) → Forallᵈ (λ a → bigMeet xs ≤ᵈ a) xs
 bigMeet-lower {n} []       = tt
 bigMeet-lower {n} (a ∷ as) =
-  (meet≤₁ a (bigMeet as) , promote ih)
-    where
-      ih : Forallᵈ (λ b → bigMeet as ≤ᵈ b) as
-      ih = bigMeet-lower as
+  ( meet≤₁ a (bigMeet as)
+  , promote ih )
+  where
+    ih : Forallᵈ (λ b → bigMeet as ≤ᵈ b) as
+    ih = bigMeet-lower as
 
-      promote :
-        Forallᵈ (λ b → bigMeet as ≤ᵈ b) as →
-        Forallᵈ (λ b → drift a (bigMeet as) ≤ᵈ b) as
-      promote [] = tt
-      promote (p , ps) =
-        ( ≤ᵈ-trans (meet≤₂ a (bigMeet as)) p
-        , promote ps )
+    promote :
+      Forallᵈ (λ b → bigMeet as ≤ᵈ b) as →
+      Forallᵈ (λ b → drift a (bigMeet as) ≤ᵈ b) as
+    promote [] = tt
+    promote (p , ps) =
+      ( ≤ᵈ-trans (meet≤₂ a (bigMeet as)) p
+      , promote ps )
 
 -- Greatest-lower-bound: if c ≤ᵈ a for all a ∈ xs, then c ≤ᵈ bigMeet xs
 bigMeet-greatest :
@@ -97,22 +98,19 @@ bigMeet-greatest {n} (a ∷ as) {c} (p , ps) =
 bigJoin-upper : ∀ {n} (xs : List (Dist n)) → Forallᵈ (λ a → a ≤ᵈ bigJoin xs) xs
 bigJoin-upper {n} []       = tt
 bigJoin-upper {n} (a ∷ as) =
-  let
+  ( ub-join₁ a (bigJoin as)        -- head: a ≤ᵈ join a (bigJoin as)
+  , promote ih )                   -- tail:  b ≤ᵈ join a (bigJoin as) for each b∈as
+  where
     ih : Forallᵈ (λ b → b ≤ᵈ bigJoin as) as
     ih = bigJoin-upper as
 
-    -- Promote each "b ≤ᵈ bigJoin as" to "b ≤ᵈ join a (bigJoin as)"
-    promote : Forallᵈ (λ b → b ≤ᵈ bigJoin as) as
-            → Forallᵈ (λ b → b ≤ᵈ join a (bigJoin as)) as
-    promote []            = tt
-    promote (p , ps)      =
-      let step : bigJoin as ≤ᵈ join a (bigJoin as)
-          step = ub-join₂ a (bigJoin as)
-      in (≤ᵈ-trans p step) , promote ps
-  in
-    ( ub-join₁ a (bigJoin as)  -- head: a ≤ᵈ join a (bigJoin as)
-    , promote ih               -- tail:  b ≤ᵈ join a (bigJoin as) for each b in as
-    )
+    promote :
+      Forallᵈ (λ b → b ≤ᵈ bigJoin as) as →
+      Forallᵈ (λ b → b ≤ᵈ join a (bigJoin as)) as
+    promote []       = tt
+    promote (p , ps) =
+      ( ≤ᵈ-trans p (ub-join₂ a (bigJoin as))
+      , promote ps )
 
 -- Least-upper-bound: if a ≤ᵈ c for all a ∈ xs, then bigJoin xs ≤ᵈ c
 bigJoin-least :

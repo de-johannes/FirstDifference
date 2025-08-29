@@ -9,15 +9,14 @@
 -- | Method:
 -- |   Reuse of Step02/03 results:
 -- |     • operations: drift, join (from Step02)
--- |     • vector laws: drift-assoc/comm, join-assoc/comm (from Step02 soundness)
--- |     • soundness: idempotence via sound-* wrappers (from Step03 soundness)
+-- |     • laws (lifted to Dist): sound-drift-assoc/comm, sound-join-assoc/comm (from Step03)
+-- |     • idempotence: sound-drift-idempotent, sound-join-idempotent (from Step03)
 -- |
 -- | Guarantee:
 -- |   All fields are inhabited by existing proofs; no new axioms or re-proofs.
 -- |
 -- | Notes:
--- |   Bounds (⊥/⊤) are handled in earlier/later steps; Step05 focuses on the
--- |   semilattice laws only.
+-- |   Bounds (⊥/⊤) are handled elsewhere; Step05 focuses on semilattice laws only.
 
 module Structures.S02_OrderCategories.Step05_Semilattice where
 
@@ -33,20 +32,17 @@ open import Relation.Binary.PropositionalEquality using (_≡_)
 open import Structures.S01_BooleanCore.Step02_VectorOperations
   using (Dist; drift; join)
 
--- Vector-level algebraic laws (certificates)
-open import Structures.S01_BooleanCore.Step02_VectorOperations_Soundness
-  using ( drift-assoc
-        ; drift-comm
-        ; join-assoc
-        ; join-comm)
-
--- Soundness wrappers (idempotence)
+-- Lifted (Dist-level) law certificates + idempotence
 open import Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness
-  using ( sound-drift-idempotent
+  using ( sound-drift-assoc
+        ; sound-drift-comm
+        ; sound-join-assoc
+        ; sound-join-comm
+        ; sound-drift-idempotent
         ; sound-join-idempotent)
 
 ------------------------------------------------------------------------
--- Public API: operations aliases
+-- Public API: operation aliases
 ------------------------------------------------------------------------
 
 infixl 6 _∧_ _∨_
@@ -60,7 +56,7 @@ _∨_ : ∀ {n : ℕ} → Dist n → Dist n → Dist n
 _∨_ = join
 
 ------------------------------------------------------------------------
--- Semilattice records (minimal, no external theory)
+-- Semilattice records (minimal; no external theory)
 ------------------------------------------------------------------------
 
 record IsSemilattice {ℓ : Level} {A : Set ℓ} (_∙_ : A → A → A) : Set ℓ where
@@ -75,8 +71,8 @@ record IsSemilattice {ℓ : Level} {A : Set ℓ} (_∙_ : A → A → A) : Set �
 
 isDriftSemilattice : ∀ {n : ℕ} → IsSemilattice (_∧_ {n})
 isDriftSemilattice {n} = record
-  { assoc      = drift-assoc {n}
-  ; comm       = drift-comm {n}
+  { assoc      = sound-drift-assoc {n}
+  ; comm       = sound-drift-comm  {n}
   ; idempotent = sound-drift-idempotent {n}
   }
 
@@ -99,8 +95,8 @@ mkDriftSemilattice n = record
 
 isJoinSemilattice : ∀ {n : ℕ} → IsSemilattice (_∨_ {n})
 isJoinSemilattice {n} = record
-  { assoc      = join-assoc {n}
-  ; comm       = join-comm {n}
+  { assoc      = sound-join-assoc {n}
+  ; comm       = sound-join-comm  {n}
   ; idempotent = sound-join-idempotent {n}
   }
 

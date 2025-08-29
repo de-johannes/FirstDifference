@@ -17,13 +17,24 @@
 module Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness where
 
 open import Relation.Binary.PropositionalEquality using (_≡_)
-open import Structures.S01_BooleanCore.Step02_VectorOperations using (Dist; drift; join; neg; all-true; all-false)
+open import Structures.S01_BooleanCore.Step02_VectorOperations
+  using (Dist; drift; join; neg; all-true; all-false)
 open import Structures.S01_BooleanCore.Step03_AlgebraLaws
 
 ------------------------------------------------------------------------
 -- DRIFT (component-wise ∧)
 ------------------------------------------------------------------------
 
+-- Associativity and commutativity (Dist-level aliases)
+sound-drift-assoc :
+  ∀ {n} (x y z : Dist n) → drift x (drift y z) ≡ drift (drift x y) z
+sound-drift-assoc = drift-assoc
+
+sound-drift-comm :
+  ∀ {n} (x y : Dist n) → drift x y ≡ drift y x
+sound-drift-comm = drift-comm
+
+-- Idempotence, identity, zero, absorption
 sound-drift-idempotent :
   ∀ {n} (a : Dist n) → drift a a ≡ a
 sound-drift-idempotent = drift-idempotent
@@ -44,6 +55,16 @@ sound-drift-absorb = drift-absorb
 -- JOIN (component-wise ∨)
 ------------------------------------------------------------------------
 
+-- Associativity and commutativity (Dist-level aliases)
+sound-join-assoc :
+  ∀ {n} (x y z : Dist n) → join x (join y z) ≡ join (join x y) z
+sound-join-assoc = join-assoc
+
+sound-join-comm :
+  ∀ {n} (x y : Dist n) → join x y ≡ join y x
+sound-join-comm = join-comm
+
+-- Idempotence, identities, ones, absorption
 sound-join-idempotent :
   ∀ {n} (a : Dist n) → join a a ≡ a
 sound-join-idempotent = join-idempotent
@@ -109,5 +130,5 @@ sound-join-complement = join-complement
 ------------------------------------------------------------------------
 -- Summary
 ------------------------------------------------------------------------
--- This module provides stable, uniquely named certificates for all
--- Step03 vector laws, enabling `open … public`.
+-- This module provides stable, uniquely named certificates for the vector
+-- algebra laws at Dist level, enabling `open … public` without clashes.

@@ -4,19 +4,18 @@
 -- |
 -- | Purpose:
 -- |   Prove the remaining algebraic laws for distinction vectors
--- |   (beyond the basics in Step02_Soundness): idempotence, identities
--- |   (left/right), absorption, distributivity, De Morgan, complements.
+-- |   (beyond Step02_Soundness): idempotence, identities (left/right),
+-- |   absorption, distributivity, De Morgan, complements.
 -- |
 -- | Method:
 -- |   Structural induction on vectors; each head-step reduces to a
--- |   scalar Boolean law from Step01 (Soundness/Completeness), and the
--- |   tail-step uses the induction hypothesis.
+-- |   scalar Boolean law (Step01 Soundness/Completeness); the tail uses
+-- |   the induction hypothesis. No postulates; --safe.
 -- |
 -- | Dependency discipline:
 -- |   - Uses ONLY our own Bool from Step01 (no Data.Bool).
--- |   - Imports Step01 Soundness+Completeness for scalar laws.
--- |   - Avoids re-proving theorems already present in Step02_Soundness
--- |     to prevent name clashes when opening modules publicly.
+-- |   - Imports Step01 Soundness + Completeness for scalar laws.
+-- |   - Does NOT duplicate theorems already proven in Step02_Soundness.
 
 module Structures.S01_BooleanCore.Step03_AlgebraLaws where
 
@@ -26,17 +25,16 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong₂)
 
 open import Structures.S01_BooleanCore.Step01_BooleanFoundation
 open import Structures.S01_BooleanCore.Step01_BooleanFoundation_Soundness
+  using (∧-idem)
 open import Structures.S01_BooleanCore.Step01_BooleanFoundation_Completeness
+  using (∧-identityˡ; ∧-zeroˡ
+       ; ∧-absorb; ∨-absorb
+       ; ∧-distrib-∨; ∨-distrib-∧
+       ; DeMorgan-∧∨; DeMorgan-∨∧
+       ; ∧-complement; ∨-complement
+       ; ∨-idem; ∨-identityʳ; ∨-identityˡ; ∨-oneʳ; ∨-oneˡ)
 open import Structures.S01_BooleanCore.Step02_VectorOperations
-
-------------------------------------------------------------------------
--- Helpful note:
--- Step02_Soundness already provides:
---   drift-assoc, drift-comm, drift-identityʳ, drift-zeroʳ,
---   join-assoc,  join-comm,  neg-involutive
--- We extend with: idempotence, identities (left), absorption,
--- distributivity (both ways), De Morgan (vector), complements.
-------------------------------------------------------------------------
+  using (Dist; drift; join; neg; all-true; all-false)
 
 ------------------------------------------------------------------------
 -- DRIFT (component-wise ∧): extra laws
@@ -60,17 +58,11 @@ drift-zeroˡ []       = refl
 drift-zeroˡ (x ∷ xs) =
   cong₂ _∷_ (∧-zeroˡ x) (drift-zeroˡ xs)
 
-  -- | Absorption (vector level): drift xs (join xs ys) = xs
+-- | Absorption for drift: drift xs (join xs ys) ≡ xs
 drift-absorb : ∀ {n} (xs ys : Dist n) → drift xs (join xs ys) ≡ xs
-drift-absorb {zero} []       []       = refl
-drift-absorb {suc n} (x ∷ xs) (y ∷ ys) =
+drift-absorb []       []       = refl
+drift-absorb (x ∷ xs) (y ∷ ys) =
   cong₂ _∷_ (∧-absorb x y) (drift-absorb xs ys)
-
--- | Absorption (vector level): join xs (drift xs ys) = xs
-join-absorb : ∀ {n} (xs ys : Dist n) → join xs (drift xs ys) ≡ xs
-join-absorb {zero} []       []       = refl
-join-absorb {suc n} (x ∷ xs) (y ∷ ys) =
-  cong₂ _∷_ (∨-absorb x y) (join-absorb xs ys)
 
 ------------------------------------------------------------------------
 -- JOIN (component-wise ∨): extra laws
@@ -111,6 +103,12 @@ join-absorb : ∀ {n} (xs ys : Dist n) → join xs (drift xs ys) ≡ xs
 join-absorb []       []       = refl
 join-absorb (x ∷ xs) (y ∷ ys) =
   cong₂ _∷_ (∨-absorb x y) (join-absorb xs ys)
+
+absorb-∧-∨ : ∀ {n} (xs ys : Dist n) → drift xs (join xs ys) ≡ xs
+absorb-∧-∨ = drift-absorb
+
+absorb-∨-∧ : ∀ {n} (xs ys : Dist n) → join xs (drift xs ys) ≡ xs
+absorb-∨-∧ = join-absorb
 
 ------------------------------------------------------------------------
 -- DISTRIBUTIVITY (both directions, lifted)
@@ -165,15 +163,3 @@ join-complement : ∀ {n} (xs : Dist n) →
 join-complement []       = refl
 join-complement (x ∷ xs) =
   cong₂ _∷_ (∨-complement x) (join-complement xs)
-
-
-------------------------------------------------------------------------
--- Summary
-------------------------------------------------------------------------
--- Added on top of Step02_Soundness:
---   • Drift:  idempotent, identityˡ, zeroˡ, absorption
---   • Join:   idempotent, identityˡ/ʳ, oneˡ/ʳ, absorption
---   • Distributivity:  ∧ over ∨  and  ∨ over ∧  (right-side forms)
---   • De Morgan (vector) and complement vector laws
--- All proofs are total (structural induction) and reduce to
--- scalar laws from Step01 (Soundness + Completeness).

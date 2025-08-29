@@ -39,8 +39,8 @@ open import Structures.S02_OrderCategories.Step07_BooleanAlgebra_Soundness      
 
 open import Structures.S02_OrderCategories.Step08_CategoryStructure                         public
 
+open import Structures.S02_OrderCategories.Step09_SemanticTimeFunctor                       public
 
--- open import Structures.Step5_CategoryStructure public
 
 -- (C) Time Emergence — Semantic time as a functor on sequences
 -- open import Structures.Step6_SemanticTimeFunctor public

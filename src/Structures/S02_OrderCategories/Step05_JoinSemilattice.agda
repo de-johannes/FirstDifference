@@ -2,17 +2,12 @@
 
 -- | Step 05: Join-Semilattice on Dist
 -- |
--- | Goal:
--- |   Show that (Dist n, ⊑, join) is a join-semilattice.
--- |   Proof uses:
--- |     • Algebra laws on Dist (Step03)
--- |     • Order structure (Step04)
+-- | Ziel:
+-- |   (Dist n, _≤ᵈ_, join) ist ein Join-Semilattice:
+-- |   • join ist das kleinste obere Schranken-Element (LUB)
+-- |   • daraus folgen Idempotenz, Kommutativität, Assoziativität
 -- |
--- | Result:
--- |   join is the least upper bound (LUB).
--- |   Laws: idempotence, commutativity, associativity.
--- |
--- | All machine-checked under --safe.
+-- | Beweise stützen sich NUR auf Step04 (Ordnung & UB/LUB).
 
 module Structures.S02_OrderCategories.Step05_JoinSemilattice where
 
@@ -54,7 +49,9 @@ join-least : ∀ {n} (x y j : Dist n) →
 join-least x y j (mkUB x≤j y≤j) = lub-≤ᵈ x≤j y≤j
 
 join-isJoin : ∀ {n} (x y : Dist n) → IsJoin x y (join x y)
-join-isJoin x y = mkJoin (join-isUB x y) (join-least x y)
+join-isJoin x y =
+  mkJoin (join-isUB x y)
+         (λ {r} ub → join-least x y r ub)   -- <<< eta-Anpassung
 
 ------------------------------------------------------------------------
 -- Algebraic laws derived from the LUB property
@@ -93,16 +90,14 @@ join-assoc x y z =
       in lub-≤ᵈ x≤ y≤
 
     z≤x_yz : z ≤ᵈ join x (join y z)
-    z≤x_yz =
-      ≤ᵈ-trans (ub-join₂ y z) (ub-join₂ x (join y z))
+    z≤x_yz = ≤ᵈ-trans (ub-join₂ y z) (ub-join₂ x (join y z))
 
     L : join (join x y) z ≤ᵈ join x (join y z)
     L = lub-≤ᵈ xy≤x_yz z≤x_yz
 
     -- Richtung 2: x∨(y∨z) ≤ (x∨y)∨z
     x≤xy_z : x ≤ᵈ join (join x y) z
-    x≤xy_z =
-      ≤ᵈ-trans (ub-join₁ x y) (ub-join₁ (join x y) z)
+    x≤xy_z = ≤ᵈ-trans (ub-join₁ x y) (ub-join₁ (join x y) z)
 
     yz≤xy_z : join y z ≤ᵈ join (join x y) z
     yz≤xy_z =

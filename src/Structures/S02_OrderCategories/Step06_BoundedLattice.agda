@@ -1,3 +1,4 @@
+-- src/Structures/S02_OrderCategories/Step06_BoundedLattice.agda
 {-# OPTIONS --safe #-}
 
 -- | Step 06: Bounded lattice on distinction vectors
@@ -44,26 +45,26 @@ record BoundedLattice (n : ℕ) : Set where
     ⊤     : Dist n
 
     -- meet laws
-    ⋀-assoc  : ∀ x y z → _⋀_ (_⋀_ x y) z ≡ _⋀_ x (_⋀_ y z)
-    ⋀-comm   : ∀ x y   → _⋀_ x y ≡ _⋀_ y x
-    ⋀-idemp  : ∀ x     → _⋀_ x x ≡ x
-    ⋀-unitˡ  : ∀ x     → _⋀_ ⊤ x ≡ x
-    ⋀-unitʳ  : ∀ x     → _⋀_ x ⊤ ≡ x
-    ⋀-absorbˡ: ∀ x     → _⋀_ ⊥ x ≡ ⊥
-    ⋀-absorbʳ: ∀ x     → _⋀_ x ⊥ ≡ ⊥
+    ⋀-assoc   : ∀ x y z → _⋀_ (_⋀_ x y) z ≡ _⋀_ x (_⋀_ y z)
+    ⋀-comm    : ∀ x y   → _⋀_ x y ≡ _⋀_ y x
+    ⋀-idemp   : ∀ x     → _⋀_ x x ≡ x
+    ⋀-unitˡ   : ∀ x     → _⋀_ ⊤ x ≡ x
+    ⋀-unitʳ   : ∀ x     → _⋀_ x ⊤ ≡ x
+    ⋀-absorbˡ : ∀ x     → _⋀_ ⊥ x ≡ ⊥
+    ⋀-absorbʳ : ∀ x     → _⋀_ x ⊥ ≡ ⊥
 
     -- join laws
-    ⋁-assoc  : ∀ x y z → _⋁_ (_⋁_ x y) z ≡ _⋁_ x (_⋁_ y z)
-    ⋁-comm   : ∀ x y   → _⋁_ x y ≡ _⋁_ y x
-    ⋁-idemp  : ∀ x     → _⋁_ x x ≡ x
-    ⋁-unitˡ  : ∀ x     → _⋁_ ⊥ x ≡ x
-    ⋁-unitʳ  : ∀ x     → _⋁_ x ⊥ ≡ x
-    ⋁-absorbˡ: ∀ x     → _⋁_ ⊤ x ≡ ⊤
-    ⋁-absorbʳ: ∀ x     → _⋁_ x ⊤ ≡ ⊤
+    ⋁-assoc   : ∀ x y z → _⋁_ (_⋁_ x y) z ≡ _⋁_ x (_⋁_ y z)
+    ⋁-comm    : ∀ x y   → _⋁_ x y ≡ _⋁_ y x
+    ⋁-idemp   : ∀ x     → _⋁_ x x ≡ x
+    ⋁-unitˡ   : ∀ x     → _⋁_ ⊥ x ≡ x
+    ⋁-unitʳ   : ∀ x     → _⋁_ x ⊥ ≡ x
+    ⋁-absorbˡ : ∀ x     → _⋁_ ⊤ x ≡ ⊤
+    ⋁-absorbʳ : ∀ x     → _⋁_ x ⊤ ≡ ⊤
 
     -- absorption laws (lattice coherence)
-    absorb⋀ : ∀ x y → _⋀_ x (_⋁_ x y) ≡ x
-    absorb⋁ : ∀ x y → _⋁_ x (_⋀_ x y) ≡ x
+    absorb⋀   : ∀ x y → _⋀_ x (_⋁_ x y) ≡ x
+    absorb⋁   : ∀ x y → _⋁_ x (_⋀_ x y) ≡ x
 
 -- Concrete instance for Dist n (meet = drift, join = join)
 boundedLatticeᵈ : ∀ {n} → BoundedLattice n

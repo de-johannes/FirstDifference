@@ -5,14 +5,9 @@ module All where
 ------------------------------------------------------------------------
 
 -- The Token Principle and irrefutability theorems
-open import Core.TokenPrinciple public
-open import Core.Irrefutable public
+open import Core.TokenPrinciple                                                             public
+open import Core.Irrefutable                                                                public
 
-------------------------------------------------------------------------
--- Helpers
-------------------------------------------------------------------------
-open import Helpers.Equality  public
-open import Helpers.Function public
 
 ------------------------------------------------------------------------
 -- Structures

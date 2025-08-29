@@ -27,15 +27,15 @@ module Structures.S02_OrderCategories.Step05_Semilattice where
 open import Agda.Primitive using (Level; _⊔_; lsuc; lzero)
 
 -- Natural numbers for vector lengths / indices
-open import Data.Nat.Base using (ℕ)
+open import Data.Nat using (ℕ)
 
 -- Equality
 open import Relation.Binary.PropositionalEquality using (_≡_)
 
--- Core ops on distinction vectors (incl. Dist constructor + vector constants)
+-- Core ops on distinction vectors
+-- NOTE: `Dist` (type) and its constructor `Dist` are exported under the same name.
 open import Structures.S01_BooleanCore.Step02_VectorOperations
-  using ( Dist
-        ; mkDist
+  using ( Dist       -- type / constructor
         ; drift
         ; join
         ; all-false
@@ -71,12 +71,12 @@ _∧_ = drift
 _∨_ : ∀ {n : ℕ} → Dist n → Dist n → Dist n
 _∨_ = join
 
--- Bounds: lift vector-level constants to Dist via the constructor
+-- Bounds: lift vector-level constants to Dist via the `Dist` constructor
 ⊥ : ∀ {n : ℕ} → Dist n
-⊥ {n} = mkDist {n} all-false
+⊥ {n} = Dist all-false
 
 ⊤ : ∀ {n : ℕ} → Dist n
-⊤ {n} = mkDist {n} all-true
+⊤ {n} = Dist all-true
 
 ------------------------------------------------------------------------
 -- Law records (local, minimal; no external theory)

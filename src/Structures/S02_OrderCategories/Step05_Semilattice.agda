@@ -33,9 +33,9 @@ open import Data.Nat using (ℕ)
 open import Relation.Binary.PropositionalEquality using (_≡_)
 
 -- Core ops on distinction vectors
--- NOTE: `Dist` (type) and its constructor `Dist` are exported under the same name.
+-- NOTE: `Dist` (type) and its constructor `Dist` share the same name.
 open import Structures.S01_BooleanCore.Step02_VectorOperations
-  using ( Dist       -- type / constructor
+  using ( Dist       -- type / constructor: Dist : (n : ℕ) → Vec Bool n → Dist n
         ; drift
         ; join
         ; all-false
@@ -73,10 +73,10 @@ _∨_ = join
 
 -- Bounds: lift vector-level constants to Dist via the `Dist` constructor
 ⊥ : ∀ {n : ℕ} → Dist n
-⊥ {n} = Dist all-false
+⊥ {n} = Dist n all-false
 
 ⊤ : ∀ {n : ℕ} → Dist n
-⊤ {n} = Dist all-true
+⊤ {n} = Dist n all-true
 
 ------------------------------------------------------------------------
 -- Law records (local, minimal; no external theory)

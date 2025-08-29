@@ -9,7 +9,8 @@
 -- |
 -- | Method:
 -- |   Each certificate is a direct alias to the corresponding theorem
--- |   from Step03_AlgebraLaws. No new proofs are introduced here.
+-- |   from Step03_AlgebraLaws (or Step02 soundness where those reside).
+-- |   No new proofs are introduced here.
 -- |
 -- | Guarantee:
 -- |   Fully machine-checked under --safe; zero postulates/axioms.
@@ -19,6 +20,8 @@ module Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness where
 open import Relation.Binary.PropositionalEquality using (_≡_)
 open import Structures.S01_BooleanCore.Step02_VectorOperations
   using (Dist; drift; join; neg; all-true; all-false)
+open import Structures.S01_BooleanCore.Step02_VectorOperations_Soundness
+  using (drift-assoc; drift-comm; join-assoc; join-comm)
 open import Structures.S01_BooleanCore.Step03_AlgebraLaws
 
 ------------------------------------------------------------------------

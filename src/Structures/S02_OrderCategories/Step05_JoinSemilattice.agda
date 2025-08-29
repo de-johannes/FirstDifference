@@ -1,112 +1,88 @@
 {-# OPTIONS --safe #-}
 
--- | Step 05: Join-Semilattice on Dist
+-- | Step 05: Semilattice structure on distinction vectors
 -- |
--- | Ziel:
--- |   (Dist n, _≤ᵈ_, join) ist ein Join-Semilattice:
--- |   • join ist das kleinste obere Schranken-Element (LUB)
--- |   • daraus folgen Idempotenz, Kommutativität, Assoziativität
+-- | Purpose:
+-- |   Package the vector-level Boolean operations into standard
+-- |   semilattice interfaces (meet/join), including bounded variants.
+-- |   This provides a clean algebraic layer before moving to categories.
 -- |
--- | Beweise stützen sich NUR auf Step04 (Ordnung & UB/LUB).
+-- | Method:
+-- |   Reuse machine-checked laws from Step02/Step03 soundness:
+-- |     drift  = component-wise ∧  (meet)
+-- |     join   = component-wise ∨  (join)
+-- |   Associativity / commutativity / idempotence are already proved.
+-- |
+-- | Guarantee:
+-- |   All fields are inhabited by previously verified proofs (no new axioms).
 
-module Structures.S02_OrderCategories.Step05_JoinSemilattice where
+module Structures.S02_OrderCategories.Step05_Semilattice where
 
 open import Data.Nat using (ℕ)
-open import Relation.Binary.PropositionalEquality using (_≡_; refl)
-open import Structures.S01_BooleanCore.Step02_VectorOperations using (Dist; join)
-open import Structures.S02_OrderCategories.Step04_PartialOrder
-  using (_≤ᵈ_; ≤ᵈ-refl; ≤ᵈ-trans; ≤ᵈ-antisym
-       ; ub-join₁ ; ub-join₂ ; lub-≤ᵈ)
+open import Relation.Binary.PropositionalEquality using (_≡_)
+
+-- Our Booleans and distinctions
+open import Structures.S01_BooleanCore.Step01_BooleanFoundation using (Bool)
+open import Structures.S01_BooleanCore.Step02_VectorOperations
+  using (Dist; drift; join; all-false; all-true)
+
+-- Vector-level laws (certificates)
+open import Structures.S01_BooleanCore.Step02_VectorOperations_Soundness
+  using (drift-assoc; drift-comm; join-assoc; join-comm)
+open import Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness
+  using ( sound-drift-idempotent
+        ; sound-drift-zeroˡ; drift-zeroʳ
+        ; sound-join-idempotent
+        ; sound-join-oneˡ; sound-join-oneʳ)
 
 ------------------------------------------------------------------------
--- Upper Bound / Least Upper Bound
+-- Meet-semilattice (with bottom)
 ------------------------------------------------------------------------
 
-record IsUpperBound {n : ℕ} (x y j : Dist n) : Set where
-  constructor mkUB
+record MeetSemilattice⊥ (n : ℕ) : Set where
   field
-    leftUB  : x ≤ᵈ j
-    rightUB : y ≤ᵈ j
+    _⋀_     : Dist n → Dist n → Dist n
+    assoc   : ∀ (x y z : Dist n) → _⋀_ (_⋀_ x y) z ≡ _⋀_ x (_⋀_ y z)
+    comm    : ∀ (x y   : Dist n) → _⋀_ x y ≡ _⋀_ y x
+    idemp   : ∀ (x     : Dist n) → _⋀_ x x ≡ x
+    bottom  : Dist n
+    absorbˡ : ∀ (x     : Dist n) → _⋀_ bottom x ≡ bottom
+    absorbʳ : ∀ (x     : Dist n) → _⋀_ x bottom ≡ bottom
 
-record IsJoin {n : ℕ} (x y j : Dist n) : Set where
-  constructor mkJoin
+-- Instance for distinction vectors: meet = drift, bottom = all-false
+meetSemilatticeᵈ : ∀ {n} → MeetSemilattice⊥ n
+meetSemilatticeᵈ {n} = record
+  { _⋀_     = drift
+  ; assoc   = drift-assoc
+  ; comm    = drift-comm
+  ; idemp   = sound-drift-idempotent
+  ; bottom  = all-false n
+  ; absorbˡ = λ x → sound-drift-zeroˡ x
+  ; absorbʳ = λ x → drift-zeroʳ x
+  }
+
+------------------------------------------------------------------------
+-- Join-semilattice (with top)
+------------------------------------------------------------------------
+
+record JoinSemilattice⊤ (n : ℕ) : Set where
   field
-    isUB  : IsUpperBound x y j
-    least : ∀ {r} → IsUpperBound x y r → j ≤ᵈ r
+    _⋁_    : Dist n → Dist n → Dist n
+    assoc  : ∀ (x y z : Dist n) → _⋁_ (_⋁_ x y) z ≡ _⋁_ x (_⋁_ y z)
+    comm   : ∀ (x y   : Dist n) → _⋁_ x y ≡ _⋁_ y x
+    idemp  : ∀ (x     : Dist n) → _⋁_ x x ≡ x
+    top    : Dist n
+    unitˡ  : ∀ (x     : Dist n) → _⋁_ top x ≡ top
+    unitʳ  : ∀ (x     : Dist n) → _⋁_ x top ≡ top
 
-open IsUpperBound public
-open IsJoin public
-
-------------------------------------------------------------------------
--- Proof: join is the LUB
-------------------------------------------------------------------------
-
-join-isUB : ∀ {n} (x y : Dist n) → IsUpperBound x y (join x y)
-join-isUB x y = mkUB (ub-join₁ x y) (ub-join₂ x y)
-
-join-least : ∀ {n} (x y j : Dist n) →
-             IsUpperBound x y j → join x y ≤ᵈ j
-join-least x y j (mkUB x≤j y≤j) = lub-≤ᵈ x≤j y≤j
-
-join-isJoin : ∀ {n} (x y : Dist n) → IsJoin x y (join x y)
-join-isJoin x y =
-  mkJoin (join-isUB x y)
-         (λ {r} ub → join-least x y r ub)   -- <<< eta-Anpassung
-
-------------------------------------------------------------------------
--- Algebraic laws derived from the LUB property
-------------------------------------------------------------------------
-
--- Idempotence:  join x x ≡ x
-join-idem : ∀ {n} (x : Dist n) → join x x ≡ x
-join-idem x =
-  let left  : join x x ≤ᵈ x
-      left  = lub-≤ᵈ (≤ᵈ-refl x) (≤ᵈ-refl x)
-      right : x ≤ᵈ join x x
-      right = ub-join₁ x x
-  in ≤ᵈ-antisym left right
-
--- Commutativity:  join x y ≡ join y x
-join-comm : ∀ {n} (x y : Dist n) → join x y ≡ join y x
-join-comm x y =
-  let a : join x y ≤ᵈ join y x
-      a = lub-≤ᵈ (ub-join₂ y x) (ub-join₁ y x)
-      b : join y x ≤ᵈ join x y
-      b = lub-≤ᵈ (ub-join₂ x y) (ub-join₁ x y)
-  in ≤ᵈ-antisym a b
-
--- Associativity:  join (join x y) z ≡ join x (join y z)
-join-assoc : ∀ {n} (x y z : Dist n) →
-             join (join x y) z ≡ join x (join y z)
-join-assoc x y z =
-  let
-    -- Richtung 1: (x∨y)∨z ≤ x∨(y∨z)
-    xy≤x_yz : join x y ≤ᵈ join x (join y z)
-    xy≤x_yz =
-      let x≤ : x ≤ᵈ join x (join y z)
-          x≤ = ub-join₁ x (join y z)
-          y≤ : y ≤ᵈ join x (join y z)
-          y≤ = ≤ᵈ-trans (ub-join₁ y z) (ub-join₂ x (join y z))
-      in lub-≤ᵈ x≤ y≤
-
-    z≤x_yz : z ≤ᵈ join x (join y z)
-    z≤x_yz = ≤ᵈ-trans (ub-join₂ y z) (ub-join₂ x (join y z))
-
-    L : join (join x y) z ≤ᵈ join x (join y z)
-    L = lub-≤ᵈ xy≤x_yz z≤x_yz
-
-    -- Richtung 2: x∨(y∨z) ≤ (x∨y)∨z
-    x≤xy_z : x ≤ᵈ join (join x y) z
-    x≤xy_z = ≤ᵈ-trans (ub-join₁ x y) (ub-join₁ (join x y) z)
-
-    yz≤xy_z : join y z ≤ᵈ join (join x y) z
-    yz≤xy_z =
-      let y≤ : y ≤ᵈ join (join x y) z
-          y≤ = ≤ᵈ-trans (ub-join₂ x y) (ub-join₁ (join x y) z)
-          z≤ : z ≤ᵈ join (join x y) z
-          z≤ = ub-join₂ (join x y) z
-      in lub-≤ᵈ y≤ z≤
-
-    R : join x (join y z) ≤ᵈ join (join x y) z
-    R = lub-≤ᵈ x≤xy_z yz≤xy_z
-  in ≤ᵈ-antisym L R
+-- Instance for distinction vectors: join = join, top = all-true
+joinSemilatticeᵈ : ∀ {n} → JoinSemilattice⊤ n
+joinSemilatticeᵈ {n} = record
+  { _⋁_   = join
+  ; assoc = join-assoc
+  ; comm  = join-comm
+  ; idemp = sound-join-idempotent
+  ; top   = all-true n
+  ; unitˡ = λ x → sound-join-oneˡ x
+  ; unitʳ = λ x → sound-join-oneʳ x
+  }

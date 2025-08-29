@@ -68,18 +68,18 @@ bigMeet-lower : ∀ {n} (xs : List (Dist n)) → Forallᵈ (λ a → bigMeet xs 
 bigMeet-lower {n} []       = tt
 bigMeet-lower {n} (a ∷ as) =
   ( meet≤₁ a (bigMeet as)
-  , promote ih )
+  , promote as (bigMeet-lower as) )
   where
-    ih : Forallᵈ (λ b → bigMeet as ≤ᵈ b) as
-    ih = bigMeet-lower as
-
+    -- promote carries the list, so we can split on it
     promote :
-      Forallᵈ (λ b → bigMeet as ≤ᵈ b) as →
-      Forallᵈ (λ b → drift a (bigMeet as) ≤ᵈ b) as
-    promote [] = tt
-    promote (p , ps) =
-      ( ≤ᵈ-trans (meet≤₂ a (bigMeet as)) p
-      , promote ps )
+      ∀ {n} (ys : List (Dist n)) →
+      Forallᵈ (λ b → bigMeet ys ≤ᵈ b) ys →
+      Forallᵈ (λ b → drift a (bigMeet ys) ≤ᵈ b) ys
+    promote []       tt           = tt
+    promote (b ∷ bs) (p , ps) =
+      ( ≤ᵈ-trans (meet≤₂ a (bigMeet (b ∷ bs))) p
+      , promote bs ps )
+
 
 -- Greatest-lower-bound: if c ≤ᵈ a for all a ∈ xs, then c ≤ᵈ bigMeet xs
 bigMeet-greatest :
@@ -98,19 +98,17 @@ bigMeet-greatest {n} (a ∷ as) {c} (p , ps) =
 bigJoin-upper : ∀ {n} (xs : List (Dist n)) → Forallᵈ (λ a → a ≤ᵈ bigJoin xs) xs
 bigJoin-upper {n} []       = tt
 bigJoin-upper {n} (a ∷ as) =
-  ( ub-join₁ a (bigJoin as)        -- head: a ≤ᵈ join a (bigJoin as)
-  , promote ih )                   -- tail:  b ≤ᵈ join a (bigJoin as) for each b∈as
+  ( ub-join₁ a (bigJoin as)
+  , promote as (bigJoin-upper as) )
   where
-    ih : Forallᵈ (λ b → b ≤ᵈ bigJoin as) as
-    ih = bigJoin-upper as
-
     promote :
-      Forallᵈ (λ b → b ≤ᵈ bigJoin as) as →
-      Forallᵈ (λ b → b ≤ᵈ join a (bigJoin as)) as
-    promote []       = tt
-    promote (p , ps) =
-      ( ≤ᵈ-trans p (ub-join₂ a (bigJoin as))
-      , promote ps )
+      ∀ {n} (ys : List (Dist n)) →
+      Forallᵈ (λ b → b ≤ᵈ bigJoin ys) ys →
+      Forallᵈ (λ b → b ≤ᵈ join a (bigJoin ys)) ys
+    promote []       tt           = tt
+    promote (b ∷ bs) (p , ps) =
+      ( ≤ᵈ-trans p (ub-join₂ a (bigJoin (b ∷ bs)))
+      , promote bs ps )
 
 -- Least-upper-bound: if a ≤ᵈ c for all a ∈ xs, then bigJoin xs ≤ᵈ c
 bigJoin-least :

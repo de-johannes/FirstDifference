@@ -37,6 +37,8 @@ open import Structures.S02_OrderCategories.Step06_BoundedLattice                
 open import Structures.S02_OrderCategories.Step07_BooleanAlgebra                            public
 open import Structures.S02_OrderCategories.Step07_BooleanAlgebra_Soundness                  public
 
+open import Structures.S02_OrderCategories.Step08_CategoryStructure                         public
+
 
 -- open import Structures.Step5_CategoryStructure public
 

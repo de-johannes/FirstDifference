@@ -1,102 +1,92 @@
+-- src/Structures/S02_OrderCategories/Step05_Semilattice.agda
 {-# OPTIONS --safe #-}
 
--- | Step 05: Semilattice
+-- | Step 05: Semilattice structure on distinction vectors
 -- |
 -- | Purpose:
--- |   Provide semilattice certificates on Dist-vectors for the two
--- |   operations `drift` (meet-like) and `join` (join-like).
+-- |   Package the vector-level Boolean operations into standard
+-- |   semilattice interfaces (meet/join), including bounded variants.
+-- |   This provides a clean algebraic layer before moving to categories.
 -- |
 -- | Method:
--- |   Reuse:
--- |     • Associativity / Commutativity: from Step02_VectorOperations_Soundness
--- |     • Idempotence:                   from Step03_AlgebraLaws_Soundness
+-- |   Reuse machine-checked laws:
+-- |     drift  = component-wise ∧  (meet)
+-- |     join   = component-wise ∨  (join)
+-- |   Associativity / commutativity / idempotence / units are imported
+-- |   from Step02/Step03 soundness layers.
 -- |
 -- | Guarantee:
--- |   All fields are inhabited by previously verified proofs; no new axioms.
--- |
--- | Notes:
--- |   Bounds (⊥/⊤) are intentionally not part of this API; focus is on laws.
+-- |   All fields are inhabited by previously verified proofs (no axioms).
 
 module Structures.S02_OrderCategories.Step05_Semilattice where
 
-------------------------------------------------------------------------
--- Imports
-------------------------------------------------------------------------
-
-open import Agda.Primitive using (Level)
 open import Data.Nat using (ℕ)
 open import Relation.Binary.PropositionalEquality using (_≡_)
 
--- Dist, operations
+-- Core types/ops
 open import Structures.S01_BooleanCore.Step02_VectorOperations
-  using (Dist; drift; join)
+  using (Dist; drift; join; all-false; all-true)
 
--- Assoc / Comm (vector-ops soundness)
+-- Vector-level laws
 open import Structures.S01_BooleanCore.Step02_VectorOperations_Soundness
-  using ( drift-assoc
-        ; drift-comm
-        ; join-assoc
-        ; join-comm)
+  using (drift-assoc; drift-comm; drift-zeroʳ; join-assoc; join-comm)
 
--- Idempotence (soundness layer)
 open import Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness
   using ( sound-drift-idempotent
-        ; sound-join-idempotent)
+        ; sound-drift-zeroˡ
+        ; sound-join-idempotent
+        ; sound-join-oneˡ
+        ; sound-join-oneʳ
+        )
 
 ------------------------------------------------------------------------
--- Semilattice record (minimal; no external theory)
+-- Meet-semilattice (with bottom)
 ------------------------------------------------------------------------
 
-record IsSemilattice {ℓ : Level} {A : Set ℓ} (_∙_ : A → A → A) : Set ℓ where
+record MeetSemilattice⊥ (n : ℕ) : Set where
   field
-    assoc      : ∀ x y z → _∙_ x (_∙_ y z) ≡ _∙_ (_∙_ x y) z
-    comm       : ∀ x y   → _∙_ x y ≡ _∙_ y x
-    idempotent : ∀ x     → _∙_ x x ≡ x
+    _⋀_     : Dist n → Dist n → Dist n
+    assoc   : ∀ (x y z : Dist n) → _⋀_ (_⋀_ x y) z ≡ _⋀_ x (_⋀_ y z)
+    comm    : ∀ (x y   : Dist n) → _⋀_ x y ≡ _⋀_ y x
+    idemp   : ∀ (x     : Dist n) → _⋀_ x x ≡ x
+    bottom  : Dist n
+    absorbˡ : ∀ (x     : Dist n) → _⋀_ bottom x ≡ bottom
+    absorbʳ : ∀ (x     : Dist n) → _⋀_ x bottom ≡ bottom
 
-------------------------------------------------------------------------
--- Drift-side semilattice
-------------------------------------------------------------------------
-
-isDriftSemilattice : ∀ {n : ℕ} → IsSemilattice (drift {n})
-isDriftSemilattice {n} = record
-  { assoc      = drift-assoc {n}
-  ; comm       = drift-comm  {n}
-  ; idempotent = sound-drift-idempotent {n}
-  }
-
-record DriftSemilattice (n : ℕ) : Set₁ where
-  field
-    Carrier       : Set
-    _∙_           : Carrier → Carrier → Carrier
-    isSemilattice : IsSemilattice _∙_
-
-mkDriftSemilattice : ∀ (n : ℕ) → DriftSemilattice n
-mkDriftSemilattice n = record
-  { Carrier       = Dist n
-  ; _∙_           = λ x y → drift {n} x y
-  ; isSemilattice = isDriftSemilattice {n}
+-- Instance for distinction vectors: meet = drift, bottom = all-false
+meetSemilatticeᵈ : ∀ {n} → MeetSemilattice⊥ n
+meetSemilatticeᵈ {n} = record
+  { _⋀_     = drift
+  ; assoc   = drift-assoc
+  ; comm    = drift-comm
+  ; idemp   = sound-drift-idempotent
+  ; bottom  = all-false n
+  ; absorbˡ = λ x → sound-drift-zeroˡ x
+  ; absorbʳ = λ x → drift-zeroʳ x
   }
 
 ------------------------------------------------------------------------
--- Join-side semilattice
+-- Join-semilattice (with top)
 ------------------------------------------------------------------------
 
-isJoinSemilattice : ∀ {n : ℕ} → IsSemilattice (join {n})
-isJoinSemilattice {n} = record
-  { assoc      = join-assoc {n}
-  ; comm       = join-comm  {n}
-  ; idempotent = sound-join-idempotent {n}
-  }
-
-record JoinSemilattice (n : ℕ) : Set₁ where
+record JoinSemilattice⊤ (n : ℕ) : Set where
   field
-    Carrier       : Set
-    _∙_           : Carrier → Carrier → Carrier
-    isSemilattice : IsSemilattice _∙_
+    _⋁_    : Dist n → Dist n → Dist n
+    assoc  : ∀ (x y z : Dist n) → _⋁_ (_⋁_ x y) z ≡ _⋁_ x (_⋁_ y z)
+    comm   : ∀ (x y   : Dist n) → _⋁_ x y ≡ _⋁_ y x
+    idemp  : ∀ (x     : Dist n) → _⋁_ x x ≡ x
+    top    : Dist n
+    unitˡ  : ∀ (x     : Dist n) → _⋁_ top x ≡ top
+    unitʳ  : ∀ (x     : Dist n) → _⋁_ x top ≡ top
 
-mkJoinSemilattice : ∀ (n : ℕ) → JoinSemilattice n
-mkJoinSemilattice n = record
-  { Carrier       = Dist n
-  ; _∙_           = λ x y → join {n} x y
-  ; isSemilattice = isJoinSemilattice {n}
+-- Instance for distinction vectors: join = join, top = all-true
+joinSemilatticeᵈ : ∀ {n} → JoinSemilattice⊤ n
+joinSemilatticeᵈ {n} = record
+  { _⋁_   = join
+  ; assoc = join-assoc
+  ; comm  = join-comm
+  ; idemp = sound-join-idempotent
+  ; top   = all-true n
+  ; unitˡ = λ x → sound-join-oneˡ x
+  ; unitʳ = λ x → sound-join-oneʳ x
   }

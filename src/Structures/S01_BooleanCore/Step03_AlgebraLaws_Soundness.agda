@@ -8,33 +8,40 @@
 -- |   (sound-…) avoids clashes when opening both modules publicly.
 -- |
 -- | Method:
--- |   Each certificate is a direct alias to the corresponding theorem
--- |   from Step03_AlgebraLaws. No new proofs are introduced here.
+-- |   Certificates are either direct renamings of Step02 soundness results
+-- |   (for assoc/comm) or direct aliases to theorems from Step03_AlgebraLaws.
+-- |   No new proofs are introduced here.
 -- |
 -- | Guarantee:
 -- |   Fully machine-checked under --safe; zero postulates/axioms.
 
 module Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness where
 
+------------------------------------------------------------------------
+-- Imports
+------------------------------------------------------------------------
+
 open import Relation.Binary.PropositionalEquality using (_≡_)
+
+-- Dist-level ops/constants for types of the certificates
 open import Structures.S01_BooleanCore.Step02_VectorOperations
   using (Dist; drift; join; neg; all-true; all-false)
+
+-- Assoc/Comm: import from Step02 soundness and RE-EXPORT under sound-* names
+open import Structures.S01_BooleanCore.Step02_VectorOperations_Soundness
+  public
+  renaming ( drift-assoc to sound-drift-assoc
+           ; drift-comm  to sound-drift-comm
+           ; join-assoc  to sound-join-assoc
+           ; join-comm   to sound-join-comm)
+
+-- Remaining algebraic laws come from Step03_AlgebraLaws; we alias them to sound-*
 open import Structures.S01_BooleanCore.Step03_AlgebraLaws
 
 ------------------------------------------------------------------------
 -- DRIFT (component-wise ∧)
 ------------------------------------------------------------------------
 
--- Dist-level associativity/commutativity (aliases to Step03)
-sound-drift-assoc :
-  ∀ {n} (x y z : Dist n) → drift x (drift y z) ≡ drift (drift x y) z
-sound-drift-assoc = drift-assocᴰ
-
-sound-drift-comm :
-  ∀ {n} (x y : Dist n) → drift x y ≡ drift y x
-sound-drift-comm = drift-commᴰ
-
--- Idempotence, identity, zero, absorption
 sound-drift-idempotent :
   ∀ {n} (a : Dist n) → drift a a ≡ a
 sound-drift-idempotent = drift-idempotent
@@ -55,16 +62,6 @@ sound-drift-absorb = drift-absorb
 -- JOIN (component-wise ∨)
 ------------------------------------------------------------------------
 
--- Dist-level associativity/commutativity (aliases to Step03)
-sound-join-assoc :
-  ∀ {n} (x y z : Dist n) → join x (join y z) ≡ join (join x y) z
-sound-join-assoc = join-assocᴰ
-
-sound-join-comm :
-  ∀ {n} (x y : Dist n) → join x y ≡ join y x
-sound-join-comm = join-commᴰ
-
--- Idempotence, identities, ones, absorption
 sound-join-idempotent :
   ∀ {n} (a : Dist n) → join a a ≡ a
 sound-join-idempotent = join-idempotent
@@ -130,5 +127,6 @@ sound-join-complement = join-complement
 ------------------------------------------------------------------------
 -- Summary
 ------------------------------------------------------------------------
--- This module exposes stable sound-* certificates at Dist level by
--- aliasing the theorems from Step03_AlgebraLaws (no new proofs).
+-- This module re-exports assoc/comm from the Step02 soundness layer under
+-- sound-* names and aliases all remaining Step03 laws to sound-* names.
+-- Downstream steps (e.g., Step05) should import ONLY these sound-* names.

@@ -7,16 +7,15 @@
 -- |   drift/join and their verified laws.
 -- |
 -- | Method:
--- |   Reuse of Step02/03 results:
--- |     • operations: drift, join (from Step02)
--- |     • laws (lifted to Dist): sound-drift-assoc/comm, sound-join-assoc/comm (from Step03)
--- |     • idempotence: sound-drift-idempotent, sound-join-idempotent (from Step03)
+-- |   Reuse of Step03 results:
+-- |     • laws (Dist-level): sound-drift-assoc/comm, sound-join-assoc/comm
+-- |     • idempotence:      sound-drift-idempotent, sound-join-idempotent
 -- |
 -- | Guarantee:
 -- |   All fields are inhabited by existing proofs; no new axioms or re-proofs.
 -- |
 -- | Notes:
--- |   Bounds (⊥/⊤) are handled elsewhere; Step05 focuses on semilattice laws only.
+-- |   Bounds (⊥/⊤) handled elsewhere; Step05 focuses on semilattice laws only.
 
 module Structures.S02_OrderCategories.Step05_Semilattice where
 
@@ -24,7 +23,7 @@ module Structures.S02_OrderCategories.Step05_Semilattice where
 -- Imports
 ------------------------------------------------------------------------
 
-open import Agda.Primitive using (Level; _⊔_; lsuc; lzero)
+open import Agda.Primitive using (Level)
 open import Data.Nat using (ℕ)
 open import Relation.Binary.PropositionalEquality using (_≡_)
 
@@ -32,7 +31,7 @@ open import Relation.Binary.PropositionalEquality using (_≡_)
 open import Structures.S01_BooleanCore.Step02_VectorOperations
   using (Dist; drift; join)
 
--- Lifted (Dist-level) law certificates + idempotence
+-- Dist-level law certificates + idempotence
 open import Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness
   using ( sound-drift-assoc
         ; sound-drift-comm
@@ -47,11 +46,9 @@ open import Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness
 
 infixl 6 _∧_ _∨_
 
--- Meet-like operation (alias for drift)
 _∧_ : ∀ {n : ℕ} → Dist n → Dist n → Dist n
 _∧_ = drift
 
--- Join-like operation (alias for join)
 _∨_ : ∀ {n : ℕ} → Dist n → Dist n → Dist n
 _∨_ = join
 
@@ -71,8 +68,8 @@ record IsSemilattice {ℓ : Level} {A : Set ℓ} (_∙_ : A → A → A) : Set �
 
 isDriftSemilattice : ∀ {n : ℕ} → IsSemilattice (_∧_ {n})
 isDriftSemilattice {n} = record
-  { assoc      = sound-drift-assoc {n}
-  ; comm       = sound-drift-comm  {n}
+  { assoc      = sound-drift-assoc  {n}
+  ; comm       = sound-drift-comm   {n}
   ; idempotent = sound-drift-idempotent {n}
   }
 
@@ -95,8 +92,8 @@ mkDriftSemilattice n = record
 
 isJoinSemilattice : ∀ {n : ℕ} → IsSemilattice (_∨_ {n})
 isJoinSemilattice {n} = record
-  { assoc      = sound-join-assoc {n}
-  ; comm       = sound-join-comm  {n}
+  { assoc      = sound-join-assoc  {n}
+  ; comm       = sound-join-comm   {n}
   ; idempotent = sound-join-idempotent {n}
   }
 

@@ -70,16 +70,15 @@ bigMeet-lower {n} (a ∷ as) =
   ( meet≤₁ a (bigMeet as)
   , promote as (bigMeet-lower as) )
   where
-    -- promote carries the list, so we can split on it
+    -- IMPORTANT: no new {n} here; use the outer n.
     promote :
-      ∀ {n} (ys : List (Dist n)) →
+      (ys : List (Dist n)) →
       Forallᵈ (λ b → bigMeet ys ≤ᵈ b) ys →
       Forallᵈ (λ b → drift a (bigMeet ys) ≤ᵈ b) ys
     promote []       tt           = tt
     promote (b ∷ bs) (p , ps) =
       ( ≤ᵈ-trans (meet≤₂ a (bigMeet (b ∷ bs))) p
       , promote bs ps )
-
 
 -- Greatest-lower-bound: if c ≤ᵈ a for all a ∈ xs, then c ≤ᵈ bigMeet xs
 bigMeet-greatest :
@@ -101,8 +100,9 @@ bigJoin-upper {n} (a ∷ as) =
   ( ub-join₁ a (bigJoin as)
   , promote as (bigJoin-upper as) )
   where
+    -- IMPORTANT: again, use the same n; do not rebind {n}.
     promote :
-      ∀ {n} (ys : List (Dist n)) →
+      (ys : List (Dist n)) →
       Forallᵈ (λ b → b ≤ᵈ bigJoin ys) ys →
       Forallᵈ (λ b → b ≤ᵈ join a (bigJoin ys)) ys
     promote []       tt           = tt

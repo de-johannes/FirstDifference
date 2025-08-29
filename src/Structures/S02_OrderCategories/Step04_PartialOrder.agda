@@ -178,12 +178,12 @@ glb-≤ᵈ {a = a} {b} {c} c≤a c≤b =
 ------------------------------------------------------------------------
 
 ub-join₁ : ∀ {n} (a b : Dist n) → a ≤ᵈ join a b
-ub-join₁ a b = absorb-∧-∨ a b    -- drift a (join a b) ≡ a
+ub-join₁ a b = sound-drift-absorb a b
 
 ub-join₂ : ∀ {n} (a b : Dist n) → b ≤ᵈ join a b
 ub-join₂ a b =
   let s = cong (λ t → drift b t) (join-comm a b)
-  in trans s (absorb-∧-∨ b a)
+  in trans s (sound-drift-absorb b a)
 
 lub-≤ᵈ : ∀ {n} {a b c : Dist n} → a ≤ᵈ c → b ≤ᵈ c → join a b ≤ᵈ c
 lub-≤ᵈ {a = a} {b} {c} a≤c b≤c =

@@ -1,4 +1,3 @@
--- src/Structures/S02_OrderCategories/Step04_PartialOrder.agda
 {-# OPTIONS --safe #-}
 
 -- | Step 04: Drift-Induced Partial Order
@@ -24,7 +23,6 @@ module Structures.S02_OrderCategories.Step04_PartialOrder where
 
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong; cong₂)
 open import Relation.Nullary using (Dec; yes; no)
--- DO NOT import ⌊_⌋, it returns Agda.Builtin.Bool.Bool and clashes with our Bool
 
 open import Data.Nat using (ℕ; zero; suc)
 open import Data.Vec using (Vec; []; _∷_; zipWith)
@@ -49,7 +47,7 @@ open import Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness
         ; sound-drift-join-distrib-right; sound-join-drift-distrib-right )
 
 ------------------------------------------------------------------------
--- Technical helpers for vectors
+-- Vector utilities
 ------------------------------------------------------------------------
 
 headV : ∀ {n A} → Vec A (suc n) → A
@@ -57,16 +55,6 @@ headV (x ∷ xs) = x
 
 tailV : ∀ {n A} → Vec A (suc n) → Vec A n
 tailV (x ∷ xs) = xs
-
-head-of-drift≡a :
-  ∀ {n} {x y : Bool} {xs ys : Vec Bool n} →
-  zipWith _∧_ (x ∷ xs) (y ∷ ys) ≡ (x ∷ xs) → x ∧ y ≡ x
-head-of-drift≡a p = cong headV p
-
-tail-of-drift≡a :
-  ∀ {n} {x y : Bool} {xs ys : Vec Bool n} →
-  zipWith _∧_ (x ∷ xs) (y ∷ ys) ≡ (x ∷ xs) → zipWith _∧_ xs ys ≡ xs
-tail-of-drift≡a p = cong tailV p
 
 ------------------------------------------------------------------------
 -- Definition: Partial Order
@@ -91,10 +79,10 @@ a ≤ᵈ b = drift a b ≡ a
   cong₂ _∷_ head tail
   where
     xy≡x : x ∧ y ≡ x
-    xy≡x = head-of-drift≡a a≤b
+    xy≡x = cong headV a≤b
 
     yz≡y : y ∧ z ≡ y
-    yz≡y = head-of-drift≡a b≤c
+    yz≡y = cong headV b≤c
 
     -- helper: if x∧y≡x and y∧z≡y then x∧z≡x
     helper : ∀ (x y z : Bool) → x ∧ y ≡ x → y ∧ z ≡ y → x ∧ z ≡ x
@@ -110,7 +98,7 @@ a ≤ᵈ b = drift a b ≡ a
     head = helper x y z xy≡x yz≡y
 
     tail : zipWith _∧_ xs zs ≡ xs
-    tail = ≤ᵈ-trans (tail-of-drift≡a a≤b) (tail-of-drift≡a b≤c)
+    tail = ≤ᵈ-trans (cong tailV a≤b) (cong tailV b≤c)
 
 ------------------------------------------------------------------------
 -- Decidability and bounds
@@ -130,7 +118,7 @@ _≟ᵈ_ (true  ∷ xs) (false ∷ ys) = no (λ ())
 ≤ᵈ-dec : ∀ {n} (a b : Dist n) → Dec (a ≤ᵈ b)
 ≤ᵈ-dec a b = (drift a b) ≟ᵈ a
 
--- Convert Dec to OUR Bool (avoid ⌊_⌋ which returns the builtin Bool)
+-- Convert Dec to OUR Bool
 fromDec : ∀ {P : Set} → Dec P → Bool
 fromDec (yes _) = true
 fromDec (no  _) = false
@@ -155,7 +143,7 @@ fromDec (no  _) = false
   cong₂ _∷_ (∧-identityʳ x) (⊤ᵈ-greatest xs)
 
 ------------------------------------------------------------------------
--- Meet: drift as GLB (greatest lower bound)
+-- Meet: drift as GLB
 ------------------------------------------------------------------------
 
 meet≤₁ : ∀ {n} (a b : Dist n) → drift a b ≤ᵈ a
@@ -181,7 +169,7 @@ glb-≤ᵈ {a = a} {b} {c} c≤a c≤b =
   in trans t₁ (trans t₂ t₃)
 
 ------------------------------------------------------------------------
--- Join: join as LUB (least upper bound)
+-- Join: join as LUB
 ------------------------------------------------------------------------
 
 ub-join₁ : ∀ {n} (a b : Dist n) → a ≤ᵈ join a b

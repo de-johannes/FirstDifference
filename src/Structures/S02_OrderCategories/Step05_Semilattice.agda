@@ -8,8 +8,8 @@
 -- |
 -- | Method:
 -- |   Reuse:
--- |     • Associativity/Commutativity:  from Step02_VectorOperations_Soundness
--- |     • Idempotence:                  from Step03_AlgebraLaws_Soundness
+-- |     • Associativity / Commutativity: from Step02_VectorOperations_Soundness
+-- |     • Idempotence:                   from Step03_AlgebraLaws_Soundness
 -- |
 -- | Guarantee:
 -- |   All fields are inhabited by previously verified proofs; no new axioms.
@@ -27,24 +27,24 @@ open import Agda.Primitive using (Level)
 open import Data.Nat using (ℕ)
 open import Relation.Binary.PropositionalEquality using (_≡_)
 
--- Dist, drift, join
+-- Dist, operations
 open import Structures.S01_BooleanCore.Step02_VectorOperations
   using (Dist; drift; join)
 
--- Assoc/Comm certificates
+-- Assoc / Comm (vector-ops soundness)
 open import Structures.S01_BooleanCore.Step02_VectorOperations_Soundness
   using ( drift-assoc
         ; drift-comm
         ; join-assoc
         ; join-comm)
 
--- Idempotence certificates (soundness layer)
+-- Idempotence (soundness layer)
 open import Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness
   using ( sound-drift-idempotent
         ; sound-join-idempotent)
 
 ------------------------------------------------------------------------
--- Semilattice record (minimal; no external theories)
+-- Semilattice record (minimal; no external theory)
 ------------------------------------------------------------------------
 
 record IsSemilattice {ℓ : Level} {A : Set ℓ} (_∙_ : A → A → A) : Set ℓ where

@@ -30,10 +30,12 @@ open import Structures.S02_OrderCategories.Step04_PartialOrder_Soundness        
 open import Structures.S02_OrderCategories.Step04_PartialOrder_Completeness                 public
 
 open import Structures.S02_OrderCategories.Step05_Semilattice                               public
+open import Structures.S02_OrderCategories.Step05_Semilattice_Soundness                     public
 
 open import Structures.S02_OrderCategories.Step06_BoundedLattice                            public
 
 open import Structures.S02_OrderCategories.Step07_BooleanAlgebra                            public
+open import Structures.S02_OrderCategories.Step07_BooleanAlgebra_Soundness                  public
 
 
 -- open import Structures.Step5_CategoryStructure public

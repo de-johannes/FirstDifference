@@ -29,7 +29,7 @@ open import Structures.S02_OrderCategories.Step04_PartialOrder                  
 open import Structures.S02_OrderCategories.Step04_PartialOrder_Soundness                    public
 open import Structures.S02_OrderCategories.Step04_PartialOrder_Completeness                 public
 
-open import Structures.S02_OrderCategories.Step05_JoinSemilattice                           public
+open import Structures.S02_OrderCategories.Step05_Semilattice                               public
 
 
 -- open import Structures.Step5_CategoryStructure public

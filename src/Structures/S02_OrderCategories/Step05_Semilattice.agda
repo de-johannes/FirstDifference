@@ -1,39 +1,51 @@
 {-# OPTIONS --safe #-}
 
--- | Step 05: Semilattice structure on distinction vectors
+-- | Step 05: Semilattice
 -- |
 -- | Purpose:
--- |   Package the vector-level Boolean operations into standard
--- |   semilattice interfaces (meet/join), including bounded variants.
--- |   This provides a clean algebraic layer before moving to categories.
+-- |   Provide (meet/join) semilattice structure on Dist-vectors derived from drift/join.
 -- |
 -- | Method:
--- |   Reuse machine-checked laws from Step02/Step03 soundness:
--- |     drift  = component-wise ∧  (meet)
--- |     join   = component-wise ∨  (join)
--- |   Associativity / commutativity / idempotence are already proved.
+-- |   Reuse of Step02/03 results:
+-- |     • operations:    drift, join, all-false, all-true  (from Step02)
+-- |     • vector laws:   drift-assoc/comm, join-assoc/comm, drift-zeroʳ (from Step02 soundness)
+-- |     • soundness:     idempotence/units/zeros via sound-* wrappers (from Step03 soundness)
 -- |
 -- | Guarantee:
--- |   All fields are inhabited by previously verified proofs (no new axioms).
+-- |   All fields are inhabited by previously verified proofs (no axioms).
+-- |
+-- | Notes:
+-- |   Finite families only; prefer our Bool from Step01 to avoid ambiguity.
 
 module Structures.S02_OrderCategories.Step05_Semilattice where
 
-open import Data.Nat using (ℕ)
-open import Relation.Binary.PropositionalEquality using (_≡_)
+------------------------------------------------------------------------
+-- Imports
+------------------------------------------------------------------------
 
--- Our Booleans and distinctions
-open import Structures.S01_BooleanCore.Step01_BooleanFoundation using (Bool)
+open import Agda.Primitive
+  using (Level; _⊔_; lsuc; lzero)
+
+-- Core ops on distinction vectors
 open import Structures.S01_BooleanCore.Step02_VectorOperations
   using (Dist; drift; join; all-false; all-true)
 
--- Vector-level laws (certificates)
+-- Vector-level algebraic laws (certificates) — includes right zero for drift
 open import Structures.S01_BooleanCore.Step02_VectorOperations_Soundness
-  using (drift-assoc; drift-comm; join-assoc; join-comm)
+  using ( drift-assoc
+        ; drift-comm
+        ; join-assoc
+        ; join-comm
+        ; drift-zeroʳ)
+
+-- Soundness wrappers (idempotence, units, left zero), no re-exports of drift-zeroʳ here
 open import Structures.S01_BooleanCore.Step03_AlgebraLaws_Soundness
   using ( sound-drift-idempotent
-        ; sound-drift-zeroˡ; drift-zeroʳ
+        ; sound-drift-zeroˡ
         ; sound-join-idempotent
-        ; sound-join-oneˡ; sound-join-oneʳ)
+        ; sound-join-oneˡ
+        ; sound-join-oneʳ)
+
 
 ------------------------------------------------------------------------
 -- Meet-semilattice (with bottom)

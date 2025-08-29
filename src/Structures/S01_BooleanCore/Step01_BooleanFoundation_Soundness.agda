@@ -21,6 +21,7 @@ module Structures.S01_BooleanCore.Step01_BooleanFoundation_Soundness where
 open import Structures.S01_BooleanCore.Step01_BooleanFoundation
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
+
 ------------------------------------------------------------------------
 -- Conjunction (AND, ∧)
 ------------------------------------------------------------------------

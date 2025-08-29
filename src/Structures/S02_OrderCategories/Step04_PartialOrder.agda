@@ -1,3 +1,4 @@
+-- src/Structures/S02_OrderCategories/Step04_PartialOrder.agda
 {-# OPTIONS --safe #-}
 
 -- | Step 04: Drift-Induced Partial Order
@@ -23,19 +24,19 @@ module Structures.S02_OrderCategories.Step04_PartialOrder where
 
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong; cong₂)
 open import Relation.Nullary using (Dec; yes; no)
-open import Relation.Nullary.Decidable using (⌊_⌋)
+-- DO NOT import ⌊_⌋, it returns Agda.Builtin.Bool.Bool and clashes with our Bool
 
 open import Data.Nat using (ℕ; zero; suc)
 open import Data.Vec using (Vec; []; _∷_; zipWith)
 
--- Scalar Booleans and laws
+-- Scalar Booleans and laws (ours)
 open import Structures.S01_BooleanCore.Step01_BooleanFoundation
 open import Structures.S01_BooleanCore.Step01_BooleanFoundation_Soundness
   using (∧-assoc; ∧-comm; ∧-identityʳ; ∧-idem; ∧-zeroʳ)
 open import Structures.S01_BooleanCore.Step01_BooleanFoundation_Completeness
   using (∧-identityˡ; ∧-zeroˡ; ∧-complement; ∨-complement; DeMorgan-∧∨; DeMorgan-∨∧)
 
--- Distinction vectors and laws
+-- Distinction vectors and vector laws
 open import Structures.S01_BooleanCore.Step02_VectorOperations
   using (Dist; drift; join; neg; all-true; all-false)
 open import Structures.S01_BooleanCore.Step02_VectorOperations_Soundness
@@ -129,8 +130,13 @@ _≟ᵈ_ (true  ∷ xs) (false ∷ ys) = no (λ ())
 ≤ᵈ-dec : ∀ {n} (a b : Dist n) → Dec (a ≤ᵈ b)
 ≤ᵈ-dec a b = (drift a b) ≟ᵈ a
 
+-- Convert Dec to OUR Bool (avoid ⌊_⌋ which returns the builtin Bool)
+fromDec : ∀ {P : Set} → Dec P → Bool
+fromDec (yes _) = true
+fromDec (no  _) = false
+
 ≤ᵈ? : ∀ {n} → Dist n → Dist n → Bool
-≤ᵈ? a b = ⌊ ≤ᵈ-dec a b ⌋
+≤ᵈ? a b = fromDec (≤ᵈ-dec a b)
 
 ⊥ᵈ : ∀ {n} → Dist n
 ⊥ᵈ {n} = all-false n

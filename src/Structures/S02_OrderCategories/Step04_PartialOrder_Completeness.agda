@@ -68,17 +68,19 @@ bigMeet-lower : ∀ {n} (xs : List (Dist n)) → Forallᵈ (λ a → bigMeet xs 
 bigMeet-lower {n} []       = tt
 bigMeet-lower {n} (a ∷ as) =
   ( meet≤₁ a (bigMeet as)
-  , promote as (bigMeet-lower as) )
+  , promote as as (bigMeet-lower as) )
   where
-    -- IMPORTANT: no new {n} here; use the outer n.
+    -- promote keeps the reference list xs₀ fixed (for bigMeet xs₀),
+    -- and folds over the target list ys on which Forallᵈ ranges.
     promote :
-      (ys : List (Dist n)) →
-      Forallᵈ (λ b → bigMeet ys ≤ᵈ b) ys →
-      Forallᵈ (λ b → drift a (bigMeet ys) ≤ᵈ b) ys
-    promote []       tt           = tt
-    promote (b ∷ bs) (p , ps) =
-      ( ≤ᵈ-trans (meet≤₂ a (bigMeet (b ∷ bs))) p
-      , promote bs ps )
+      (xs₀ : List (Dist n)) →
+      (ys  : List (Dist n)) →
+      Forallᵈ (λ b → bigMeet xs₀ ≤ᵈ b) ys →
+      Forallᵈ (λ b → drift a (bigMeet xs₀) ≤ᵈ b) ys
+    promote xs₀ []       tt           = tt
+    promote xs₀ (b ∷ bs) (p , ps) =
+      ( ≤ᵈ-trans (meet≤₂ a (bigMeet xs₀)) p
+      , promote xs₀ bs ps )
 
 -- Greatest-lower-bound: if c ≤ᵈ a for all a ∈ xs, then c ≤ᵈ bigMeet xs
 bigMeet-greatest :
@@ -98,17 +100,17 @@ bigJoin-upper : ∀ {n} (xs : List (Dist n)) → Forallᵈ (λ a → a ≤ᵈ bi
 bigJoin-upper {n} []       = tt
 bigJoin-upper {n} (a ∷ as) =
   ( ub-join₁ a (bigJoin as)
-  , promote as (bigJoin-upper as) )
+  , promote as as (bigJoin-upper as) )
   where
-    -- IMPORTANT: again, use the same n; do not rebind {n}.
     promote :
-      (ys : List (Dist n)) →
-      Forallᵈ (λ b → b ≤ᵈ bigJoin ys) ys →
-      Forallᵈ (λ b → b ≤ᵈ join a (bigJoin ys)) ys
-    promote []       tt           = tt
-    promote (b ∷ bs) (p , ps) =
-      ( ≤ᵈ-trans p (ub-join₂ a (bigJoin (b ∷ bs)))
-      , promote bs ps )
+      (xs₀ : List (Dist n)) →
+      (ys  : List (Dist n)) →
+      Forallᵈ (λ b → b ≤ᵈ bigJoin xs₀) ys →
+      Forallᵈ (λ b → b ≤ᵈ join a (bigJoin xs₀)) ys
+    promote xs₀ []       tt           = tt
+    promote xs₀ (b ∷ bs) (p , ps) =
+      ( ≤ᵈ-trans p (ub-join₂ a (bigJoin xs₀))
+      , promote xs₀ bs ps )
 
 -- Least-upper-bound: if a ≤ᵈ c for all a ∈ xs, then bigJoin xs ≤ᵈ c
 bigJoin-least :

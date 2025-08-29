@@ -67,19 +67,18 @@ bigJoin {n} (a ∷ as) = join a (bigJoin as)
 bigMeet-lower : ∀ {n} (xs : List (Dist n)) → Forallᵈ (λ a → bigMeet xs ≤ᵈ a) xs
 bigMeet-lower {n} []       = tt
 bigMeet-lower {n} (a ∷ as) =
-  let
-    ih : Forallᵈ (λ b → bigMeet as ≤ᵈ b) as
-    ih = bigMeet-lower as
+  (meet≤₁ a (bigMeet as) , promote ih)
+    where
+      ih : Forallᵈ (λ b → bigMeet as ≤ᵈ b) as
+      ih = bigMeet-lower as
 
-    -- Promote each "bigMeet as ≤ᵈ b" to "drift a (bigMeet as) ≤ᵈ b"
-    promote : Forallᵈ (λ b → bigMeet as ≤ᵈ b) as
-            → Forallᵈ (λ b → drift a (bigMeet as) ≤ᵈ b) as
-    promote []            = tt
-    promote (p , ps)      = (≤ᵈ-trans (meet≤₂ a (bigMeet as)) p) , promote ps
-  in
-    ( meet≤₁ a (bigMeet as)    -- head: drift a (bigMeet as) ≤ᵈ a
-    , promote ih               -- tail:  drift a (bigMeet as) ≤ᵈ each b in as
-    )
+      promote :
+        Forallᵈ (λ b → bigMeet as ≤ᵈ b) as →
+        Forallᵈ (λ b → drift a (bigMeet as) ≤ᵈ b) as
+      promote [] = tt
+      promote (p , ps) =
+        ( ≤ᵈ-trans (meet≤₂ a (bigMeet as)) p
+        , promote ps )
 
 -- Greatest-lower-bound: if c ≤ᵈ a for all a ∈ xs, then c ≤ᵈ bigMeet xs
 bigMeet-greatest :

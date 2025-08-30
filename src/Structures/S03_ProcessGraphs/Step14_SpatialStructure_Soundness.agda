@@ -11,7 +11,7 @@ open import Data.List using (List; []; _∷_)
 open import Data.Product using (_×_; _,_)
 open import Relation.Nullary using (Dec; yes; no)
 open import Data.Empty using (⊥; ⊥-elim)
-open import Data.Bool using (Bool; true; false)
+open import Structures.S01_BooleanCore.Step01_BooleanFoundation using (Bool; true; false)
 
 -- Bring in list-membership and graph essentials
 open import Structures.S03_ProcessGraphs.Step10_DriftGraph

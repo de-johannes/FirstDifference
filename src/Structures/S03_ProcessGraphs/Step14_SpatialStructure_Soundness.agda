@@ -27,7 +27,7 @@ open import Structures.S03_ProcessGraphs.Step14_SpatialStructure
 
 -- If x is in (bool-filter p xs) then p x ≡ true.
 filter-sound :
-  ∀ {A : Set} {x : A} (p : A → _) (xs : List A) →
+  ∀ {A : Set} {x : A} (p : A → Bool) (xs : List A) →
   x ∈ bool-filter p xs → p x ≡ true
 filter-sound p [] ()
 filter-sound p (x ∷ xs) with p x
@@ -36,7 +36,7 @@ filter-sound p (x ∷ xs) with p x
 
 -- If x ∈ xs and p x ≡ true then x ∈ bool-filter p xs.
 filter-complete :
-  ∀ {A : Set} {x : A} (p : A → _) (xs : List A) →
+  ∀ {A : Set} {x : A} (p : A → Bool) (xs : List A) →
   x ∈ xs → p x ≡ true → x ∈ bool-filter p xs
 filter-complete p [] () _
 filter-complete p (x ∷ xs) here px rewrite px = here

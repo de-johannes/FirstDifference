@@ -10,6 +10,7 @@ open import Data.Nat using (ℕ; _≟_)
 open import Data.List using (List; []; _∷_)
 open import Data.Product using (_×_; _,_)
 open import Relation.Nullary using (Dec; yes; no)
+open import Data.Empty using (⊥; ⊥-elim)
 open import Structures.S01_BooleanCore.Step01_BooleanFoundation using (Bool; true; false)
 
 -- Bring in list-membership and graph essentials
@@ -46,6 +47,15 @@ filter-complete p (y ∷ xs) (there m) px with p y | px
 ... | false | ()
 
 ------------------------------------------------------------------------
+-- Convert decidable equality on ℕ to our project Bool
+------------------------------------------------------------------------
+
+eqᵇ : ℕ → ℕ → Bool
+eqᵇ m r with m ≟ r
+... | yes _ = true
+... | no  _ = false
+
+------------------------------------------------------------------------
 -- Specialization to same-rank-nodes
 ------------------------------------------------------------------------
 
@@ -54,14 +64,15 @@ same-rank-sound :
   ∀ {G : DriftGraph} {r : ℕ} {n : Node} →
   n ∈ same-rank-nodes G r → nodeId n ≡ r
 same-rank-sound {G} {r} {n} m
-  with nodeId n ≟ r | filter-sound (λ node → case nodeId node ≟ r of λ { (yes _) → true ; (no _) → false })
-                                    (nodes G) m
+  with nodeId n ≟ r | filter-sound (λ node → eqᵇ (nodeId node) r) (nodes G) m
 ... | yes eq | _    = eq
 ... | no  _  | ()   -- impossible: would force false ≡ true
 
 -- If m ≡ r then the decidable test (m ≟ r) yields true under our Bool
-dec-eq-true : ∀ (m r : ℕ) → m ≡ r → (case m ≟ r of λ { (yes _) → true ; (no _) → false }) ≡ true
-dec-eq-true .r r refl = refl
+dec-eq-true : ∀ (m r : ℕ) → m ≡ r → eqᵇ m r ≡ true
+dec-eq-true .r r refl with r ≟ r
+... | yes _      = refl
+... | no contra  = ⊥-elim (contra refl)
 
 -- Completeness: any node of rank r contained in nodes G appears in same-rank-nodes G r.
 same-rank-complete :
@@ -69,7 +80,7 @@ same-rank-complete :
   n ∈ nodes G → nodeId n ≡ r → n ∈ same-rank-nodes G r
 same-rank-complete {G} {r} {n} n∈ eq =
   filter-complete
-    (λ node → case nodeId node ≟ r of λ { (yes _) → true ; (no _) → false })
+    (λ node → eqᵇ (nodeId node) r)
     (nodes G)
     n∈
     dec-eq-true (nodeId n) r eq

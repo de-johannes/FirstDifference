@@ -212,16 +212,19 @@ historyAt G rank = map node→dist (sliceAt G rank)
 
 -- Hilfen: Bool, Nat, List sind oben bereits importiert
 
+toℕ : Bool → ℕ
+toℕ true  = 1
+toℕ false = 0
+
 -- Bitzählung
 popcount : ∀ {n} → Dist n → ℕ
-popcount {zero}  []       = 0
-popcount {suc _} (b ∷ xs) = case b of λ where { true → 1 ; false → 0 } + popcount xs
+popcount {zero}  []        = 0
+popcount {suc _} (b ∷ xs)  = toℕ b + popcount xs
 
 -- maskierte And-Zählung
 andCount : ∀ {n} → Dist n → Dist n → ℕ
-andCount {zero}  []       []       = 0
-andCount {suc _} (a ∷ as) (b ∷ bs) =
-  case (a ∧ b) of λ where { true → 1 ; false → 0 } + andCount as bs
+andCount {zero}  []        []        = 0
+andCount {suc _} (a ∷ as)  (b ∷ bs)  = toℕ (a ∧ b) + andCount as bs
 
 eqℕ : ℕ → ℕ → Bool
 eqℕ zero    zero    = true

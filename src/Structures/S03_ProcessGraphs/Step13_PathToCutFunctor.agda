@@ -62,9 +62,9 @@ path⇒≤ {G} {u} {w} (e PC.∷-path p)  = ≤-trans (edge⇒≤ {G} e) (path�
 path⇒≤-++ :
   ∀ {G a b c} (p : PC.Path G a b) (q : PC.Path G b c) →
   path⇒≤ (p PC.++-path q) ≡ ≤-trans (path⇒≤ p) (path⇒≤ q)
-path⇒≤-++ {G} PC.refl-path q
-  rewrite sym (≤-idˡ′ (path⇒≤ {G} PC.refl-path) (path⇒≤ {G} q))
-  = refl
+path⇒≤-++ {G} PC.refl-path q =
+  ≤-irrelevant (path⇒≤ {G} q)
+               (≤-trans (path⇒≤ {G} PC.refl-path) (path⇒≤ {G} q))
 path⇒≤-++ {G} (e PC.∷-path p) q
   rewrite path⇒≤-++ {G} p q
         | Cut.≤-assoc (edge⇒≤ {G} e) (path⇒≤ {G} p) (path⇒≤ {G} q)

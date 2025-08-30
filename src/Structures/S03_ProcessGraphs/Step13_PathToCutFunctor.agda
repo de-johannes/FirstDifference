@@ -32,11 +32,13 @@ record Functor
   (ObjD : Set) (HomD : ObjD → ObjD → Set) (D : Category ObjD HomD)
   : Set₁ where
   field
-    F₀    : ObjC → ObjD
-    F₁    : ∀ {A B} → HomC A B → HomD (F₀ A) (F₀ B)
-    F-id  : ∀ {A} → F₁ (Category.id C A) ≡ Category.id D (F₀ A)
-    F-comp: ∀ {A B C′} (f : HomC A B) (g : HomC B C′) →
-            F₁ (Category._∘_ C f g) ≡ Category._∘_ D (F₁ f) (F₁ g)
+    F₀     : ObjC → ObjD
+    F₁     : {A B : ObjC} → HomC A B → HomD (F₀ A) (F₀ B)
+
+    F-id   : {A : ObjC} → F₁ (Category.id C A) ≡ Category.id D (F₀ A)
+    F-comp : {A B C′ : ObjC}
+             → (f : HomC A B) (g : HomC B C′)
+             → F₁ (Category._∘_ C f g) ≡ Category._∘_ D (F₁ f) (F₁ g)
 
 ------------------------------------------------------------------------
 -- Path → ≤ on objects of G

@@ -42,9 +42,9 @@ filter-complete p [] () _
 filter-complete p (x ∷ xs) here px with p x | px
 ... | true  | refl = here
 ... | false | ()
-filter-complete p (y ∷ xs) (there m) px with p y | px
-... | true  | refl = there (filter-complete p xs m refl)
-... | false | ()
+filter-complete p (y ∷ xs) (there m) px with p y
+... | true  = there (filter-complete p xs m px)
+... | false = filter-complete p xs m px
 
 ------------------------------------------------------------------------
 -- Convert decidable equality on ℕ to our project Bool

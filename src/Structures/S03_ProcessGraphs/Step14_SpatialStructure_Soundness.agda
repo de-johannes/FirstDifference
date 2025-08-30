@@ -19,42 +19,21 @@ open import Structures.S03_ProcessGraphs.Step10_DriftGraph
 
 -- Bring in the spatial constructors we reason about
 open import Structures.S03_ProcessGraphs.Step14_SpatialStructure
-  using (bool-filter; same-rank-nodes)
+  using (bool-filter; same-rank-nodes; rank-match; rank-match-true)
 
 ------------------------------------------------------------------------
--- Boolean-filter lemmas specialized to Node-membership
+-- Elementary contradictions for Bool and rank-match soundness
 ------------------------------------------------------------------------
 
-filter-sound-Node :
-  ∀ (p : Node → Bool) (xs : List Node) {n : Node} →
-  n ∈ bool-filter p xs → p n ≡ true
-filter-sound-Node p [] ()
-filter-sound-Node p (y ∷ ys) {n} prf with p y
-... | true  with prf
-...   | here        = refl
-...   | there prf'  = filter-sound-Node p ys prf'
-... | false = filter-sound-Node p ys prf
+-- No confusion between false and true
+false≠true : false ≡ true → ⊥
+false≠true ()
 
--- If n ∈ xs and p n ≡ true then n ∈ bool-filter p xs.
-filter-complete-Node :
-  ∀ (p : Node → Bool) (xs : List Node) {n : Node} →
-  n ∈ xs → p n ≡ true → n ∈ bool-filter p xs
-filter-complete-Node p [] () _
-filter-complete-Node p (y ∷ ys) {n} here pn with p y
-... | true  rewrite pn = here
-... | false rewrite pn = ⊥-elim (λ ())  -- impossible since pn ≡ true
-filter-complete-Node p (y ∷ ys) {n} (there prf) pn with p y
-... | true  = there (filter-complete-Node p ys prf pn)
-... | false = filter-complete-Node p ys prf pn
-
-------------------------------------------------------------------------
--- Convert decidable equality on ℕ to our project Bool
-------------------------------------------------------------------------
-
-eqᵇ : ℕ → ℕ → Bool
-eqᵇ m r with m ≟ r
-... | yes _ = true
-... | no  _ = false
+-- If rank-match id target ≡ true then id ≡ target
+rank-match-sound : ∀ {id target : ℕ} → rank-match id target ≡ true → id ≡ target
+rank-match-sound {id} {target} rm≡ with id ≟ target
+... | yes eq = eq
+... | no  _  = ⊥-elim (false≠true rm≡)
 
 ------------------------------------------------------------------------
 -- Specialization to same-rank-nodes
@@ -64,24 +43,34 @@ eqᵇ m r with m ≟ r
 same-rank-sound :
   ∀ {G : DriftGraph} {r : ℕ} {n : Node} →
   n ∈ same-rank-nodes G r → nodeId n ≡ r
-same-rank-sound {G} {r} {n} m
-  with nodeId n ≟ r | filter-sound-Node (λ node → eqᵇ (nodeId node) r) (nodes G) m
-... | yes eq | _    = eq
-... | no  _  | ()   -- impossible: would force false ≡ true
+same-rank-sound {G} {r} {n} m = rank-match-sound (go (nodes G) m)
+  where
+    p : Node → Bool
+    p node = rank-match (nodeId node) r
 
--- If m ≡ r then the decidable test (m ≟ r) yields true under our Bool
-dec-eq-true : ∀ (m r : ℕ) → m ≡ r → eqᵇ m r ≡ true
-dec-eq-true .r r refl with r ≟ r
-... | yes _      = refl
-... | no contra  = ⊥-elim (contra refl)
+    -- Show: if n ∈ bool-filter p xs then p n ≡ true
+    go : ∀ (xs : List Node) → n ∈ bool-filter p xs → p n ≡ true
+    go [] ()
+    go (y ∷ ys) prf with p y
+    ... | true  with prf
+    ...   | here        = refl
+    ...   | there prf'  = go ys prf'
+    ... | false = go ys prf
 
 -- Completeness: any node of rank r contained in nodes G appears in same-rank-nodes G r.
 same-rank-complete :
   ∀ {G : DriftGraph} {r : ℕ} {n : Node} →
   n ∈ nodes G → nodeId n ≡ r → n ∈ same-rank-nodes G r
-same-rank-complete {G} {r} {n} n∈ eq =
-  filter-complete-Node
-    (λ node → eqᵇ (nodeId node) r)
-    (nodes G)
-    n∈
-    dec-eq-true (nodeId n) r eq
+same-rank-complete {G} {r} {n} n∈ eq = insert (nodes G) n∈
+  where
+    p : Node → Bool
+    p node = rank-match (nodeId node) r
+
+    insert : ∀ (xs : List Node) → n ∈ xs → n ∈ bool-filter p xs
+    insert [] ()
+    insert (y ∷ ys) here with p y
+    ... | true  = here
+    ... | false = ⊥-elim (false≠true (rank-match-true (eq)))
+    insert (y ∷ ys) (there prf) with p y
+    ... | true  = there (insert ys prf)
+    ... | false = insert ys prf

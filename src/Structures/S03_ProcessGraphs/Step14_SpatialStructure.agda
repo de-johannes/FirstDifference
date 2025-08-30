@@ -72,15 +72,16 @@ are-spatially-related d₁ d₂ = has-true (drift d₁ d₂)
 spatial-adjacency : SpatialSlice 0 → List (Dist 2 × Dist 2)
 spatial-adjacency slice = build-pairs slice slice
   where
-    build-pairs : List (Dist 2) → List (Dist 2) → List (Dist 2 × Dist 2)
-    build-pairs [] _          = []
-    build-pairs (d ∷ ds) all₂ = filter-rel d all₂ ++ build-pairs ds all₂
+    mutual
+      build-pairs : List (Dist 2) → List (Dist 2) → List (Dist 2 × Dist 2)
+      build-pairs [] _          = []
+      build-pairs (d ∷ ds) all₂ = filter-rel d all₂ ++ build-pairs ds all₂
 
-    filter-rel : Dist 2 → List (Dist 2) → List (Dist 2 × Dist 2)
-    filter-rel d []       = []
-    filter-rel d (d₂ ∷ r) with are-spatially-related d d₂
-    ... | true  = (d , d₂) ∷ filter-rel d r
-    ... | false =      filter-rel d r
+      filter-rel : Dist 2 → List (Dist 2) → List (Dist 2 × Dist 2)
+      filter-rel d []       = []
+      filter-rel d (d₂ ∷ r) with are-spatially-related d d₂
+      ... | true  = (d , d₂) ∷ filter-rel d r
+      ... | false =      filter-rel d r
 
 ------------------------------------------------------------------------
 -- Example

@@ -30,19 +30,25 @@ filter-sound :
   ∀ {A : Set} {x : A} (p : A → Bool) (xs : List A) →
   x ∈ bool-filter p xs → p x ≡ true
 filter-sound p [] ()
-filter-sound p (x ∷ xs) with p x
-... | true  = λ { here → refl ; there m → filter-sound p xs m }
-... | false = λ m → filter-sound p xs m
+filter-sound p (y ∷ ys) with p y
+... | true  with (λ prf → prf)
+...   | here        = refl
+...   | there prf'  = filter-sound p ys prf'
+... | false with (λ prf → prf)
+...   | here        = ⊥-elim (λ ())   -- impossible: head was filtered out
+...   | there prf'  = filter-sound p ys prf'
 
 -- If x ∈ xs and p x ≡ true then x ∈ bool-filter p xs.
 filter-complete :
   ∀ {A : Set} {x : A} (p : A → Bool) (xs : List A) →
   x ∈ xs → p x ≡ true → x ∈ bool-filter p xs
 filter-complete p [] () _
-filter-complete p (x ∷ xs) here px rewrite px = here
-filter-complete p (y ∷ xs) (there m) px with p y
-... | true  = there (filter-complete p xs m px)
-... | false = filter-complete p xs m px
+filter-complete p (y ∷ ys) here px with p y
+... | true  rewrite px = here
+... | false rewrite px = ⊥-elim (λ ())  -- cannot happen since px ≡ true
+filter-complete p (y ∷ ys) (there prf) px with p y
+... | true  = there (filter-complete p ys prf px)
+... | false = filter-complete p ys prf px
 
 ------------------------------------------------------------------------
 -- Convert decidable equality on ℕ to our project Bool

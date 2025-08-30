@@ -25,18 +25,15 @@ open import Structures.S03_ProcessGraphs.Step14_SpatialStructure
 -- Generic Boolean-filter lemmas (for list membership)
 ------------------------------------------------------------------------
 
--- If x is in (bool-filter p xs) then p x ≡ true.
 filter-sound :
   ∀ {A : Set} {x : A} (p : A → Bool) (xs : List A) →
   x ∈ bool-filter p xs → p x ≡ true
 filter-sound p [] ()
-filter-sound p (y ∷ ys) with p y
-... | true  with (λ prf → prf)
+filter-sound p (y ∷ ys) prf with p y
+... | true  with prf
 ...   | here        = refl
 ...   | there prf'  = filter-sound p ys prf'
-... | false with (λ prf → prf)
-...   | here        = ⊥-elim (λ ())   -- impossible: head was filtered out
-...   | there prf'  = filter-sound p ys prf'
+... | false = filter-sound p ys prf
 
 -- If x ∈ xs and p x ≡ true then x ∈ bool-filter p xs.
 filter-complete :

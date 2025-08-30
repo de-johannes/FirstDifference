@@ -52,9 +52,9 @@ same-rank-sound {G} {r} {n} m = rank-match-sound (go (nodes G) m)
     go : ∀ (xs : List Node) → n ∈ bool-filter p xs → p n ≡ true
     go [] ()
     go (y ∷ ys) prf with nodeId y ≟ r | prf
-    ... | yes _ | here        = refl
-    ... | yes _ | there prf'  = go ys prf'
-    ... | no  _ | prf         = go ys prf
+    ... | yes eq | here        = rank-match-true eq
+    ... | yes _  | there prf'  = go ys prf'
+    ... | no  _  | prf         = go ys prf
 
 -- Completeness: any node of rank r contained in nodes G appears in same-rank-nodes G r.
 same-rank-complete :

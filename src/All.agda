@@ -44,7 +44,7 @@ open import Structures.S02_OrderCategories.Step09_SemanticTimeFunctor           
 
 -- (D) Process Graphs & Temporal Functors — Paths, Cuts, and evolution
 open import Structures.S03_ProcessGraphs.Step10_DriftGraph                                  public
-
+open import Structures.S03_ProcessGraphs.Step11_PathCategory                                public
 
 
 

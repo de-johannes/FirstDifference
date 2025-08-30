@@ -5,7 +5,7 @@
 
 module Structures.S03_ProcessGraphs.Step14_SpatialStructure_Soundness where
 
-open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
 open import Data.Nat using (ℕ; _≟_)
 open import Data.List using (List; []; _∷_)
 open import Data.Product using (_×_; _,_)
@@ -31,7 +31,7 @@ filter-sound-Node :
 filter-sound-Node p [] ()
 filter-sound-Node p (y ∷ ys) {n} prf with p y
 ... | true  with prf
-...   | here        = refl
+...   | here eq     rewrite cong p eq = refl
 ...   | there prf'  = filter-sound-Node p ys prf'
 ... | false = filter-sound-Node p ys prf
 
@@ -41,7 +41,7 @@ filter-complete-Node :
   n ∈ xs → p n ≡ true → n ∈ bool-filter p xs
 filter-complete-Node p [] () _
 filter-complete-Node p (y ∷ ys) {n} here pn with p y
-... | true  rewrite pn = here
+... | true  rewrite pn = here refl
 ... | false rewrite pn = ⊥-elim (λ ())  -- impossible since pn ≡ true
 filter-complete-Node p (y ∷ ys) {n} (there prf) pn with p y
 ... | true  = there (filter-complete-Node p ys prf pn)

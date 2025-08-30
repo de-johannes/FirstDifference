@@ -47,6 +47,7 @@ open import Structures.S03_ProcessGraphs.Step10_DriftGraph                      
 open import Structures.S03_ProcessGraphs.Step11_PathCategory                                public
 open import Structures.S03_ProcessGraphs.Step12_CutCategory                                 public
 open import Structures.S03_ProcessGraphs.Step13_PathToCutFunctor                            public
+open import Structures.S03_ProcessGraphs.Step14_SpatialStructure                            public
 
 
 

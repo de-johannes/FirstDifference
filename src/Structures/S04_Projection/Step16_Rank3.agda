@@ -12,6 +12,7 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
 open import Data.Nat  using (ℕ; zero; suc; _+_; _*_) 
 open import Data.List using (List; []; _∷_; map)
 open import Data.Maybe using (Maybe; just; nothing)
+open import Data.Empty using (⊥; ⊥-elim)
 
 -- Project Bool (avoid std Data.Bool to keep one Bool in scope)
 open import Structures.S01_BooleanCore.Step01_BooleanFoundation using (Bool; true; false; not)
@@ -162,6 +163,15 @@ data HasGoodTriple : List ℤ³ → Set where
         → HasGoodTriple (u ∷ v ∷ w ∷ rs)
   there : ∀ {x xs} → HasGoodTriple xs → HasGoodTriple (x ∷ xs)
 
+-- No good triple exists on lists shorter than 3
+absurd0 : HasGoodTriple [] → ⊥
+absurd0 ()
+
+absurd1 : ∀ {x} → HasGoodTriple (x ∷ []) → ⊥
+absurd1 (there p) = absurd0 p
+
+absurd2 : ∀ {x y} → HasGoodTriple (x ∷ y ∷ []) → ⊥
+absurd2 (there p) = absurd1 p
 
 completeness : ∀ xs → HasGoodTriple xs → rank3? xs ≡ true
 completeness []                 ()
@@ -169,9 +179,7 @@ completeness (_ ∷ [])          (there ())
 completeness (_ ∷ _ ∷ [])      (there (there ()))
 completeness (u ∷ v ∷ w ∷ rs) (here h)
   rewrite step-when-true u v w rs h = refl
-completeness (u ∷ v ∷ w ∷ []) (there p) with nonZeroℤ (det3 u v w)
-... | true  = refl
-... | false rewrite step-when-false[] u v w refl = completeness (v ∷ w ∷ []) p
+completeness (u ∷ v ∷ w ∷ []) (there p) = ⊥-elim (absurd2 p)
 completeness (u ∷ v ∷ w ∷ (x ∷ xs)) (there p) with nonZeroℤ (det3 u v w)
 ... | true  = refl
 ... | false

@@ -39,9 +39,7 @@ filter-complete :
   ∀ {A : Set} {x : A} (p : A → _) (xs : List A) →
   x ∈ xs → p x ≡ true → x ∈ bool-filter p xs
 filter-complete p [] () _
-filter-complete p (x ∷ xs) here px with p x | px
-... | true  | refl = here
-... | false | ()
+filter-complete p (x ∷ xs) here px rewrite px = here
 filter-complete p (y ∷ xs) (there m) px with p y
 ... | true  = there (filter-complete p xs m px)
 ... | false = filter-complete p xs m px

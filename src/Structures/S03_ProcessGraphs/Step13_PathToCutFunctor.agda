@@ -1,14 +1,15 @@
+-- src/Structures/S03_ProcessGraphs/Step13_PathToCutFunctor.agda
 {-# OPTIONS --safe #-}
 
 -- | Step 13: Functor from Path Category to Cut Category
 -- |
 -- | For any DriftGraph G:
 -- |   R(G)  --(PathToCut)-->  CutCat
--- | Objects map identically (NodeId ≡ ℕ).
--- | Morphisms (paths) map to ≤-proofs via temporal monotonicity.
+-- | Objects: Node identifiers (ℕ).
+-- | Morphisms: Paths map to ≤-proofs via temporal monotonicity.
 module Structures.S03_ProcessGraphs.Step13_PathToCutFunctor where
 
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong; sym)
 open import Data.Nat using (ℕ; _≤_)
 open import Data.Nat.Properties using (≤-refl; ≤-trans)
 
@@ -24,7 +25,7 @@ open import Structures.S03_ProcessGraphs.Step10_DriftGraph
   as DG using (DriftGraph; NodeId; _—→_within_; edge-increases-time)
 
 ------------------------------------------------------------------------
--- A minimal functor record between two concrete categories
+-- A minimal functor record between two categories
 ------------------------------------------------------------------------
 
 record Functor
@@ -41,34 +42,38 @@ record Functor
              → F₁ (Category._∘_ C f g) ≡ Category._∘_ D (F₁ f) (F₁ g)
 
 ------------------------------------------------------------------------
--- Path → ≤ on objects of G
+-- Path ⇒ ≤
 ------------------------------------------------------------------------
 
 -- Each edge increases time strictly, hence a ≤-morphism exists.
 edge⇒≤ : ∀ {G u v} → (e : u DG.—→ v within G) → u ≤ v
 edge⇒≤ {G} {u} {v} e = Cut.<⇒≤ (DG.edge-increases-time u v G e)
 
--- Map a Path to a single ≤-witness
+-- Recursively map a Path to a single ≤-witness
 path⇒≤ : ∀ {G u v} → PC.Path G u v → u ≤ v
-path⇒≤ {G} {u} {v} PC.refl-path      = ≤-refl
-path⇒≤ {G} {u} {w} (e PC.∷-path p)   = ≤-trans (edge⇒≤ {G} e) (path⇒≤ {G} p)
+path⇒≤ {G} {u} {v} PC.refl-path     = ≤-refl
+path⇒≤ {G} {u} {w} (e PC.∷-path p)  = ≤-trans (edge⇒≤ {G} e) (path⇒≤ {G} p)
 
 -- Compatibility with concatenation
 path⇒≤-++ :
   ∀ {G a b c} (p : PC.Path G a b) (q : PC.Path G b c) →
   path⇒≤ (p PC.++-path q) ≡ ≤-trans (path⇒≤ p) (path⇒≤ q)
 path⇒≤-++ {G} PC.refl-path q = Cut.≤-idˡ (path⇒≤ {G} q)
-path⇒≤-++ {G} (e PC.∷-path p) q =
-  cong (λ z → ≤-trans (edge⇒≤ {G} e) z) (path⇒≤-++ {G} p q)
-  ▸ Cut.≤-assoc (edge⇒≤ {G} e) (path⇒≤ {G} p) (path⇒≤ {G} q)
+path⇒≤-++ {G} (e PC.∷-path p) q
+  rewrite path⇒≤-++ {G} p q
+        | Cut.≤-assoc (edge⇒≤ {G} e) (path⇒≤ {G} p) (path⇒≤ {G} q)
+  = refl
 
+------------------------------------------------------------------------
 -- The functor R(G) → CutCat
+------------------------------------------------------------------------
+
 PathToCut : (G : DG.DriftGraph) →
   Functor (DG.NodeId) (PC.Path G) (PC.DriftPathCategory G)
           (ℕ)        (_≤_)       (Cut.CutCat)
 PathToCut G = record
-  { F₀    = λ x → x
-  ; F₁    = λ {A} {B} p → path⇒≤ {G} {A} {B} p
-  ; F-id  = λ {A} → refl
-  ; F-comp= λ {A} {B} {C′} p q → path⇒≤-++ {G} p q
+  { F₀     = λ x → x
+  ; F₁     = λ {A} {B} p → path⇒≤ {G} {A} {B} p
+  ; F-id   = λ {A} → refl
+  ; F-comp = λ f g → path⇒≤-++ {G} f g
   }

@@ -8,7 +8,7 @@
 
 module Structures.S04_Projection.Step16_Rank3 where
 
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong) renaming (begin_ to begin; _≡⟨_⟩_ to _≡⟨_⟩_; _∎ to ∎)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
 open import Data.Nat  using (ℕ; zero; suc; _+_; _*_) 
 open import Data.List using (List; []; _∷_; map)
 open import Data.Maybe using (Maybe; just; nothing)
@@ -166,38 +166,15 @@ completeness : ∀ xs → HasGoodTriple xs → rank3? xs ≡ true
 completeness []                 ()
 completeness (_ ∷ [])          (there ())
 completeness (_ ∷ _ ∷ [])      (there (there ()))
-completeness (u ∷ v ∷ w ∷ rs) (here h) =
-  -- rank3? (u ∷ v ∷ w ∷ rs) = isJust (step u v w rs) = true
-  -- by step-when-true
-  let eq = step-when-true u v w rs h in
-  begin
-    isJust (rank3Witness (u ∷ v ∷ w ∷ rs))
-  ≡⟨ refl ⟩
-    isJust (step u v w rs)
-  ≡⟨ cong isJust eq ⟩
-    isJust (just (pack u v w rs))
-  ≡⟨ refl ⟩
-    true
-  ∎
-completeness (u ∷ v ∷ w ∷ rs) (there p) with nonZeroℤ (det3 u v w)
+completeness (u ∷ v ∷ w ∷ rs) (here h)
+  rewrite step-when-true u v w rs h = refl
+completeness (u ∷ v ∷ w ∷ []) (there p) =
+  -- p : HasGoodTriple (v ∷ w ∷ []) is impossible
+  completeness (v ∷ w ∷ []) p
+completeness (u ∷ v ∷ w ∷ (x ∷ xs)) (there p) with nonZeroℤ (det3 u v w)
 ... | true  = refl
-... | false with rs
-...   | [] =
-      -- p : HasGoodTriple (v ∷ w ∷ []) is impossible; reuse earlier clause
-      completeness (v ∷ w ∷ []) p
-...   | x ∷ xs =
-      -- use step-when-false∷ to move the window and recurse
-      begin
-        isJust (rank3Witness (u ∷ v ∷ w ∷ x ∷ xs))
-      ≡⟨ refl ⟩
-        isJust (step u v w (x ∷ xs))
-      ≡⟨ cong isJust (step-when-false∷ u v w x xs refl) ⟩
-        isJust (step v w x xs)
-      ≡⟨ refl ⟩
-        isJust (rank3Witness (v ∷ w ∷ x ∷ xs))
-      ≡⟨ completeness (v ∷ w ∷ x ∷ xs) p ⟩
-        true
-      ∎
+... | false
+  rewrite step-when-false∷ u v w x xs refl = completeness (v ∷ w ∷ x ∷ xs) p
 
 completenessOnSlice :
   (G : DriftGraph) (t : ℕ)

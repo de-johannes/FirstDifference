@@ -133,7 +133,8 @@ rank3Witness _                = nothing
 
 -- Helper lemmas for completeness
 step-when-true : ∀ u v w rs → nonZeroℤ (det3 u v w) ≡ true → step u v w rs ≡ just (pack u v w rs)
-step-when-true u v w rs h rewrite h = refl
+step-when-true u v w []       h rewrite h = refl
+step-when-true u v w (x ∷ xs) h rewrite h = refl
 
 isJust : ∀ {a} {A : Set a} → Maybe A → Bool
 isJust nothing  = false

@@ -51,11 +51,10 @@ same-rank-sound {G} {r} {n} m = rank-match-sound (go (nodes G) m)
     -- Show: if n ∈ bool-filter p xs then p n ≡ true
     go : ∀ (xs : List Node) → n ∈ bool-filter p xs → p n ≡ true
     go [] ()
-    go (y ∷ ys) prf with py ← p y
-    ... | true  with prf
-    ...   | here        = refl
-    ...   | there prf'  = go ys prf'
-    ... | false = go ys prf
+    go (y ∷ ys) prf with p y | prf
+    ... | true  | here        = refl
+    ... | true  | there prf'  = go ys prf'
+    ... | false | prf         = go ys prf
 
 -- Completeness: any node of rank r contained in nodes G appears in same-rank-nodes G r.
 same-rank-complete :
@@ -68,14 +67,10 @@ same-rank-complete {G} {r} {n} n∈ eq = insert (nodes G) n∈
 
     insert : ∀ (xs : List Node) → n ∈ xs → n ∈ bool-filter p xs
     insert [] ()
-    insert (y ∷ ys) here with py ← p y | rank-match-true eq
+    insert (y ∷ ys) here with p y | rank-match-true eq
     ... | true  | _        = here
     ... | false | py≡true  =
-      let py≡false : py ≡ false
-          py≡false = refl
-          false≡true : false ≡ true
-          false≡true = trans (sym py≡false) py≡true
-      in ⊥-elim (false≠true false≡true)
-    insert (y ∷ ys) (there prf) with py ← p y
+      ⊥-elim (false≠true (trans (sym refl) py≡true))
+    insert (y ∷ ys) (there prf) with p y
     ... | true  = there (insert ys prf)
     ... | false = insert ys prf

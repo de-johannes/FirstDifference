@@ -9,6 +9,8 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import Data.Nat using (ℕ; _≟_)
 open import Data.List using (List; []; _∷_)
 open import Data.Product using (_×_; _,_)
+open import Relation.Nullary using (Dec; yes; no)
+open import Structures.S01_BooleanCore.Step01_BooleanFoundation using (Bool; true; false)
 
 -- Bring in list-membership and graph essentials
 open import Structures.S03_ProcessGraphs.Step10_DriftGraph
@@ -28,11 +30,8 @@ filter-sound :
   x ∈ bool-filter p xs → p x ≡ true
 filter-sound p [] ()
 filter-sound p (x ∷ xs) with p x
-... | true  = λ where
-  { here      → refl
-  ; (there m) → filter-sound p xs m
-  }
-... | false  = λ m → filter-sound p xs m
+... | true  = λ { here → refl ; there m → filter-sound p xs m }
+... | false = λ m → filter-sound p xs m
 
 -- If x ∈ xs and p x ≡ true then x ∈ bool-filter p xs.
 filter-complete :
@@ -60,6 +59,10 @@ same-rank-sound {G} {r} {n} m
 ... | yes eq | _    = eq
 ... | no  _  | ()   -- impossible: would force false ≡ true
 
+-- If m ≡ r then the decidable test (m ≟ r) yields true under our Bool
+dec-eq-true : ∀ (m r : ℕ) → m ≡ r → (case m ≟ r of λ { (yes _) → true ; (no _) → false }) ≡ true
+dec-eq-true .r r refl = refl
+
 -- Completeness: any node of rank r contained in nodes G appears in same-rank-nodes G r.
 same-rank-complete :
   ∀ {G : DriftGraph} {r : ℕ} {n : Node} →
@@ -69,12 +72,4 @@ same-rank-complete {G} {r} {n} n∈ eq =
     (λ node → case nodeId node ≟ r of λ { (yes _) → true ; (no _) → false })
     (nodes G)
     n∈
-    (let open Relation.Binary.PropositionalEquality in
-     -- After rewriting nodeId n to r, (r ≟ r) is (yes refl), hence predicate is true.
-     begin
-       (case nodeId n ≟ r of λ { (yes _) → true ; (no _) → false })
-     ≡⟨⟩
-       (case (subst (λ k → k ≟ r) eq (nodeId n ≟ r)) of λ { (yes _) → true ; (no _) → false })
-     ≡⟨⟩
-       true
-     ∎)
+    dec-eq-true (nodeId n) r eq

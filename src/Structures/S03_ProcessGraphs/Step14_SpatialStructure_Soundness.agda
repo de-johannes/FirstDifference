@@ -22,30 +22,30 @@ open import Structures.S03_ProcessGraphs.Step14_SpatialStructure
   using (bool-filter; same-rank-nodes)
 
 ------------------------------------------------------------------------
--- Generic Boolean-filter lemmas (for list membership)
+-- Boolean-filter lemmas specialized to Node-membership
 ------------------------------------------------------------------------
 
-filter-sound :
-  ∀ {A : Set} {x : A} (p : A → Bool) (xs : List A) →
-  x ∈ bool-filter p xs → p x ≡ true
-filter-sound p [] ()
-filter-sound p (y ∷ ys) prf with p y
+filter-sound-Node :
+  ∀ (p : Node → Bool) (xs : List Node) {n : Node} →
+  n ∈ bool-filter p xs → p n ≡ true
+filter-sound-Node p [] ()
+filter-sound-Node p (y ∷ ys) {n} prf with p y
 ... | true  with prf
 ...   | here        = refl
-...   | there prf'  = filter-sound p ys prf'
-... | false = filter-sound p ys prf
+...   | there prf'  = filter-sound-Node p ys prf'
+... | false = filter-sound-Node p ys prf
 
--- If x ∈ xs and p x ≡ true then x ∈ bool-filter p xs.
-filter-complete :
-  ∀ {A : Set} {x : A} (p : A → Bool) (xs : List A) →
-  x ∈ xs → p x ≡ true → x ∈ bool-filter p xs
-filter-complete p [] () _
-filter-complete p (y ∷ ys) here px with p y
-... | true  rewrite px = here
-... | false rewrite px = ⊥-elim (λ ())  -- cannot happen since px ≡ true
-filter-complete p (y ∷ ys) (there prf) px with p y
-... | true  = there (filter-complete p ys prf px)
-... | false = filter-complete p ys prf px
+-- If n ∈ xs and p n ≡ true then n ∈ bool-filter p xs.
+filter-complete-Node :
+  ∀ (p : Node → Bool) (xs : List Node) {n : Node} →
+  n ∈ xs → p n ≡ true → n ∈ bool-filter p xs
+filter-complete-Node p [] () _
+filter-complete-Node p (y ∷ ys) {n} here pn with p y
+... | true  rewrite pn = here
+... | false rewrite pn = ⊥-elim (λ ())  -- impossible since pn ≡ true
+filter-complete-Node p (y ∷ ys) {n} (there prf) pn with p y
+... | true  = there (filter-complete-Node p ys prf pn)
+... | false = filter-complete-Node p ys prf pn
 
 ------------------------------------------------------------------------
 -- Convert decidable equality on ℕ to our project Bool
@@ -65,7 +65,7 @@ same-rank-sound :
   ∀ {G : DriftGraph} {r : ℕ} {n : Node} →
   n ∈ same-rank-nodes G r → nodeId n ≡ r
 same-rank-sound {G} {r} {n} m
-  with nodeId n ≟ r | filter-sound (λ node → eqᵇ (nodeId node) r) (nodes G) m
+  with nodeId n ≟ r | filter-sound-Node (λ node → eqᵇ (nodeId node) r) (nodes G) m
 ... | yes eq | _    = eq
 ... | no  _  | ()   -- impossible: would force false ≡ true
 
@@ -80,7 +80,7 @@ same-rank-complete :
   ∀ {G : DriftGraph} {r : ℕ} {n : Node} →
   n ∈ nodes G → nodeId n ≡ r → n ∈ same-rank-nodes G r
 same-rank-complete {G} {r} {n} n∈ eq =
-  filter-complete
+  filter-complete-Node
     (λ node → eqᵇ (nodeId node) r)
     (nodes G)
     n∈

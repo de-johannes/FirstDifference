@@ -19,6 +19,7 @@ open import Data.Product using (_×_; _,_)
 open import Data.Vec using (Vec; []; _∷_)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
 open import Relation.Nullary using (Dec; yes; no)
+open import Data.Empty using (⊥; ⊥-elim)
 
 ------------------------------------------------------------------------
 -- Boolean filter helper
@@ -45,16 +46,15 @@ rank-match-true : ∀ {id target : ℕ} → id ≡ target → rank-match id targ
 rank-match-true {id} {target} eq
   rewrite eq
   with target ≟ target
-... | yes _ = refl
-... | no  _ = refl  -- unerreichbar, aber durch Exhaustion ok (Dec-Totalität)
+... | yes _     = refl
+... | no  ¬eq   = ⊥-elim (¬eq refl)
 
 -- | Alternative Form, wenn du direkt das Dec-Ergebnis verwendest:
 rank-match-true-by-≟ : ∀ {id target : ℕ} → (id ≟ target) ≡ yes refl → rank-match id target ≡ true
-rank-match-true-by-≟ {id} {target} dec-yes
-  rewrite dec-yes
-  with id ≟ target
+rank-match-true-by-≟ {id} {target} dec-yes with id ≟ target
 ... | yes _ = refl
-... | no  _ = refl  -- unerreichbar unter der Annahme
+... | no  ¬eq with dec-yes
+...   | ()
 
 ------------------------------------------------------------------------
 -- Spatial slices

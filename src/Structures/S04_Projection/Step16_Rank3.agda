@@ -112,8 +112,12 @@ record GoodTriple : Set where
 
 -- Tail-structural search for a good triple (obvious termination)
 step : ℤ³ → ℤ³ → ℤ³ → List ℤ³ → Maybe GoodTriple
-step u v w rs with nonZeroℤ (det3 u v w)
-... | true  = just (pack u v w rs)
+step u v w [] with nonZeroℤ (det3 u v w)
+... | true  = just (pack u v w [])
+... | false = nothing
+step u v w (x ∷ xs) with nonZeroℤ (det3 u v w)
+... | true  = just (pack u v w (x ∷ xs))
+... | false = step v w x xs
 
 step-when-false[] :
   ∀ u v w → nonZeroℤ (det3 u v w) ≡ false → step u v w [] ≡ nothing
@@ -122,10 +126,6 @@ step-when-false[] u v w h rewrite h = refl
 step-when-false∷ :
   ∀ u v w x xs → nonZeroℤ (det3 u v w) ≡ false → step u v w (x ∷ xs) ≡ step v w x xs
 step-when-false∷ u v w x xs h rewrite h = refl
-
-... | false with rs
-...   | []       = nothing
-...   | x ∷ xs   = step v w x xs
 
 rank3Witness : List ℤ³ → Maybe GoodTriple
 rank3Witness (u ∷ v ∷ w ∷ rs) = step u v w rs

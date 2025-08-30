@@ -11,7 +11,7 @@ module Structures.S03_ProcessGraphs.Step13_PathToCutFunctor where
 
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong; sym)
 open import Data.Nat using (ℕ; _≤_)
-open import Data.Nat.Properties using (≤-refl; ≤-trans)
+open import Data.Nat.Properties using (≤-refl; ≤-trans; ≤-irrelevant)
 
 -- Source/target categories and path ops
 open import Structures.S03_ProcessGraphs.Step11_PathCategory
@@ -54,11 +54,17 @@ path⇒≤ : ∀ {G u v} → PC.Path G u v → u ≤ v
 path⇒≤ {G} {u} {v} PC.refl-path     = ≤-refl
 path⇒≤ {G} {u} {w} (e PC.∷-path p)  = ≤-trans (edge⇒≤ {G} e) (path⇒≤ {G} p)
 
+-- Left-identity for ≤-trans with an arbitrary reflexivity witness
+≤-idˡ′ : ∀ {m n} (r : m ≤ m) (p : m ≤ n) → ≤-trans r p ≡ p
+≤-idˡ′ r p = ≤-irrelevant (≤-trans r p) p
+
 -- Compatibility with concatenation
 path⇒≤-++ :
   ∀ {G a b c} (p : PC.Path G a b) (q : PC.Path G b c) →
   path⇒≤ (p PC.++-path q) ≡ ≤-trans (path⇒≤ p) (path⇒≤ q)
-path⇒≤-++ {G} PC.refl-path q = Cut.≤-idˡ (path⇒≤ {G} q)
+path⇒≤-++ {G} PC.refl-path q
+  rewrite sym (≤-idˡ′ (path⇒≤ {G} PC.refl-path) (path⇒≤ {G} q))
+  = refl
 path⇒≤-++ {G} (e PC.∷-path p) q
   rewrite path⇒≤-++ {G} p q
         | Cut.≤-assoc (edge⇒≤ {G} e) (path⇒≤ {G} p) (path⇒≤ {G} q)

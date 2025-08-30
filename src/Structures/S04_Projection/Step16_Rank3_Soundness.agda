@@ -8,7 +8,7 @@
 --  * TERMINATING by measure (list length, with ≤-proof)
 ----------------------------------------------------------------------
 
-module Structures.S04_Projection.Step17_Rank3_Soundness where
+module Structures.S04_Projection.Step16_Rank3_Soundness where
 
 open import Agda.Primitive using (Level)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans)

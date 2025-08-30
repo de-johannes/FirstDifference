@@ -1,15 +1,22 @@
 {-# OPTIONS --safe #-}
 
-module Structures.Step13_OperadicCohesion where
+-- Step 18: Operadic Cohesion
+-- • A tiny (universe-polymorphic) operad interface
+-- • Endo-operad on Cells (from FoldMap)
+-- • Action lifted to graph Nodes via the FoldMap projection π
+-- • Packaged as a small NodeAction “algebra”
+
+module Structures.S04_Projection.Step17_OperadicCohesion where
 
 open import Agda.Primitive using (Level; _⊔_; lsuc; lzero)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
-open import Structures.Step7_DriftGraph using (DriftGraph ; Node)
-open import Structures.Step10_FoldMap   using (Cell ; FoldMap)
+-- Updated imports (new structure layout)
+open import Structures.S03_ProcessGraphs.Step10_DriftGraph using (DriftGraph ; Node)
+open import Structures.S04_Projection.Step15_FoldMap      using (Cell ; FoldMap)
 
 ------------------------------------------------------------------------
--- 1) Universe-polymorphe Operade
+-- 1) Universe-polymorphic Operad
 ------------------------------------------------------------------------
 
 record Operad (ℓX ℓO : Level) (X : Set ℓX) : Set (lsuc (ℓX ⊔ ℓO)) where
@@ -26,14 +33,14 @@ record Operad (ℓX ℓO : Level) (X : Set ℓX) : Set (lsuc (ℓX ⊔ ℓO)) wh
 open Operad public
 
 ------------------------------------------------------------------------
--- 2) Endo-Operad auf Cells (gleicher Level für Träger & Ops)
+-- 2) Endo-operad on Cells (same level for carrier and operations)
 ------------------------------------------------------------------------
 
 CellOperad : Operad lzero lzero Cell
 CellOperad = record
   { Op    = Cell → Cell
   ; idO   = λ c → c
-  ; _∘_   = λ f g → λ c → g (f c)       -- erst f, dann g
+  ; _∘_   = λ f g → λ c → g (f c)       -- first f, then g
   ; act   = λ f c → f c
   ; unitL = λ f c → refl
   ; unitR = λ f c → refl
@@ -41,7 +48,7 @@ CellOperad = record
   }
 
 ------------------------------------------------------------------------
--- 3) Lift der Cell-Operationen auf Nodes via π aus FoldMap
+-- 3) Lift Cell-operations to Nodes via π from FoldMap
 ------------------------------------------------------------------------
 
 nodeAct
@@ -64,7 +71,7 @@ nodeAct-comp
 nodeAct-comp fm f g n = refl
 
 ------------------------------------------------------------------------
--- 4) Bündelung als NodeAction-„Algebra“
+-- 4) Bundle as a NodeAction “algebra”
 ------------------------------------------------------------------------
 
 record NodeAction (G : DriftGraph) (rank : _) : Set where

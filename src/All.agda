@@ -49,6 +49,8 @@ open import Structures.S03_ProcessGraphs.Step14_SpatialStructure                
 open import Structures.S04_Projection.Step15_FoldMap                                        public
 open import Structures.S04_Projection.Step16_Rank3                                          public
 open import Structures.S04_Projection.Step16_Rank3_Soundness                                public
+open import Structures.S04_Projection.Step17_OperadicCohesion                               public
+
 
 
 

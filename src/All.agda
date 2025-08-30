@@ -58,10 +58,7 @@ open import Structures.S03_ProcessGraphs.Step14_SpatialStructure                
 open import Structures.S04_Projection.Step15_FoldMap                                        public
 
 open import Structures.S04_Projection.Step16_Rank3                                          public
-
-
-
--- open import Structures.Step12_Rank3_Soundness  public
+open import Structures.S04_Projection.Step17_Rank3_Soundness                                public
 
 -- (G) Operadic Cohesion — Composable operations on Cells/Nodes
 -- open import Structures.Step13_OperadicCohesion public

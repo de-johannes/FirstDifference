@@ -114,6 +114,15 @@ record GoodTriple : Set where
 step : ℤ³ → ℤ³ → ℤ³ → List ℤ³ → Maybe GoodTriple
 step u v w rs with nonZeroℤ (det3 u v w)
 ... | true  = just (pack u v w rs)
+
+step-when-false[] :
+  ∀ u v w → nonZeroℤ (det3 u v w) ≡ false → step u v w [] ≡ nothing
+step-when-false[] u v w h rewrite h = refl
+
+step-when-false∷ :
+  ∀ u v w x xs → nonZeroℤ (det3 u v w) ≡ false → step u v w (x ∷ xs) ≡ step v w x xs
+step-when-false∷ u v w x xs h rewrite h = refl
+
 ... | false with rs
 ...   | []       = nothing
 ...   | x ∷ xs   = step v w x xs
@@ -125,12 +134,6 @@ rank3Witness _                = nothing
 -- Helper lemmas for completeness
 step-when-true : ∀ u v w rs → nonZeroℤ (det3 u v w) ≡ true → step u v w rs ≡ just (pack u v w rs)
 step-when-true u v w rs h rewrite h = refl
-
-step-when-false :
-  ∀ u v w rs → nonZeroℤ (det3 u v w) ≡ false →
-  step u v w rs ≡ (case rs of λ where { [] → nothing ; (x ∷ xs) → step v w x xs })
-step-when-false u v w []      h rewrite h = refl
-step-when-false u v w (x ∷ xs) h rewrite h = refl
 
 isJust : ∀ {a} {A : Set a} → Maybe A → Bool
 isJust nothing  = false
@@ -178,20 +181,23 @@ completeness (u ∷ v ∷ w ∷ rs) (here h) =
   ∎
 completeness (u ∷ v ∷ w ∷ rs) (there p) with nonZeroℤ (det3 u v w)
 ... | true  = refl
-... | false =
-  -- step u v w rs reduces to next step on tail; recurse
-  let eq = step-when-false u v w rs refl in
-  begin
-    isJust (rank3Witness (u ∷ v ∷ w ∷ rs))
-  ≡⟨ refl ⟩
-    isJust (step u v w rs)
-  ≡⟨ cong isJust eq ⟩
-    (case rs of λ where { [] → false ; (x ∷ xs) → isJust (step v w x xs) })
-  ≡⟨⟩
-    isJust (rank3Witness (v ∷ w ∷ rs))
-  ≡⟨ completeness (v ∷ w ∷ rs) p ⟩
-    true
-  ∎
+... | false with rs
+...   | [] =
+      -- p : HasGoodTriple (v ∷ w ∷ []) is impossible; reuse earlier clause
+      completeness (v ∷ w ∷ []) p
+...   | x ∷ xs =
+      -- use step-when-false∷ to move the window and recurse
+      begin
+        isJust (rank3Witness (u ∷ v ∷ w ∷ x ∷ xs))
+      ≡⟨ refl ⟩
+        isJust (step u v w (x ∷ xs))
+      ≡⟨ cong isJust (step-when-false∷ u v w x xs refl) ⟩
+        isJust (step v w x xs)
+      ≡⟨ refl ⟩
+        isJust (rank3Witness (v ∷ w ∷ x ∷ xs))
+      ≡⟨ completeness (v ∷ w ∷ x ∷ xs) p ⟩
+        true
+      ∎
 
 completenessOnSlice :
   (G : DriftGraph) (t : ℕ)

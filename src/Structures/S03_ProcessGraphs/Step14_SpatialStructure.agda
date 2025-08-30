@@ -9,13 +9,12 @@ module Structures.S03_ProcessGraphs.Step14_SpatialStructure where
 -- Boolean/distinction foundation
 open import Structures.S01_BooleanCore.Step02_VectorOperations using (Dist; drift; join; neg)
 
--- Order & graph imports
-open import Structures.S03_ProcessGraphs.Step10_DriftGraph using (DriftGraph; Node; NodeId; nodes; content)
+open import Structures.S03_ProcessGraphs.Step10_DriftGraph using (DriftGraph; Node; NodeId; nodeId; nodes; content)
 
 -- Standard library
 open import Data.Nat using (ℕ; _≟_)
 open import Data.List using (List; []; _∷_; map; _++_)
-open import Data.Bool using (Bool; true; false; _∨_; if_then_else_)
+open import Structures.S01_BooleanCore.Step01_BooleanFoundation using (Bool; true; false; _∨_)
 open import Data.Product using (_×_; _,_)
 open import Data.Vec using (Vec; []; _∷_) 
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
@@ -27,7 +26,9 @@ open import Relation.Nullary using (Dec; yes; no)
 
 bool-filter : ∀ {A : Set} → (A → Bool) → List A → List A
 bool-filter p []       = []
-bool-filter p (x ∷ xs) = if p x then x ∷ bool-filter p xs else bool-filter p xs
+bool-filter p (x ∷ xs) with p x
+... | true  = x ∷ bool-filter p xs
+... | false =     bool-filter p xs
 
 ------------------------------------------------------------------------
 -- Spatial slices
@@ -77,10 +78,9 @@ spatial-adjacency slice = build-pairs slice slice
 
     filter-rel : Dist 2 → List (Dist 2) → List (Dist 2 × Dist 2)
     filter-rel d []       = []
-    filter-rel d (d₂ ∷ r) =
-      if are-spatially-related d d₂
-      then (d , d₂) ∷ filter-rel d r
-      else filter-rel d r
+    filter-rel d (d₂ ∷ r) with are-spatially-related d d₂
+    ... | true  = (d , d₂) ∷ filter-rel d r
+    ... | false =      filter-rel d r
 
 ------------------------------------------------------------------------
 -- Example

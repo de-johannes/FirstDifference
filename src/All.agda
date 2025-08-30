@@ -52,19 +52,11 @@ open import Structures.S04_Projection.Step16_Rank3_Soundness                    
 open import Structures.S04_Projection.Step17_OperadicCohesion                               public
 
 
-
-
-
-
-
--- (G) Operadic Cohesion — Composable operations on Cells/Nodes
--- open import Structures.Step13_OperadicCohesion public
-
 ------------------------------------------------------------------------
 -- Physics
 ------------------------------------------------------------------------
 
--- open import Physics.Step14_EFI_Core public
+open import Physics.Step01_EFI_Core                                                         public
 
 
 ------------------------------------------------------------------------
@@ -74,4 +66,4 @@ open import Structures.S04_Projection.Step17_OperadicCohesion                   
 -- import Examples.Demo                     as ExDemo
 -- import Examples.DriftSim                 as ExDriftSim
 -- import Examples.DriftWithTPProof         as ExDriftTP
--- import Examples.EFI_FoldMap_SmokeTest    as ExEfiSmoke
+import Examples.EFI_FoldMap_SmokeTest       as ExEfiSmoke

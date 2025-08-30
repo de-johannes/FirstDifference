@@ -8,7 +8,7 @@
 
 module Structures.S04_Projection.Step16_Rank3 where
 
-open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong) renaming (begin_ to begin; _≡⟨_⟩_ to _≡⟨_⟩_; _∎ to ∎)
 open import Data.Nat  using (ℕ; zero; suc; _+_; _*_) 
 open import Data.List using (List; []; _∷_; map)
 open import Data.Maybe using (Maybe; just; nothing)
@@ -109,11 +109,28 @@ record GoodTriple : Set where
   field a b c : ℤ³
         rest  : List ℤ³
 
-rank3Witness : List ℤ³ → Maybe GoodTriple
-rank3Witness (u ∷ v ∷ w ∷ rs) with nonZeroℤ (det3 u v w)
+
+-- Tail-structural search for a good triple (obvious termination)
+step : ℤ³ → ℤ³ → ℤ³ → List ℤ³ → Maybe GoodTriple
+step u v w rs with nonZeroℤ (det3 u v w)
 ... | true  = just (pack u v w rs)
-... | false = rank3Witness (v ∷ w ∷ rs)
-rank3Witness _ = nothing
+... | false with rs
+...   | []       = nothing
+...   | x ∷ xs   = step v w x xs
+
+rank3Witness : List ℤ³ → Maybe GoodTriple
+rank3Witness (u ∷ v ∷ w ∷ rs) = step u v w rs
+rank3Witness _                = nothing
+
+-- Helper lemmas for completeness
+step-when-true : ∀ u v w rs → nonZeroℤ (det3 u v w) ≡ true → step u v w rs ≡ just (pack u v w rs)
+step-when-true u v w rs h rewrite h = refl
+
+step-when-false :
+  ∀ u v w rs → nonZeroℤ (det3 u v w) ≡ false →
+  step u v w rs ≡ (case rs of λ where { [] → nothing ; (x ∷ xs) → step v w x xs })
+step-when-false u v w []      h rewrite h = refl
+step-when-false u v w (x ∷ xs) h rewrite h = refl
 
 isJust : ∀ {a} {A : Set a} → Maybe A → Bool
 isJust nothing  = false
@@ -141,15 +158,40 @@ data HasGoodTriple : List ℤ³ → Set where
         → HasGoodTriple (u ∷ v ∷ w ∷ rs)
   there : ∀ {x xs} → HasGoodTriple xs → HasGoodTriple (x ∷ xs)
 
+
 completeness : ∀ xs → HasGoodTriple xs → rank3? xs ≡ true
 completeness []                 ()
 completeness (_ ∷ [])          (there ())
 completeness (_ ∷ _ ∷ [])      (there (there ()))
-completeness (u ∷ v ∷ w ∷ rs)  (here h) rewrite h = refl
-completeness (u ∷ v ∷ w ∷ rs)  (there p)
-  with nonZeroℤ (det3 u v w)
+completeness (u ∷ v ∷ w ∷ rs) (here h) =
+  -- rank3? (u ∷ v ∷ w ∷ rs) = isJust (step u v w rs) = true
+  -- by step-when-true
+  let eq = step-when-true u v w rs h in
+  begin
+    isJust (rank3Witness (u ∷ v ∷ w ∷ rs))
+  ≡⟨ refl ⟩
+    isJust (step u v w rs)
+  ≡⟨ cong isJust eq ⟩
+    isJust (just (pack u v w rs))
+  ≡⟨ refl ⟩
+    true
+  ∎
+completeness (u ∷ v ∷ w ∷ rs) (there p) with nonZeroℤ (det3 u v w)
 ... | true  = refl
-... | false = completeness (v ∷ w ∷ rs) p
+... | false =
+  -- step u v w rs reduces to next step on tail; recurse
+  let eq = step-when-false u v w rs refl in
+  begin
+    isJust (rank3Witness (u ∷ v ∷ w ∷ rs))
+  ≡⟨ refl ⟩
+    isJust (step u v w rs)
+  ≡⟨ cong isJust eq ⟩
+    (case rs of λ where { [] → false ; (x ∷ xs) → isJust (step v w x xs) })
+  ≡⟨⟩
+    isJust (rank3Witness (v ∷ w ∷ rs))
+  ≡⟨ completeness (v ∷ w ∷ rs) p ⟩
+    true
+  ∎
 
 completenessOnSlice :
   (G : DriftGraph) (t : ℕ)

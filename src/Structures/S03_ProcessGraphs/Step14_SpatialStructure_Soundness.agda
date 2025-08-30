@@ -1,0 +1,80 @@
+{-# OPTIONS --safe #-}
+
+-- Step 14: Spatial structure – Soundness & Completeness of the rank filter
+-- We prove that same-rank-nodes picks exactly the nodes whose nodeId = rank.
+
+module Structures.S03_ProcessGraphs.Step14_SpatialStructure_Soundness where
+
+open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+open import Data.Nat using (ℕ; _≟_)
+open import Data.List using (List; []; _∷_)
+open import Data.Product using (_×_; _,_)
+
+-- Bring in list-membership and graph essentials
+open import Structures.S03_ProcessGraphs.Step10_DriftGraph
+  using (DriftGraph; Node; NodeId; nodeId; nodes; _∈_; here; there)
+
+-- Bring in the spatial constructors we reason about
+open import Structures.S03_ProcessGraphs.Step14_SpatialStructure
+  using (bool-filter; same-rank-nodes)
+
+------------------------------------------------------------------------
+-- Generic Boolean-filter lemmas (for list membership)
+------------------------------------------------------------------------
+
+-- If x is in (bool-filter p xs) then p x ≡ true.
+filter-sound :
+  ∀ {A : Set} {x : A} (p : A → _) (xs : List A) →
+  x ∈ bool-filter p xs → p x ≡ true
+filter-sound p [] ()
+filter-sound p (x ∷ xs) with p x
+... | true  = λ where
+  { here      → refl
+  ; (there m) → filter-sound p xs m
+  }
+... | false  = λ m → filter-sound p xs m
+
+-- If x ∈ xs and p x ≡ true then x ∈ bool-filter p xs.
+filter-complete :
+  ∀ {A : Set} {x : A} (p : A → _) (xs : List A) →
+  x ∈ xs → p x ≡ true → x ∈ bool-filter p xs
+filter-complete p [] () _
+filter-complete p (x ∷ xs) here px with p x | px
+... | true  | refl = here
+... | false | ()
+filter-complete p (y ∷ xs) (there m) px with p y | px
+... | true  | refl = there (filter-complete p xs m refl)
+... | false | ()
+
+------------------------------------------------------------------------
+-- Specialization to same-rank-nodes
+------------------------------------------------------------------------
+
+-- Soundness: every member filtered by same-rank-nodes has matching rank.
+same-rank-sound :
+  ∀ {G : DriftGraph} {r : ℕ} {n : Node} →
+  n ∈ same-rank-nodes G r → nodeId n ≡ r
+same-rank-sound {G} {r} {n} m
+  with nodeId n ≟ r | filter-sound (λ node → case nodeId node ≟ r of λ { (yes _) → true ; (no _) → false })
+                                    (nodes G) m
+... | yes eq | _    = eq
+... | no  _  | ()   -- impossible: would force false ≡ true
+
+-- Completeness: any node of rank r contained in nodes G appears in same-rank-nodes G r.
+same-rank-complete :
+  ∀ {G : DriftGraph} {r : ℕ} {n : Node} →
+  n ∈ nodes G → nodeId n ≡ r → n ∈ same-rank-nodes G r
+same-rank-complete {G} {r} {n} n∈ eq =
+  filter-complete
+    (λ node → case nodeId node ≟ r of λ { (yes _) → true ; (no _) → false })
+    (nodes G)
+    n∈
+    (let open Relation.Binary.PropositionalEquality in
+     -- After rewriting nodeId n to r, (r ≟ r) is (yes refl), hence predicate is true.
+     begin
+       (case nodeId n ≟ r of λ { (yes _) → true ; (no _) → false })
+     ≡⟨⟩
+       (case (subst (λ k → k ≟ r) eq (nodeId n ≟ r)) of λ { (yes _) → true ; (no _) → false })
+     ≡⟨⟩
+       true
+     ∎)

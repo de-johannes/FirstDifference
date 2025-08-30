@@ -43,10 +43,12 @@ open import Structures.S03_ProcessGraphs.Step11_PathCategory_Completeness       
 open import Structures.S03_ProcessGraphs.Step12_CutCategory                                 public
 open import Structures.S03_ProcessGraphs.Step13_PathToCutFunctor                            public
 open import Structures.S03_ProcessGraphs.Step14_SpatialStructure                            public
+open import Structures.S03_ProcessGraphs.Step14_SpatialStructure_Soundness                  public
 
 
 -- (S04_Projection) FoldMap & Dimensionality — Projection to data; Rank-3 proof
 open import Structures.S04_Projection.Step15_FoldMap                                        public
+open import Structures.S04_Projection.Step15_FoldMap_Soundness                              public
 open import Structures.S04_Projection.Step16_Rank3                                          public
 open import Structures.S04_Projection.Step16_Rank3_Soundness                                public
 open import Structures.S04_Projection.Step17_OperadicCohesion                               public

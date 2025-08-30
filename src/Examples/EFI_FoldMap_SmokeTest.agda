@@ -9,12 +9,12 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
 open import Data.Nat as Nat using (ℕ; zero; suc)
 open import Data.List using (List; []; _∷_; length)
 
-open import Structures.Step7_DriftGraph using (DriftGraph ; Node)
-open import Structures.Step10_FoldMap   using (FoldMap)
+open import Structures.S03_ProcessGraphs.Step10_DriftGraph using (DriftGraph ; Node)
+open import Structures.S04_Projection.Step15_FoldMap   using (FoldMap)
 
 -- Physik-Core qualifiziert einbinden (wir nutzen Semiring, EFI, fold, expect)
-open import Physics.Step14_EFI_Core as P using (Semiring; EFI)
-import Physics.Step14_EFI_Core as Core  -- für Core.fold / Core.expect
+open import Physics.Step01_EFI_Core as P using (Semiring; EFI)
+import Physics.Step01_EFI_Core as Core  -- für Core.fold / Core.expect
 
 ------------------------------------------------------------------------
 -- Nat-Semiring als einfachste Trägerstruktur

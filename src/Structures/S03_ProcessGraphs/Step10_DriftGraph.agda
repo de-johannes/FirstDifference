@@ -1,42 +1,48 @@
+-- src/Structures/S03_ProcessGraphs/Step10_DriftGraph.agda
 {-# OPTIONS --safe #-}
 
-module Structures.Step7_DriftGraph where
+-- | Step 10: Drift Graph — chronological process graph over distinctions
+-- |
+-- | Purpose:
+-- |   Inductive DAG whose nodes carry distinction vectors (Dist n).
+-- |   Edges only go forward in time (strictly increasing NodeId).
+-- |   Includes reachability and an acyclicity theorem.
+module Structures.S03_ProcessGraphs.Step10_DriftGraph where
 
 open import Data.Nat using (ℕ; zero; suc; _≤_; _<_; z≤n; s≤s; _≟_)
 open import Data.Nat.Properties using (<-trans)
 open import Data.Vec using (Vec; []; _∷_)
 open import Data.List using (List; []; _∷_)
 open import Data.Product using (_×_; _,_)
-open import Data.Bool using (Bool; true; false; _∧_)
 open import Data.Maybe using (Maybe; just; nothing)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong)
 open import Relation.Nullary using (¬_; Dec; yes; no)
 open import Data.Empty using (⊥; ⊥-elim)
 open import Function using (id; _∘_)
 
--- Import aus vorherigen Schritten
-open import Structures.Step2_VectorOperations using (Dist; drift)
+-- Our Booleans and vector ops
+open import Structures.S01_BooleanCore.Step01_BooleanFoundation using (Bool; true; false; _∧_)
+open import Structures.S01_BooleanCore.Step02_VectorOperations using (Dist; drift)
 
 ------------------------------------------------------------------------
--- 1. List-Mitgliedschaft
+-- 1. List membership
 ------------------------------------------------------------------------
 
 data _∈_ {A : Set} (x : A) : List A → Set where
-  here  : ∀ {xs} → x ∈ (x ∷ xs)
+  here  : ∀ {xs}       → x ∈ (x ∷ xs)
   there : ∀ {y xs} → x ∈ xs → x ∈ (y ∷ xs)
 
 ------------------------------------------------------------------------
--- 2. Definitionen für Knoten und Kanten
+-- 2. Nodes and edges
 ------------------------------------------------------------------------
 
 NodeId : Set
 NodeId = ℕ
 
 record Node : Set where
-  constructor node[_içeriği_]
   field
     nodeId  : NodeId
-    content : Dist (suc (suc zero)) -- Beispiel-Dimension 2
+    content : Dist (suc (suc zero))   -- example: dimension 2
 open Node public
 
 _≟NodeId_ : Node → NodeId → Bool
@@ -48,7 +54,7 @@ Edge : Set
 Edge = NodeId × NodeId
 
 ------------------------------------------------------------------------
--- 3. Der chronologische, induktive DriftGraph
+-- 3. Chronological (inductive) DriftGraph
 ------------------------------------------------------------------------
 
 data DriftGraph : Set where
@@ -60,21 +66,21 @@ data DriftGraph : Set where
            → DriftGraph
 
 ------------------------------------------------------------------------
--- 4. Graphen-Eigenschaften extrahieren
+-- 4. Extract graph properties
 ------------------------------------------------------------------------
 
 nodes : DriftGraph → List Node
-nodes empty = []
-nodes (add-node G n) = n ∷ nodes G
+nodes empty                 = []
+nodes (add-node G n)        = n ∷ nodes G
 nodes (add-edge G _ _ _ _ _) = nodes G
 
 edges : DriftGraph → List Edge
-edges empty = []
-edges (add-node G _) = edges G
-edges (add-edge G p₁ p₂ c _ _) = (nodeId p₁ , nodeId c) ∷ (nodeId p₂ , nodeId c) ∷ edges G
+edges empty                      = []
+edges (add-node G _)             = edges G
+edges (add-edge G p₁ p₂ c _ _)   = (nodeId p₁ , nodeId c) ∷ (nodeId p₂ , nodeId c) ∷ edges G
 
 ------------------------------------------------------------------------
--- 5. Erreichbarkeit und Azyklizität
+-- 5. Reachability and acyclicity
 ------------------------------------------------------------------------
 
 _—→_within_ : NodeId → NodeId → DriftGraph → Set
@@ -89,26 +95,25 @@ infix 4 _can-reach_within_
 edge-increases-time : ∀ u v G → u —→ v within G → u < v
 edge-increases-time u v empty ()
 edge-increases-time u v (add-node G n) edge = edge-increases-time u v G edge
-edge-increases-time u v (add-edge G p₁ p₂ c p₁<c p₂<c) here = p₁<c
-edge-increases-time u v (add-edge G p₁ p₂ c p₁<c p₂<c) (there here) = p₂<c
-edge-increases-time u v (add-edge G p₁ p₂ c p₁<c p₂<c) (there (there edge)) =
-  edge-increases-time u v G edge
+edge-increases-time u v (add-edge G p₁ p₂ c p₁<c p₂<c) here               = p₁<c
+edge-increases-time u v (add-edge G p₁ p₂ c p₁<c p₂<c) (there here)       = p₂<c
+edge-increases-time u v (add-edge G p₁ p₂ c p₁<c p₂<c) (there (there e))  = edge-increases-time u v G e
 
 reachability-increases-time : ∀ u w G → u can-reach w within G → u < w
-reachability-increases-time u w G (direct edge) = edge-increases-time u w G edge
-reachability-increases-time u w G (compose u↠v v↠w) =
-  <-trans (reachability-increases-time u _ G u↠v) (reachability-increases-time _ w G v↠w)
+reachability-increases-time u w G (direct e)     = edge-increases-time u w G e
+reachability-increases-time u w G (compose p q)  =
+  <-trans (reachability-increases-time u _ G p) (reachability-increases-time _ w G q)
 
--- Hilfsfunktion: Zeigt, dass suc v ≤ v unmöglich ist
+-- helper: suc v ≤ v is impossible
 suc≤v→⊥ : ∀ v → suc v ≤ v → ⊥
-suc≤v→⊥ zero ()
+suc≤v→⊥ zero    ()
 suc≤v→⊥ (suc v) (s≤s p) = suc≤v→⊥ v p
 
 theorem-acyclic : ∀ G v → ¬ (v can-reach v within G)
 theorem-acyclic G v cycle = suc≤v→⊥ v (reachability-increases-time v v G cycle)
 
 ------------------------------------------------------------------------
--- 6. Graphen-Operationen
+-- 6. Graph operations
 ------------------------------------------------------------------------
 
 find-node : DriftGraph → NodeId → Maybe Node
@@ -129,19 +134,19 @@ extract-drift-result (add-edge G parent₁ parent₂ child _ _) p₁ p₂
 ...   | false = extract-drift-result G p₁ p₂
 
 ------------------------------------------------------------------------
--- 7. Beispiel-Konstruktion und Tests
+-- 7. Example construction & checks
 ------------------------------------------------------------------------
 
 node₀ : Node
-node₀ = node[ 0 içeriği (true ∷ false ∷ []) ]
+node₀ = record { nodeId = 0 ; content = (true ∷ false ∷ []) }
 
 node₁ : Node
-node₁ = node[ 1 içeriği (false ∷ true ∷ []) ]
+node₁ = record { nodeId = 1 ; content = (false ∷ true ∷ []) }
 
 node₂ : Node
-node₂ = node[ 2 içeriği (drift (content node₀) (content node₁)) ]
+node₂ = record { nodeId = 2 ; content = drift (content node₀) (content node₁) }
 
--- KORRIGIERTE BEWEISE für m < n (definiert als suc m ≤ n)
+-- proofs of 0 < 2 and 1 < 2 (using the standard encoding: m < n ≡ suc m ≤ n)
 proof-0<2 : 0 < 2
 proof-0<2 = s≤s z≤n
 
@@ -155,7 +160,7 @@ example-graph =
            proof-0<2
            proof-1<2
 
--- Tests, die Agda beim Laden prüft
+-- sanity checks Agda verifies at load time
 _ : nodes example-graph ≡ node₂ ∷ node₁ ∷ node₀ ∷ []
 _ = refl
 

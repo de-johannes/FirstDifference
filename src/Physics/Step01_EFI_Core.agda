@@ -1,6 +1,6 @@
 {-# OPTIONS --safe #-}
 
-module Physics.Step14_EFI_Core where
+module Physics.Step01_EFI_Core where
 
 open import Agda.Primitive using (Level; _⊔_; lsuc)
 open import Data.List using (List; []; _∷_)

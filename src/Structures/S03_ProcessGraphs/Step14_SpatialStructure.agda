@@ -16,8 +16,8 @@ open import Data.Nat using (ℕ; _≟_)
 open import Data.List using (List; []; _∷_; map; _++_)
 open import Structures.S01_BooleanCore.Step01_BooleanFoundation using (Bool; true; false; _∨_)
 open import Data.Product using (_×_; _,_)
-open import Data.Vec using (Vec; []; _∷_) 
-open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+open import Data.Vec using (Vec; []; _∷_)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
 open import Relation.Nullary using (Dec; yes; no)
 
 ------------------------------------------------------------------------
@@ -31,6 +31,32 @@ bool-filter p (x ∷ xs) with p x
 ... | false =     bool-filter p xs
 
 ------------------------------------------------------------------------
+-- Rank test (TOP-LEVEL!) + Hilfslemmas
+------------------------------------------------------------------------
+
+-- | Top-level rank matcher so that proofs can reduce it by case-splitting.
+rank-match : ℕ → ℕ → Bool
+rank-match id target with id ≟ target
+... | yes _ = true
+... | no  _ = false
+
+-- | Wenn id ≡ target, dann liefert rank-match id target ≡ true.
+rank-match-true : ∀ {id target : ℕ} → id ≡ target → rank-match id target ≡ true
+rank-match-true {id} {target} eq
+  rewrite eq
+  with target ≟ target
+... | yes _ = refl
+... | no  _ = refl  -- unerreichbar, aber durch Exhaustion ok (Dec-Totalität)
+
+-- | Alternative Form, wenn du direkt das Dec-Ergebnis verwendest:
+rank-match-true-by-≟ : ∀ {id target : ℕ} → (id ≟ target) ≡ yes refl → rank-match id target ≡ true
+rank-match-true-by-≟ {id} {target} dec-yes
+  rewrite dec-yes
+  with id ≟ target
+... | yes _ = refl
+... | no  _ = refl  -- unerreichbar unter der Annahme
+
+------------------------------------------------------------------------
 -- Spatial slices
 ------------------------------------------------------------------------
 
@@ -40,13 +66,8 @@ SpatialSlice rank = List (Dist 2)
 
 -- | Extract nodes of same rank from DriftGraph
 same-rank-nodes : DriftGraph → ℕ → List Node
-same-rank-nodes G target = 
-  bool-filter (λ n → rank-match (nodeId n)) (nodes G)
-  where
-    rank-match : NodeId → Bool
-    rank-match id with id ≟ target
-    ... | yes _ = true
-    ... | no  _ = false
+same-rank-nodes G target =
+  bool-filter (λ n → rank-match (nodeId n) target) (nodes G)
 
 -- | Convert Node content to Dist
 node→dist : Node → Dist 2
@@ -88,9 +109,10 @@ spatial-adjacency slice = build-pairs slice slice
 ------------------------------------------------------------------------
 
 example-slice : SpatialSlice 0
-example-slice = (true ∷ false ∷ []) ∷ 
-                (false ∷ true ∷ []) ∷ 
-                (true ∷ true ∷ []) ∷ []
+example-slice =
+  (true ∷ false ∷ []) ∷
+  (false ∷ true  ∷ []) ∷
+  (true  ∷ true  ∷ []) ∷ []
 
 test-rel : Bool
 test-rel = are-spatially-related (true ∷ false ∷ []) (false ∷ true ∷ [])

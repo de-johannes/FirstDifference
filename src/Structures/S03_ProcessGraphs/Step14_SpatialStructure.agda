@@ -49,13 +49,6 @@ rank-match-true {id} {target} eq
 ... | yes _     = refl
 ... | no  ¬eq   = ⊥-elim (¬eq refl)
 
--- | Alternative Form, wenn du direkt das Dec-Ergebnis verwendest:
-rank-match-true-by-≟ : ∀ {id target : ℕ} → (id ≟ target) ≡ yes refl → rank-match id target ≡ true
-rank-match-true-by-≟ {id} {target} dec-yes with id ≟ target
-... | yes _ = refl
-... | no  ¬eq with dec-yes
-...   | ()
-
 ------------------------------------------------------------------------
 -- Spatial slices
 ------------------------------------------------------------------------

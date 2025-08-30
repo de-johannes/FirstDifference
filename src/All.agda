@@ -46,6 +46,8 @@ open import Structures.S02_OrderCategories.Step09_SemanticTimeFunctor           
 open import Structures.S03_ProcessGraphs.Step10_DriftGraph                                  public
 
 open import Structures.S03_ProcessGraphs.Step11_PathCategory                                public
+open import Structures.S03_ProcessGraphs.Step11_PathCategory_Soundness                      public
+open import Structures.S03_ProcessGraphs.Step11_PathCategory_Completeness                   public
 
 open import Structures.S03_ProcessGraphs.Step12_CutCategory                                 public
 

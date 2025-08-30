@@ -14,9 +14,9 @@ open import Structures.S01_BooleanCore.Step02_VectorOperations  using (Dist; dri
 open import Structures.S04_Projection.Step15_FoldMap
   using (toℕ; popcount; andCount)
 
--- Helper: push congruence through (+) on the right
-cong-+ʳ : ∀ {m n} → m ≡ n → ∀ k → m + k ≡ n + k
-cong-+ʳ refl k = refl
+-- Helper: push congruence through (+) on the left
+cong-+ˡ : ∀ {m n} → m ≡ n → ∀ k → k + m ≡ k + n
+cong-+ˡ refl k = refl
 
 -- Main identity: componentwise-AND counted equals count of ANDed vector
 popcount-drift≡andCount : ∀ {n} (a b : Dist n) → popcount (drift a b) ≡ andCount a b
@@ -24,4 +24,4 @@ popcount-drift≡andCount {zero}  []       []       = refl
 popcount-drift≡andCount {suc n} (x ∷ xs) (y ∷ ys) =
   -- LHS = toℕ (x ∧ y) + popcount (drift xs ys)
   -- RHS = toℕ (x ∧ y) + andCount xs ys
-  cong-+ʳ (popcount-drift≡andCount xs ys) (toℕ (x ∧ y))
+  cong-+ˡ (popcount-drift≡andCount xs ys) (toℕ (x ∧ y))

@@ -182,8 +182,7 @@ completeness (u ∷ v ∷ w ∷ rs) (here h)
 completeness (u ∷ v ∷ w ∷ []) (there p) = ⊥-elim (absurd2 p)
 completeness (u ∷ v ∷ w ∷ (x ∷ xs)) (there p) with nonZeroℤ (det3 u v w)
 ... | true  = refl
-... | false
-  rewrite step-when-false∷ u v w x xs refl = completeness (v ∷ w ∷ x ∷ xs) p
+... | false = completeness (v ∷ w ∷ x ∷ xs) p
 
 completenessOnSlice :
   (G : DriftGraph) (t : ℕ)

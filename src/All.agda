@@ -42,10 +42,14 @@ open import Structures.S02_OrderCategories.Step08_CategoryStructure             
 open import Structures.S02_OrderCategories.Step09_SemanticTimeFunctor                       public
 
 
--- (C) Time Emergence — Semantic time as a functor on sequences
--- open import Structures.Step6_SemanticTimeFunctor public
-
 -- (D) Process Graphs & Temporal Functors — Paths, Cuts, and evolution
+open import Structures.S03_ProcessGraphs.Step10_DriftGraph                                  public
+
+
+
+
+
+
 -- open import Structures.Step7_DriftGraph        public
 -- open import Structures.Step8_PathCategory      public
 -- open import Structures.Step8_CutCategory       public

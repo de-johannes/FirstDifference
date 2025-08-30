@@ -67,9 +67,8 @@ same-rank-complete {G} {r} {n} n∈ eq = insert (nodes G) n∈
 
     insert : ∀ (xs : List Node) → n ∈ xs → n ∈ bool-filter p xs
     insert [] ()
-    insert (y ∷ ys) here with nodeId y ≟ r | eq
-    ... | yes _ | _      = here
-    ... | no  ¬eq | eq   = ⊥-elim (¬eq eq)
+    insert (y ∷ ys) here with rank-match-true eq
+    ... | py≡true rewrite py≡true = here
     insert (y ∷ ys) (there prf) with nodeId y ≟ r
     ... | yes _  = there (insert ys prf)
     ... | no  _  = insert ys prf

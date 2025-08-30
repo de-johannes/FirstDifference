@@ -7,24 +7,22 @@
 --  * kompatibel mit Stdlib, in der Data.List.filter Dec erwartet
 ------------------------------------------------------------------------
 
-module Structures.Step10_FoldMap where
+module Structures.S04_Projection.Step15_FoldMap where
 
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import Relation.Nullary                      using (Dec; yes; no)
 open import Data.Nat                              using (ℕ; _≟_; zero; suc; _+_; _*_; _≤?_)
 open import Data.List                             using (List; []; _∷_; map; _++_; length)
-open import Data.Bool                             using (Bool; true; false; not; _∨_; _∧_; if_then_else_)
 open import Data.Product                          using (_×_; _,_)
 open import Data.Maybe                            using (Maybe; just; nothing)
 open import Data.Vec                              using (Vec; []; _∷_)
 
-open import Structures.Step1_BooleanFoundation
-open import Structures.Step2_VectorOperations      using (Dist)
-open import Structures.Step7_DriftGraph            using
-  ( DriftGraph ; Node ; NodeId
-  ; nodes ; nodeId ; content )
-open import Structures.Step9_SpatialStructure      using
-  ( same-rank-nodes ; node-to-dist ; are-spatially-related )
+open import Structures.S01_BooleanCore.Step01_BooleanFoundation using (Bool; true; false; not; _∨_; _∧_)
+open import Structures.S01_BooleanCore.Step02_VectorOperations using (Dist)
+open import Structures.S03_ProcessGraphs.Step10_DriftGraph using
+  ( DriftGraph ; Node ; NodeId ; nodes ; nodeId ; content )
+open import Structures.S03_ProcessGraphs.Step14_SpatialStructure using
+  ( same-rank-nodes ; node→dist ; are-spatially-related )
 
 ------------------------------------------------------------------------
 -- 0.   Dec → Bool  & Nat-/Node-Vergleich
@@ -82,7 +80,7 @@ filterBy p (x ∷ xs) with p x
 
 relatedᵇ : Node → Node → Bool
 relatedᵇ a b =
-  let d₁ = node-to-dist a ; d₂ = node-to-dist b in
+  let d₁ = node→dist a ; d₂ = node→dist b in
   are-spatially-related d₁ d₂ ∨ are-spatially-related d₂ d₁
 
 nbrs : List Node → Node → List Node
@@ -205,7 +203,7 @@ sliceAt : DriftGraph → ℕ → List Node
 sliceAt G rank = same-rank-nodes G rank
 
 historyAt : DriftGraph → ℕ → List (Dist 2)
-historyAt G rank = map node-to-dist (sliceAt G rank)
+historyAt G rank = map node→dist (sliceAt G rank)
 
 ------------------------------------------------------------------------
 -- 8.   Numerische Fold-Map (ℕ-basiert, gewichtet)
@@ -217,13 +215,13 @@ historyAt G rank = map node-to-dist (sliceAt G rank)
 -- Bitzählung
 popcount : ∀ {n} → Dist n → ℕ
 popcount {zero}  []       = 0
-popcount {suc _} (b ∷ xs) = (if b then 1 else 0) + popcount xs
+popcount {suc _} (b ∷ xs) = case b of λ where { true → 1 ; false → 0 } + popcount xs
 
 -- maskierte And-Zählung
 andCount : ∀ {n} → Dist n → Dist n → ℕ
 andCount {zero}  []       []       = 0
 andCount {suc _} (a ∷ as) (b ∷ bs) =
-  (if a ∧ b then 1 else 0) + andCount as bs
+  case (a ∧ b) of λ where { true → 1 ; false → 0 } + andCount as bs
 
 eqℕ : ℕ → ℕ → Bool
 eqℕ zero    zero    = true
@@ -255,9 +253,16 @@ mask3Aux : ∀ {n} → Bool → ℕ → Vec Bool n
 mask3Aux {zero}  _ _ = []
 mask3Aux {suc n} b t = b ∷ mask3Aux {n} b' t'
   where
+    done? : Bool
     done? = eqℕ t zero
-    b'    = if done? then not b else b
-    t'    = if done? then two    else pred t
+    b' : Bool
+    b' with done?
+    ... | true  = not b
+    ... | false = b
+    t' : ℕ
+    t' with done?
+    ... | true  = two
+    ... | false = pred t
 
 mask₃ : ∀ {n} → Dist n
 mask₃ {n} = mask3Aux {n} true two
@@ -305,4 +310,3 @@ Embed3Nat hist =
 -- Komfort: direkt Punkte für einen Zeit-Slice liefern
 Embed3NatAt : DriftGraph → ℕ → List Tripleℕ
 Embed3NatAt G t = Embed3Nat (historyAt G t)
-

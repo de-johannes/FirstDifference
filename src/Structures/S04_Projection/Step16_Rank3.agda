@@ -1,26 +1,27 @@
 {-# OPTIONS --safe #-}
 
 ----------------------------------------------------------------------
---  Step 11 ▸ Rank-3 detection on time-slices (builds on Step 10)
---  * benutzt historyAt / Embed3Nat aus Step 10
---  * macht nur noch Diffs + Determinante + Checker/Beweis
+--  Step 16 ▸ Rank-3 detection on time-slices (builds on Step 15)
+--  * consumes historyAt / Embed3Nat from Step 15 (FoldMap)
+--  * computes diffs, determinant over ℤ, boolean checker + completeness
 ----------------------------------------------------------------------
 
-module Structures.Step11_Rank3 where
+module Structures.S04_Projection.Step16_Rank3 where
 
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
-open import Data.Bool      using (Bool; true; false; if_then_else_; not)
-open import Data.Nat       using (ℕ; zero; suc; _+_; _*_)
-open import Data.List      using (List; []; _∷_; map)
-open import Data.Maybe     using (Maybe; just; nothing)
-open import Agda.Primitive using (Level)
+open import Data.Nat  using (ℕ; zero; suc; _+_; _*_) 
+open import Data.List using (List; []; _∷_; map)
+open import Data.Maybe using (Maybe; just; nothing)
 
+-- Project Bool (avoid std Data.Bool to keep one Bool in scope)
+open import Structures.S01_BooleanCore.Step01_BooleanFoundation using (Bool; true; false; not)
 
-open import Structures.Step7_DriftGraph  using (DriftGraph)
-open import Structures.Step10_FoldMap    using (historyAt ; Tripleℕ ; Embed3Nat)
+-- Graph + FoldMap pipeline
+open import Structures.S03_ProcessGraphs.Step10_DriftGraph using (DriftGraph)
+open import Structures.S04_Projection.Step15_FoldMap using (historyAt ; Tripleℕ ; Embed3Nat)
 
 ----------------------------------------------------------------------
--- ℤ (als Differenz zweier ℕ) + Grundrechenarten
+-- ℤ (as difference of two ℕ) + arithmetic
 ----------------------------------------------------------------------
 
 record ℤ : Set where
@@ -43,24 +44,25 @@ z a b +ℤ z c d = z (a + c) (b + d)
 _−ℤ_ : ℤ → ℤ → ℤ
 x −ℤ y = x +ℤ negℤ y
 
-_∗ℤ_ : ℤ → ℤ → ℤ                -- (a−b)(c−d) = (ac+bd) − (ad+bc)
+-- (a−b)(c−d) = (ac+bd) − (ad+bc)
+_∗ℤ_ : ℤ → ℤ → ℤ
 z a b ∗ℤ z c d = z (a * c + b * d) (a * d + b * c)
 
+-- boolean equality on ℕ (local, only for isZeroℤ)
+_==_ : ℕ → ℕ → Bool
+0       == 0        = true
+0       == suc _    = false
+suc _   == 0        = false
+suc m   == suc n    = m == n
+
 isZeroℤ : ℤ → Bool
-isZeroℤ (z p n) = if p == n then true else false
-  where
-    -- kleiner Gleichheitstest über ℕ (nur für isZeroℤ gebraucht)
-    _==_ : ℕ → ℕ → Bool
-    0     == 0     = true
-    0     == (suc _) = false
-    (suc _) == 0     = false
-    (suc m) == (suc n) = m == n
+isZeroℤ (z p n) = p == n
 
 nonZeroℤ : ℤ → Bool
 nonZeroℤ x = not (isZeroℤ x)
 
 ----------------------------------------------------------------------
--- ℤ³ + Determinante
+-- ℤ³ + determinant
 ----------------------------------------------------------------------
 
 record ℤ³ : Set where
@@ -87,20 +89,20 @@ det3 r₁ r₂ r₃ =
   in  (t₁ −ℤ t₂) +ℤ t₃
 
 ----------------------------------------------------------------------
--- Umwandlung der Step-10-Punkte (ℕ³) nach ℤ³
+-- Convert Step‑15 points (ℕ³) to ℤ³
 ----------------------------------------------------------------------
 
 toZ3 : Tripleℕ → ℤ³
 toZ3 t = mk3 (toℤ (Tripleℕ.x t)) (toℤ (Tripleℕ.y t)) (toℤ (Tripleℕ.z t))
 
 ----------------------------------------------------------------------
--- Diffs, Witness-Suche und Bool-Checker
+-- Diffs, witness search and boolean checker
 ----------------------------------------------------------------------
 
 diffs : List ℤ³ → List ℤ³
-diffs []           = []
-diffs (_ ∷ [])     = []
-diffs (p ∷ q ∷ rs) = q minus3 p ∷ diffs (q ∷ rs)
+diffs []             = []
+diffs (_ ∷ [])       = []
+diffs (p ∷ q ∷ rest) = q minus3 p ∷ diffs (q ∷ rest)
 
 record GoodTriple : Set where
   constructor pack
@@ -108,10 +110,9 @@ record GoodTriple : Set where
         rest  : List ℤ³
 
 rank3Witness : List ℤ³ → Maybe GoodTriple
-rank3Witness (u ∷ v ∷ w ∷ rs) =
-  if nonZeroℤ (det3 u v w)
-  then just (pack u v w rs)
-  else rank3Witness (v ∷ w ∷ rs)
+rank3Witness (u ∷ v ∷ w ∷ rs) with nonZeroℤ (det3 u v w)
+... | true  = just (pack u v w rs)
+... | false = rank3Witness (v ∷ w ∷ rs)
 rank3Witness _ = nothing
 
 isJust : ∀ {a} {A : Set a} → Maybe A → Bool
@@ -122,7 +123,7 @@ rank3? : List ℤ³ → Bool
 rank3? xs = isJust (rank3Witness xs)
 
 ----------------------------------------------------------------------
--- Öffentliche API: Rank-3 auf dem Zeit-Slice (Step 10)
+-- Public API: Rank‑3 on a time slice (via Step‑15)
 ----------------------------------------------------------------------
 
 rank3At : DriftGraph → ℕ → Bool
@@ -131,7 +132,7 @@ rank3At G t =
   in  rank3? (diffs ptsZ)
 
 ----------------------------------------------------------------------
--- Spezifikation & Vollständigkeit
+-- Specification & completeness
 ----------------------------------------------------------------------
 
 data HasGoodTriple : List ℤ³ → Set where
@@ -141,11 +142,11 @@ data HasGoodTriple : List ℤ³ → Set where
   there : ∀ {x xs} → HasGoodTriple xs → HasGoodTriple (x ∷ xs)
 
 completeness : ∀ xs → HasGoodTriple xs → rank3? xs ≡ true
-completeness []               ()
-completeness (_ ∷ [])        (there ())
-completeness (_ ∷ _ ∷ [])    (there (there ()))
-completeness (u ∷ v ∷ w ∷ rs) (here h) rewrite h = refl
-completeness (u ∷ v ∷ w ∷ rs) (there p)
+completeness []                 ()
+completeness (_ ∷ [])          (there ())
+completeness (_ ∷ _ ∷ [])      (there (there ()))
+completeness (u ∷ v ∷ w ∷ rs)  (here h) rewrite h = refl
+completeness (u ∷ v ∷ w ∷ rs)  (there p)
   with nonZeroℤ (det3 u v w)
 ... | true  = refl
 ... | false = completeness (v ∷ w ∷ rs) p

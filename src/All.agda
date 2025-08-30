@@ -44,24 +44,23 @@ open import Structures.S02_OrderCategories.Step09_SemanticTimeFunctor           
 
 -- (D) Process Graphs & Temporal Functors — Paths, Cuts, and evolution
 open import Structures.S03_ProcessGraphs.Step10_DriftGraph                                  public
+
 open import Structures.S03_ProcessGraphs.Step11_PathCategory                                public
+
 open import Structures.S03_ProcessGraphs.Step12_CutCategory                                 public
+
 open import Structures.S03_ProcessGraphs.Step13_PathToCutFunctor                            public
+
 open import Structures.S03_ProcessGraphs.Step14_SpatialStructure                            public
 
 
+-- (E) FoldMap & Dimensionality — Projection to data; Rank-3 proof
+open import Structures.S04_Projection.Step15_FoldMap                                        public
 
--- open import Structures.Step7_DriftGraph        public
--- open import Structures.Step8_PathCategory      public
--- open import Structures.Step8_CutCategory       public
--- open import Structures.Step8_TemporalFunctor   public
+open import Structures.S04_Projection.Step16_Rank3                                          public
 
--- (E) Space from Simultaneity — Spatial slices from equal-rank nodes
--- open import Structures.Step9_SpatialStructure  public
 
--- (F) FoldMap & Dimensionality — Projection to data; Rank-3 proof
--- open import Structures.Step10_FoldMap          public
--- open import Structures.Step11_Rank3            public
+
 -- open import Structures.Step12_Rank3_Soundness  public
 
 -- (G) Operadic Cohesion — Composable operations on Cells/Nodes

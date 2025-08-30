@@ -169,7 +169,8 @@ completeness (_ ∷ [])          (there ())
 completeness (_ ∷ _ ∷ [])      (there (there ()))
 completeness (u ∷ v ∷ w ∷ rs) (here h)
   rewrite step-when-true u v w rs h = refl
-completeness (u ∷ v ∷ w ∷ []) (there ()) 
+completeness (u ∷ v ∷ w ∷ []) (there p) =
+  completeness (v ∷ w ∷ []) p
 completeness (u ∷ v ∷ w ∷ (x ∷ xs)) (there p) with nonZeroℤ (det3 u v w)
 ... | true  = refl
 ... | false

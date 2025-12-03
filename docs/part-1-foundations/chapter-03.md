@@ -331,5 +331,5 @@ The seed of spacetime is planted. The rest follows by calculation.
 
 <nav class="chapter-nav">
   <a href="chapter-02" class="prev">← Chapter 2: Genesis</a>
-  <a href="../" class="next">Back to Home →</a>
+  <a href="../part-2-spectral-geometry/" class="next">Part II: Spectral Geometry →</a>
 </nav>

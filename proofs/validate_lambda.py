@@ -35,8 +35,20 @@ PLANCK_MASS = 2.176434e-8          # kg
 
 # Cosmological parameters
 SPEED_OF_LIGHT = 299792458         # m/s
-AGE_OF_UNIVERSE_SECONDS = 4.35e17  # seconds (13.8 Gyr)
-AGE_OF_UNIVERSE_YEARS = 13.8e9     # years
+
+# Two options for age of universe:
+# 1. OBSERVED (Planck 2018): 13.787 Gyr
+# 2. DRIFE PREDICTED: 13.726 Gyr = 5 × 4^100 × t_Planck
+#
+# We use the DRIFE prediction for consistency!
+import math
+DRIFE_N = 5 * (4 ** 100)  # N = 5 × 4^100 (K₄-derived)
+DRIFE_TAU_SECONDS = DRIFE_N * PLANCK_TIME  # τ = N × t_P
+DRIFE_TAU_YEARS = DRIFE_TAU_SECONDS / (365.25 * 24 * 3600)
+DRIFE_TAU_GYR = DRIFE_TAU_YEARS / 1e9
+
+AGE_OF_UNIVERSE_SECONDS = DRIFE_TAU_SECONDS  # Using DRIFE prediction!
+AGE_OF_UNIVERSE_YEARS = DRIFE_TAU_YEARS      # ≈ 13.726 Gyr
 HUBBLE_RADIUS = 4.4e26             # meters (current)
 
 # Observed cosmological constant

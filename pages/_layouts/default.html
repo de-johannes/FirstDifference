@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}</title>
+  <meta name="description" content="{{ page.description | default: site.description }}">
+  
+  <!-- MathJax Configuration -->
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="{{ '/assets/css/custom.css' | relative_url }}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="{{ '/' | relative_url }}" class="site-title">{{ site.title }}</a>
+      <nav class="site-nav">
+        <a href="{{ '/' | relative_url }}">Home</a>
+        <a href="{{ '/abstract' | relative_url }}">Abstract</a>
+        <a href="{{ '/preface' | relative_url }}">Preface</a>
+        <a href="{{ '/part-1-foundations/' | relative_url }}">Part I</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    {% if page.breadcrumb %}
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      {{ page.breadcrumb }}
+    </nav>
+    {% endif %}
+
+    <article>
+      {{ content }}
+    </article>
+
+    {% if page.prev_page or page.next_page %}
+    <nav class="chapter-nav">
+      {% if page.prev_page %}
+      <a href="{{ page.prev_page.url | relative_url }}" class="prev">← {{ page.prev_page.title }}</a>
+      {% endif %}
+      {% if page.next_page %}
+      <a href="{{ page.next_page.url | relative_url }}" class="next">{{ page.next_page.title }} →</a>
+      {% endif %}
+    </nav>
+    {% endif %}
+
+    <p class="back-to-top"><a href="#top">↑ Back to top</a></p>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>DRIFE - The First Difference | By {{ site.author }}</p>
+      <p>Machine-Verified in Agda under <code>--safe --without-K</code></p>
+    </div>
+  </footer>
+</body>
+</html>

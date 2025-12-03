@@ -1,0 +1,443 @@
+/* DRIFE Book - Custom Styles */
+/* Clean, academic styling matching the LaTeX theme */
+
+:root {
+  --drife-blue: rgb(70, 130, 180);
+  --drife-dark: rgb(50, 50, 60);
+  --drife-light: rgb(245, 248, 250);
+  --drife-accent: rgb(180, 100, 100);
+  --code-bg: rgb(250, 250, 252);
+  --chain-color: rgb(60, 100, 60);
+}
+
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Liberation Sans', sans-serif;
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--drife-dark);
+  background: #fff;
+}
+
+/* Container */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Header */
+.site-header {
+  background: var(--drife-light);
+  border-bottom: 1px solid #ddd;
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.site-header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.site-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--drife-blue);
+  text-decoration: none;
+}
+
+.site-nav {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.site-nav a {
+  color: var(--drife-dark);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.site-nav a:hover {
+  color: var(--drife-blue);
+}
+
+/* Main content */
+main {
+  padding: 2rem 0 4rem;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.breadcrumb a {
+  color: var(--drife-blue);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--drife-dark);
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+}
+
+h1 {
+  font-size: 2.2rem;
+  border-bottom: 2px solid var(--drife-blue);
+  padding-bottom: 0.5rem;
+  margin-top: 0;
+}
+
+h2 {
+  font-size: 1.6rem;
+  color: var(--drife-blue);
+}
+
+h3 {
+  font-size: 1.3rem;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+/* Links */
+a {
+  color: var(--drife-blue);
+}
+
+a:hover {
+  color: var(--drife-accent);
+}
+
+/* Lists */
+ul, ol {
+  margin-bottom: 1rem;
+  padding-left: 2rem;
+}
+
+li {
+  margin-bottom: 0.5rem;
+}
+
+/* Blockquotes */
+blockquote {
+  border-left: 4px solid var(--drife-blue);
+  margin: 1.5rem 0;
+  padding: 1rem 1.5rem;
+  background: var(--drife-light);
+  font-style: italic;
+}
+
+blockquote cite {
+  display: block;
+  margin-top: 0.5rem;
+  font-style: normal;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Code blocks */
+pre {
+  background: var(--code-bg);
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+code {
+  font-family: 'Inconsolata', 'Monaco', 'Consolas', monospace;
+  font-size: 0.9em;
+}
+
+:not(pre) > code {
+  background: var(--code-bg);
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  border: 1px solid #e0e0e0;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+
+th, td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background: var(--drife-light);
+  font-weight: 600;
+}
+
+/* Math display */
+.MathJax {
+  font-size: 1.1em !important;
+}
+
+.MathJax_Display {
+  margin: 1.5rem 0 !important;
+  overflow-x: auto;
+}
+
+/* Special boxes */
+.highlight-box {
+  background: var(--drife-light);
+  border: 2px solid var(--drife-blue);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  text-align: center;
+}
+
+.highlight-box code {
+  font-size: 1.1rem;
+  background: none;
+  border: none;
+}
+
+.principle-box {
+  background: #fff;
+  border: 2px solid var(--drife-accent);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.principle-box h4 {
+  color: var(--drife-accent);
+  margin-top: 0;
+}
+
+.insight-box {
+  background: var(--drife-light);
+  border: 1px solid var(--drife-blue);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.insight-box h4 {
+  color: var(--drife-blue);
+  margin-top: 0;
+}
+
+.agda-proof {
+  background: var(--code-bg);
+  border: 1px solid var(--drife-dark);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.agda-proof h4 {
+  font-family: 'Inconsolata', monospace;
+  margin-top: 0;
+  color: var(--drife-dark);
+}
+
+.chain-box {
+  background: #fff;
+  border: 2px solid var(--chain-color);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  text-align: center;
+}
+
+.chain-box h4 {
+  color: var(--chain-color);
+  margin-top: 0;
+}
+
+/* Definition, Theorem, etc. */
+.definition, .theorem, .lemma, .corollary, .proposition {
+  margin: 1.5rem 0;
+  padding: 1rem 1.5rem;
+  border-radius: 6px;
+}
+
+.definition {
+  background: var(--drife-light);
+  border-left: 4px solid var(--drife-blue);
+}
+
+.theorem {
+  background: #fff9f0;
+  border-left: 4px solid #f0a030;
+}
+
+.lemma, .corollary, .proposition {
+  background: #f9fff9;
+  border-left: 4px solid var(--chain-color);
+}
+
+.definition strong:first-child,
+.theorem strong:first-child,
+.lemma strong:first-child,
+.corollary strong:first-child,
+.proposition strong:first-child {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* Chapter navigation */
+.chapter-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #ddd;
+}
+
+.chapter-nav a {
+  text-decoration: none;
+  color: var(--drife-blue);
+}
+
+.chapter-nav a:hover {
+  text-decoration: underline;
+}
+
+.chapter-nav .prev {
+  text-align: left;
+}
+
+.chapter-nav .next {
+  text-align: right;
+}
+
+/* Back to top */
+.back-to-top {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* Footer */
+.site-footer {
+  background: var(--drife-light);
+  border-top: 1px solid #ddd;
+  padding: 2rem 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.site-footer p {
+  margin-bottom: 0.5rem;
+}
+
+/* Table of Contents */
+.toc {
+  background: var(--drife-light);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.toc h2 {
+  margin-top: 0;
+  font-size: 1.3rem;
+}
+
+.toc ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.toc > ul > li {
+  margin-bottom: 1rem;
+}
+
+.toc ul ul {
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.toc a {
+  text-decoration: none;
+}
+
+.toc a:hover {
+  text-decoration: underline;
+}
+
+/* Predictions table */
+.predictions-table {
+  margin: 1.5rem 0;
+}
+
+.predictions-table th {
+  background: var(--drife-blue);
+  color: white;
+}
+
+.predictions-table .checkmark {
+  color: green;
+  font-weight: bold;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  body {
+    font-size: 16px;
+  }
+  
+  h1 {
+    font-size: 1.8rem;
+  }
+  
+  h2 {
+    font-size: 1.4rem;
+  }
+  
+  .site-header .container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .site-nav {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .chapter-nav {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}

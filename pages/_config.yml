@@ -1,0 +1,40 @@
+# DRIFE Book - Jekyll Configuration
+title: "DRIFE - The First Difference"
+description: "A Constructive, Axiom-Free Derivation of 4D General Relativity from Pure Distinction"
+author: "Johannes Wielsch"
+
+# Build settings
+theme: minima
+markdown: kramdown
+kramdown:
+  math_engine: mathjax
+  syntax_highlighter: rouge
+
+# MathJax support
+mathjax:
+  enabled: true
+
+# Collections for navigation
+collections:
+  chapters:
+    output: true
+    permalink: /:collection/:name/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+
+# Exclude from build
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+
+# Enable GitHub Pages
+plugins:
+  - jekyll-seo-tag

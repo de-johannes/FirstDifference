@@ -60,9 +60,9 @@ DRIFE.agda
 
 ---
 
-## Statistics
+## Statistics (as of December 2025)
 
-- **Total lines**: 6,516
+- **Total lines**: ~6,500
 - **Theorems**: 47
 - **Type-checked**: Yes
 - **External dependencies**: None

@@ -88,9 +88,9 @@ theorem-kappa = refl
 
 In standard general relativity (with c = 1):
 
-$$\kappa = \frac{8\pi G}{c^4} = 8\pi G$$
+$$\kappa_{\text{GR}} = \frac{8\pi G}{c^4} = 8\pi G$$
 
-DRIFE gives κ = 8 in natural units. The factor of π can be absorbed into the definition of Newton's constant G.
+DRIFE gives κ = 8 in natural (Planck) units. The difference is that DRIFE uses units where G = 1/(8π), so κ<sub>DRIFE</sub> = 8 corresponds to 8πG in conventional units. The numerical value matches when the appropriate unit conversion is applied.
 
 ---
 

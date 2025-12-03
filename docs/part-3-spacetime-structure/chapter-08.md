@@ -76,7 +76,7 @@ Why can't we "un-distinguish"? Why doesn't the system run backward from K₄ to 
 
 The answer lies in the structure of distinction itself. A distinction, once made, creates structure that did not exist before. To "undo" a distinction would require knowing which distinction to undo—but this knowledge is itself a distinction!
 
-More formally: the process D₀ → Genesis → K₄ is *entropy-increasing*. Each step creates more structure (more edges, more relations). The reverse would be entropy-decreasing, which is statistically forbidden.
+More formally: the process D₀ → Genesis → K₄ is *structure-increasing*. Each step creates more distinctions (more edges, more relations). The reverse would require a mechanism for "undistinguishing" that does not exist in the framework—there is no operation inverse to distinction-making.
 
 <div class="theorem">
   <strong>Theorem (Drift Irreversibility)</strong>

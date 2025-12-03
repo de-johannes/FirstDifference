@@ -78,8 +78,7 @@ The-Irrefutable/
 ├── DRIFE.agda           # The proof (6000+ lines, --safe --without-K)
 ├── validate_K4.py       # Numerical validation (7/7 tests pass)
 ├── simulate_collapse.py # Topological brake visualization
-├── README.md            # This file
-└── work/                # Legacy modules and development history
+└── README.md            # This file
 ```
 
 ---

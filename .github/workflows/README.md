@@ -1,8 +1,16 @@
 # CI/CD Workflows
 
-Two workflows, one proof.
+Three workflows, one proof.
 
 ## Workflows
+
+### ci.yml (PRs and main pushes)
+
+**Trigger:** Pull requests to `main` and pushes to `main`
+
+**Jobs:**
+1. **agda-verification:** Compile `DRIFE.agda` with `--safe --without-K --no-libraries`
+2. **validation-tests:** Run `validate_K4.py` and `validate_lambda.py`
 
 ### test-ci.yml (non-main branches)
 
@@ -25,8 +33,9 @@ Two workflows, one proof.
 ## What Gets Verified
 
 ```
-DRIFE.agda      # Complete proof: D₀ → G_μν = 8T_μν
-validate_K4.py  # K₄ eigenvalues, Königsklasse predictions
+DRIFE.agda         # Complete proof: D₀ → G_μν = 8T_μν
+validate_K4.py     # K₄ eigenvalues, Königsklasse predictions (7 tests)
+validate_lambda.py # Λ-dilution derivation, 10^{-122} problem (7 tests)
 ```
 
 ## Local Testing
@@ -37,4 +46,5 @@ agda --safe --without-K --no-libraries DRIFE.agda
 
 # Numerical validation
 python validate_K4.py
+python validate_lambda.py
 ```

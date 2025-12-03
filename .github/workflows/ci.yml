@@ -1,0 +1,73 @@
+name: DRIFE CI
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  agda-verification:
+    name: Verify DRIFE.agda compiles
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Agda
+        uses: wenkokke/setup-agda@v2
+        with:
+          agda-version: '2.7.0.1'
+
+      - name: Compile DRIFE.agda
+        run: |
+          echo "⏳ Compiling DRIFE.agda (--safe --without-K --no-libraries)..."
+          agda --safe --without-K --no-libraries DRIFE.agda
+          echo "✅ DRIFE.agda compiles successfully"
+
+      - name: Report success
+        run: echo "✅ DRIFE.agda compiles successfully"
+
+  validation-tests:
+    name: Run validation tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install numpy
+
+      - name: Run K₄ validation
+        run: |
+          python validate_K4.py
+          echo "✅ K₄ validation passed"
+
+      - name: Run Lambda validation
+        run: |
+          python validate_lambda.py
+          echo "✅ Lambda validation passed"
+
+      - name: Report test results
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ All validation tests passed!"
+          echo "   ✅ K₄ validation: 7/7 tests"
+          echo "   ✅ Lambda validation: 7/7 tests"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

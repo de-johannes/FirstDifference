@@ -26,10 +26,10 @@
   <link rel="stylesheet" href="{{ '/assets/css/custom.css' | relative_url }}">
 </head>
 <body>
-  <header class="site-header">
+  <header class="site-header" role="banner">
     <div class="container">
       <a href="{{ '/' | relative_url }}" class="site-title">{{ site.title }}</a>
-      <nav class="site-nav">
+      <nav class="site-nav" role="navigation" aria-label="Main navigation">
         <a href="{{ '/' | relative_url }}">Home</a>
         <a href="{{ '/abstract' | relative_url }}">Abstract</a>
         <a href="{{ '/preface' | relative_url }}">Preface</a>

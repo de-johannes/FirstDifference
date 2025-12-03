@@ -447,8 +447,10 @@ spatial-dim : ℕ
 spatial-dim = suc (suc (suc zero))  -- 3 from K₄
 
 -- Curvature dimension (independent of spatial dim)
+-- Note: This holds for d ≥ 2. The d = 1 case is degenerate (no curvature in 1D).
+-- For DRIFE, we have d = 3 from K₄, so this is well-defined.
 curvature-dim : ℕ
-curvature-dim = suc (suc zero)  -- 2 (always, for any d ≥ 2)
+curvature-dim = suc (suc zero)  -- 2 (for any d ≥ 2; curvature requires 2D loop)
 
 -- THEOREM: Dilution exponent = curvature dimension, NOT spatial dimension
 record ExponentDerivation : Set where

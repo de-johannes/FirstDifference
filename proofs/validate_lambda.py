@@ -274,7 +274,8 @@ def test_122_problem():
     
     # For Λ_obs/Λ_Planck = 3/N²:
     # log₁₀(3/N²) = log₁₀(3) - 2×log₁₀(N) ≈ 0.48 - 2×60.9 ≈ -121.3
-    # The magnitude of this negative exponent is what we call "122"
+    # The magnitude (~122) is the conventional name for the cosmological constant problem
+    # (rounded from the actual value ~121-122 depending on measurement uncertainties)
     predicted_power = 2 * N_exp - np.log10(LAMBDA_BARE)
     
     print("\nTEST 6: The 10^{-122} Problem")

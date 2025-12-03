@@ -18,7 +18,7 @@ Physical Constants:
 - Hubble radius: ℓ_H = c × t_universe ≈ 4.4 × 10²⁶ m
 - Age of universe: t_universe = 13.8 Gyr = 4.35 × 10¹⁷ s
 
-Run: python3 proofs/validate_lambda.py
+Run: python3 validate_lambda.py
 ═══════════════════════════════════════════════════════════════════════════════
 """
 

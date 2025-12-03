@@ -53,13 +53,18 @@ jobs:
 
       - name: Run K₄ validation
         run: |
-          python validate_K4.py
+          python proofs/validate_K4.py
           echo "✅ K₄ validation passed"
 
       - name: Run Lambda validation
         run: |
-          python validate_lambda.py
+          python proofs/validate_lambda.py
           echo "✅ Lambda validation passed"
+
+      - name: Run Alpha validation
+        run: |
+          python proofs/validate_alpha.py
+          echo "✅ Alpha validation passed"
 
       - name: Report test results
         run: |

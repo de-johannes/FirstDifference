@@ -148,9 +148,9 @@ This is the **inflation exit**. Not a parameter. A theorem.
 - Einstein tensor construction
 - κ = 8 from Euler characteristic
 - Conservation laws (Bianchi identity)
+- τ/t_P ≈ 10⁶⁰ (hierarchy problem)
 
 ### What's NOT Claimed
-- τ/t_P ≈ 10⁶⁰ (hierarchy problem — needs recursion depth proof)
 - Specific particle masses (would need Standard Model extension)
 - Quantum mechanics (separate but compatible framework)
 

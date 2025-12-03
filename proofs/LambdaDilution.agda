@@ -283,46 +283,44 @@ theorem-lambda-dilution = record
 -- § 7  WHAT THIS PROVES AND WHAT REMAINS OPEN
 -- ============================================================================
 
-{-
-  WHAT WE HAVE PROVEN:
-  
-  1. Λ_bare = 3 from K₄ spectral geometry (derived, not assumed)
-  
-  2. The dilution scales as N⁻² where N is the distinction count
-     (physical argument, formalized structurally)
-  
-  3. With N ~ 10^{60-61}, we get Λ_obs/Λ_bare ~ 10^{-122}
-     (matches observation!)
-  
-  WHAT REMAINS OPEN (marked as TODO):
-  
-  1. TODO: Derive N from DRIFE principles
-     Currently N comes from the observed age of the universe.
-     Can we derive why t_universe ~ 10^{61} t_Planck?
-     
-  2. TODO: Derive the quadratic scaling rigorously
-     We gave physical arguments, but a full derivation
-     would require the dynamics of distinction accumulation.
-     
-  3. TODO: Explain why dilution is exactly 2, not 3 or 1
-     The dimension 2 comes from Λ being a curvature (area⁻¹).
-     Can this be derived from K₄ structure directly?
-     
-  4. TODO: Connect to Hubble parameter
-     H₀² ~ Λ in de Sitter. Does DRIFE predict H₀ timing?
-     
-  IMPLICATIONS:
-  
-  The "cosmological constant problem" is often stated as:
-  "Why is Λ_obs 10^{122} times smaller than Λ_Planck?"
-  
-  DRIFE's answer:
-  "Because 10^{61} Planck times have elapsed since Genesis.
-   Each distinction dilutes Λ by spreading vacuum energy
-   over a larger horizon. Quadratic scaling gives 10^{-122}."
-   
-  This is NOT a fine-tuning: it's a CONSEQUENCE of cosmic age.
--}
+-- WHAT WE HAVE PROVEN:
+--
+-- 1. Λ_bare = 3 from K₄ spectral geometry (derived, not assumed)
+--
+-- 2. The dilution scales as N⁻² where N is the distinction count
+--    (physical argument, formalized structurally)
+--
+-- 3. With N ~ 10^(60-61), we get Λ_obs/Λ_bare ~ 10^(-122)
+--    (matches observation!)
+--
+-- WHAT REMAINS OPEN (marked as TODO):
+--
+-- 1. TODO: Derive N from DRIFE principles
+--    Currently N comes from the observed age of the universe.
+--    Can we derive why t_universe ~ 10^61 t_Planck?
+--
+-- 2. TODO: Derive the quadratic scaling rigorously
+--    We gave physical arguments, but a full derivation
+--    would require the dynamics of distinction accumulation.
+--
+-- 3. TODO: Explain why dilution is exactly 2, not 3 or 1
+--    The dimension 2 comes from Λ being a curvature (area⁻¹).
+--    Can this be derived from K₄ structure directly?
+--
+-- 4. TODO: Connect to Hubble parameter
+--    H₀² ~ Λ in de Sitter. Does DRIFE predict H₀ timing?
+--
+-- IMPLICATIONS:
+--
+-- The "cosmological constant problem" is often stated as:
+-- "Why is Λ_obs 10^122 times smaller than Λ_Planck?"
+--
+-- DRIFE's answer:
+-- "Because 10^61 Planck times have elapsed since Genesis.
+--  Each distinction dilutes Λ by spreading vacuum energy
+--  over a larger horizon. Quadratic scaling gives 10^(-122)."
+--
+-- This is NOT a fine-tuning: it's a CONSEQUENCE of cosmic age.
 
 -- ============================================================================
 -- END OF MODULE

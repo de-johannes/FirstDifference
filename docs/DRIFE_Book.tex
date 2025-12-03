@@ -12,6 +12,12 @@
 % Typography
 \usepackage{microtype}
 \usepackage{libertine}
+
+% Math (must load before newtxmath to avoid \Bbbk conflict)
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{bm}
+
 \usepackage[libertine]{newtxmath}
 \usepackage{inconsolata}
 
@@ -41,11 +47,6 @@
 \usepackage{graphicx}
 \usepackage{tikz}
 \usetikzlibrary{shapes,arrows,positioning,calc,decorations.pathreplacing,matrix}
-
-% Math
-\usepackage{amsmath,amssymb,amsthm}
-\usepackage{mathtools}
-\usepackage{bm}
 
 % Code listings - ASCII only
 \usepackage{listings}

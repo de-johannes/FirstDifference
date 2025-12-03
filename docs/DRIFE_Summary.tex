@@ -11,6 +11,11 @@
 % Typography
 \usepackage{microtype}
 \usepackage{libertine}
+
+% Math (must load before newtxmath to avoid \Bbbk conflict)
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+
 \usepackage[libertine]{newtxmath}
 \usepackage{inconsolata}
 
@@ -26,10 +31,6 @@
 % Graphics
 \usepackage{tikz}
 \usetikzlibrary{shapes,arrows,positioning}
-
-% Math
-\usepackage{amsmath,amssymb,amsthm}
-\usepackage{mathtools}
 
 % Tables
 \usepackage{booktabs}

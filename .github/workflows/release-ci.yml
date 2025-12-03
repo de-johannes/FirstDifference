@@ -1,0 +1,127 @@
+name: Release CI (main only)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'DRIFE.agda'
+      - 'validate_K4.py'
+      - 'README.md'
+      - '.github/workflows/release-ci.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Agda
+        uses: wenkokke/setup-agda@v2
+        with:
+          agda-version: '2.7.0.1'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install numpy
+
+      - name: Compile DRIFE.agda
+        run: |
+          echo "🚀 Compiling DRIFE.agda for release verification..."
+          agda --safe --without-K --no-libraries DRIFE.agda
+          echo "✅ DRIFE.agda compiled successfully!"
+
+      - name: Check for holes
+        run: |
+          echo "🔍 Checking for holes {!!}..."
+          if grep -n '{!.*!}' DRIFE.agda; then
+            echo "❌ Holes found - cannot release!"
+            exit 1
+          else
+            echo "✅ No holes found!"
+          fi
+
+      - name: Run numerical validation
+        run: |
+          echo "🧮 Running validate_K4.py..."
+          python validate_K4.py
+          echo "✅ All numerical tests passed!"
+
+  release:
+    name: Create release on success
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute SHORT_SHA
+        id: sha
+        run: echo "short=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Fetch tags
+        run: git fetch --tags --force
+
+      - name: Compute changelog
+        id: changelog
+        shell: bash
+        run: |
+          set -euo pipefail
+          PREV_TAG="$(git describe --tags --abbrev=0 2>/dev/null || true)"
+          echo "prev=${PREV_TAG}" >> "$GITHUB_OUTPUT"
+          
+          {
+            echo "## DRIFE Release ${{ steps.sha.outputs.short }}"
+            echo ""
+            echo "🏆 **The First Distinction → Einstein Field Equations**"
+            echo ""
+            echo "### Königsklasse Predictions (zero free parameters):"
+            echo "- d = 3 (from K₄ eigenvalue degeneracy)"
+            echo "- Λ > 0 (from finite K₄)"
+            echo "- κ = 8 (from edge/vertex ratio)"
+            echo "- R = 12 (from K₄ scalar curvature)"
+            echo ""
+            if [ -n "$PREV_TAG" ]; then
+              echo "### Changes since $PREV_TAG:"
+              echo ""
+              git log --no-decorate --pretty=format:'- %s (%h)' "${PREV_TAG}..HEAD"
+            else
+              echo "### Initial Release"
+              echo ""
+              echo "Complete proof: D₀ → K₄ saturation → G_μν = 8T_μν"
+            fi
+            echo ""
+            echo "---"
+            echo "**Verification:** \`agda --safe --without-K --no-libraries DRIFE.agda\`"
+            echo "**Numerical:** \`python validate_K4.py\` (7/7 tests)"
+          } > CHANGELOG.md
+
+      - name: Create source archive
+        run: |
+          git archive -o drife-${{ steps.sha.outputs.short }}.zip HEAD
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}
+          name: DRIFE v${{ github.run_number }} (${{ steps.sha.outputs.short }})
+          body_path: CHANGELOG.md
+          draft: false
+          prerelease: false
+          files: |
+            drife-${{ steps.sha.outputs.short }}.zip

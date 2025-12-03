@@ -1,0 +1,75 @@
+name: Test CI (non-main branches)
+
+on:
+  push:
+    branches:
+      - '**'
+      - '!main'  # Exclude main (release-ci handles that)
+    paths:
+      - 'DRIFE.agda'
+      - 'validate_K4.py'
+      - '.github/workflows/test-ci.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Agda
+        uses: wenkokke/setup-agda@v2
+        with:
+          agda-version: '2.7.0.1'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install numpy
+
+      - name: Compile DRIFE.agda
+        run: |
+          echo "⏳ Compiling DRIFE.agda (--safe --without-K --no-libraries)..."
+          agda --safe --without-K --no-libraries DRIFE.agda
+          echo "✅ DRIFE.agda compiled successfully!"
+
+      - name: Check for holes
+        run: |
+          echo "🔍 Checking for holes {!!}..."
+          if grep -n '{!.*!}' DRIFE.agda; then
+            echo "❌ Holes found!"
+            exit 1
+          else
+            echo "✅ No holes found!"
+          fi
+
+      - name: Run numerical validation
+        run: |
+          echo "🧮 Running validate_K4.py..."
+          python validate_K4.py
+          echo "✅ All numerical tests passed!"
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "🎉 Test CI passed!"
+            echo "   ✅ DRIFE.agda compiles (--safe --without-K)"
+            echo "   ✅ No holes detected"
+            echo "   ✅ K₄ validation: 7/7 tests"
+          else
+            echo "❌ Test CI failed!"
+          fi
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

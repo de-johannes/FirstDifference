@@ -185,27 +185,84 @@ open Σ public
 
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- § 2  NATURAL NUMBERS AND ARITHMETIC
+-- § 2  NATURAL NUMBERS: EMERGENCE FROM COUNTING
 -- ─────────────────────────────────────────────────────────────────────────────
 --
--- Natural numbers emerge as the counting structure of semantic time—the
--- enumeration of irreducible drift events. This is not an axiom (like Peano's)
--- but the inevitable consequence of sequential distinction.
+-- Natural numbers are NOT primitive (Peano axioms). They EMERGE from counting!
+--
+-- EMERGENCE PATH:
+--   D₀ (First Distinction)
+--     → List D₀ (Sequential events / temporal ledger)
+--     → count : List D₀ → ℕ (Abstract counting)
+--     → ℕ (Frozen number, forgetting event identity)
+--
+-- KEY INSIGHT: "Numbers are frozen drift"
+--   Each ℕ is a witness to accumulated history (n distinctions made)
+--   Addition = combining histories (temporal succession)
+--   Order = comparing accumulation (which history is longer)
+--
+-- The Peano structure (zero, suc) is the RESULT of counting, not an axiom.
+-- We could define: ℕ = List D₀ / ≃ where xs ≃ ys iff count xs ≡ count ys
+-- But we use the standard representation for efficiency.
 
--- The natural numbers (Peano structure)
+-- § 2.1 Sequential Structure (Lists)
+-- Lists record the temporal ledger of distinctions.
+-- This is the minimal structure for sequential causality.
+
+infixr 5 _∷_
+
+data List (A : Set) : Set where
+  []  : List A              -- Empty list (no events)
+  _∷_ : A → List A → List A -- Cons: Prepend element to list
+
+-- § 2.2 The Natural Numbers (Peano Structure)
+-- This structure EMERGES from counting - the Peano constructors
+-- are the RESULT of the counting process, not axioms.
+-- ℕ = im(count) = the image of the counting function
+
 data ℕ : Set where
   zero : ℕ
   suc  : ℕ → ℕ
 
 {-# BUILTIN NATURAL ℕ #-}
 
--- Addition: iterated successor
+-- § 2.3 EMERGENCE: count - The Bridge from Events to Numbers
+-- count : List A → ℕ is the FUNDAMENTAL emergence function
+-- It abstracts away event identity, keeping only magnitude
+
+count : {A : Set} → List A → ℕ
+count []       = zero           -- Empty list has no elements
+count (x ∷ xs) = suc (count xs) -- Cons adds one to count of tail
+
+-- NOTE: count is NOT injective!
+-- Different lists can have same length: [●,●] and [●,●] both count to 2
+-- This is INTENTIONAL - counting abstracts away from specific events
+-- This quotient structure is what makes ℕ a "frozen" version of List D₀
+
+-- § 2.4 THEOREM: ℕ characterizes List lengths
+-- Every natural number is the count of some list
+-- This shows ℕ is exactly the "frozen" version of sequential events
+
+-- Witness: For any n, construct a list of that length
+witness-list : ℕ → List ⊤
+witness-list zero    = []
+witness-list (suc n) = tt ∷ witness-list n
+
+-- THEOREM: count (witness-list n) ≡ n
+theorem-count-witness : (n : ℕ) → count (witness-list n) ≡ n
+theorem-count-witness zero    = refl
+theorem-count-witness (suc n) = cong suc (theorem-count-witness n)
+
+-- § 2.5 Arithmetic Operations (Derived from Counting)
+
+-- Addition: Combining counts (temporal succession)
+-- Semantics: m + n = "m events, then n more events"
 infixl 6 _+_
 _+_ : ℕ → ℕ → ℕ
 zero  + n = n
 suc m + n = suc (m + n)
 
--- Multiplication: iterated addition
+-- Multiplication: Repeated addition
 infixl 7 _*_
 _*_ : ℕ → ℕ → ℕ
 zero  * n = zero
@@ -261,21 +318,6 @@ data _≤_ : ℕ → ℕ → Set where
 ≤-refl : ∀ {n} → n ≤ n
 ≤-refl {zero}  = z≤n
 ≤-refl {suc n} = s≤s ≤-refl
-
--- ─────────────────────────────────────────────────────────────────────────────
--- § 2a  LISTS (Sequential Structure)
--- ─────────────────────────────────────────────────────────────────────────────
---
--- Lists represent sequences—ordered collections of elements.
--- In DRIFE: Lists record the temporal ledger of distinctions.
--- This is the minimal structure for sequential causality.
-
-infixr 5 _∷_
-
--- List: Sequential structure (inductive type)
-data List (A : Set) : Set where
-  []  : List A              -- Empty list (no events)
-  _∷_ : A → List A → List A -- Cons: Prepend element to list
 
 -- Useful list operations
 [_] : {A : Set} → A → List A

@@ -4,6 +4,9 @@
 # macOS cruft
 .DS_Store
 
-# Push only the PDF files
-docs/*
-!docs/*.pdf
+# LaTeX auxiliary files
+docs/*.aux
+docs/*.log
+docs/*.out
+docs/*.toc
+docs/*.synctex.gz

@@ -1,14 +1,9 @@
-# Ignore Agda interface files
+# Ignore Agda interface files - get your own local copy :)
 *.agdai
-
-# Script logs (keep locally, not in git)
-# Structure: logs/<script-name>/run-*.log
-logs/
-
-drife-graph/
 
 # macOS cruft
 .DS_Store
 
-.work/*
-.github/copilot-instructions.md*.bak*
+# Push only the PDF files
+docs/*
+!docs/*.pdf

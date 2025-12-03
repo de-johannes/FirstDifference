@@ -23,7 +23,6 @@ Run: python3 proofs/validate_lambda.py
 """
 
 import numpy as np
-from typing import Tuple
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # PHYSICAL CONSTANTS (SI units)
@@ -273,16 +272,19 @@ def test_122_problem():
     N = distinction_count()
     N_exp = distinction_count_exponent()
     
-    # The 122 comes from: 2 × log₁₀(N) + log₁₀(3) ≈ 2 × 60.9 + 0.48 ≈ 122.3
-    predicted_power = 2 * N_exp + np.log10(LAMBDA_BARE)
+    # For Λ_obs/Λ_Planck = 3/N²:
+    # log₁₀(3/N²) = log₁₀(3) - 2×log₁₀(N) ≈ 0.48 - 2×60.9 ≈ -121.3
+    # The magnitude of this negative exponent is what we call "122"
+    predicted_power = 2 * N_exp - np.log10(LAMBDA_BARE)
     
     print("\nTEST 6: The 10^{-122} Problem")
     print(f"  Formula: Λ_obs/Λ_Planck = 3/N²")
-    print(f"  Exponent: -2 × {N_exp:.2f} + log₁₀(3)")
+    print(f"  Exponent: log₁₀(3) - 2 × {N_exp:.2f}")
+    print(f"          = {np.log10(LAMBDA_BARE):.2f} - {2 * N_exp:.2f}")
     print(f"          = -{predicted_power:.2f}")
     print(f"  Classical problem: Why 10^{{-122}}?")
     print(f"  DRIFE answer: Because N ~ 10^{{{N_exp:.1f}}} Planck times have elapsed!")
-    print(f"  Expected exponent: ~122 (negative)")
+    print(f"  Expected exponent magnitude: ~122")
     
     match = (120 <= predicted_power <= 124)
     print(f"  Result:   {'✓ PASS' if match else '✗ FAIL'}")

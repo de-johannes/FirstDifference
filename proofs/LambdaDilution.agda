@@ -233,20 +233,24 @@ record ObservedLambda : Set where
 -- Constants for numerical estimates (scaled by powers of 10)
 -- These represent orders of magnitude, not exact values
 
+-- Helper for building larger numbers readably
+ten : ℕ
+ten = suc (suc (suc (suc (suc (suc (suc (suc (suc (suc zero)))))))))  -- 10
+
 -- t_universe / t_Planck ~ 10^{60.9}
--- We represent the exponent
+-- We represent the exponent as 60 = 6 × 10
+six : ℕ
+six = suc (suc (suc (suc (suc (suc zero)))))  -- 6
+
 N-exponent : ℕ
-N-exponent = suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 
-           (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 
-           (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 
-           (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 
-           (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 
-           (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 
-           zero)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) -- 60
+N-exponent = six * ten  -- 60
 
 -- The ratio exponent: -2 × 60 = -120 (approximately -122 with corrections)
+two : ℕ
+two = suc (suc zero)  -- 2
+
 ratio-exponent : ℕ
-ratio-exponent = suc (suc zero) * N-exponent  -- 2 × 60 = 120
+ratio-exponent = two * N-exponent  -- 2 × 60 = 120
 
 -- ============================================================================
 -- § 6  SUMMARY RECORD

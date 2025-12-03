@@ -7012,8 +7012,48 @@ theorem-lambda-positive = record
   ; lambda-positive = s≤s z≤n
   }
 
--- ─────────────────────────────────────────────────────────────────────────────
--- § 22b′  THE 10⁻¹²² PROBLEM: LAMBDA DILUTION
+-- ═══════════════════════════════════════════════════════════════════════════
+-- § 22b′  THE N-PROBLEM: WHAT DRIFE CANNOT DERIVE
+-- ═══════════════════════════════════════════════════════════════════════════
+--
+-- CRITICAL DISCLAIMER: N = τ/t_Planck ≈ 10⁶¹ is OBSERVED, not derived!
+--
+-- ┌─────────────────────────────────────────────────────────────────────────┐
+-- │  N = 10⁶¹ is the age of the universe in Planck time units.             │
+-- │  This number CANNOT be derived from DRIFE's axiom-free framework.      │
+-- │  No combination of K₄ numbers (4, 6, 12, 24, 720...) gives 10⁶¹.       │
+-- └─────────────────────────────────────────────────────────────────────────┘
+--
+-- WHAT DRIFE DERIVES (structure):
+-- ═══════════════════════════════
+--   ✓ Λ_bare = 3 (from K₄ Ricci curvature)
+--   ✓ Dilution exponent = 2 (from curvature dimension)
+--   ✓ Λ_obs = Λ_bare / N²  (structural scaling law)
+--   ✓ H = 1/N (functional form from Friedmann)
+--
+-- WHAT DRIFE NEEDS AS INPUT (observation):
+-- ════════════════════════════════════════
+--   ✗ N = τ_universe / t_Planck ≈ 10⁶¹ (measured cosmic age)
+--   ✗ τ_universe ≈ 13.8 Gyr (observed)
+--   ✗ 1 tick = 1 t_Planck (calibration assumption)
+--
+-- CONSEQUENCE:
+-- ════════════
+--   • Λ_obs ≈ 3 / (10⁶¹)² = 3 × 10⁻¹²²  ← Uses observed N!
+--   • H₀ ≈ 1/N (Planck units) ← Uses observed N!
+--
+-- This is an INTERNAL CONSISTENCY CHECK, not a zero-parameter prediction.
+-- DRIFE explains WHY Λ_obs is small (dilution), but not the exact value.
+--
+-- KÖNIGSKLASSE STATUS:
+-- ════════════════════
+--   Λ_bare = 3 (sign Λ > 0)  → ✓ KÖNIGSKLASSE (pure K₄)
+--   Λ_obs = 10⁻¹²²           → ✗ NOT KÖNIGSKLASSE (uses N)
+--   H₀ = 70 km/s/Mpc         → ✗ NOT KÖNIGSKLASSE (uses N)
+--   d = 3                    → ✓ KÖNIGSKLASSE (pure K₄)
+--
+
+-- § 22b″  THE 10⁻¹²² PROBLEM: LAMBDA DILUTION
 -- ─────────────────────────────────────────────────────────────────────────────
 --
 -- DRIFE SOLVES the cosmological constant problem!

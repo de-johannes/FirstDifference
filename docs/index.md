@@ -42,6 +42,38 @@ The proof is:
 - [Chapter 2: Genesis — The Three Primordial Distinctions](part-1-foundations/chapter-02)
 - [Chapter 3: Saturation — The Birth of K₄](part-1-foundations/chapter-03)
 
+### Part II: Spectral Geometry
+- [Overview](part-2-spectral-geometry/)
+- [Chapter 4: The Complete Graph K₄](part-2-spectral-geometry/chapter-04)
+- [Chapter 5: The Graph Laplacian](part-2-spectral-geometry/chapter-05)
+- [Chapter 6: Three-Dimensional Emergence](part-2-spectral-geometry/chapter-06)
+- [Chapter 7: The Drift Ledger](part-2-spectral-geometry/chapter-07)
+
+### Part III: Spacetime Structure
+- [Overview](part-3-spacetime-structure/)
+- [Chapter 8: From Space to Spacetime — The Emergence of Time](part-3-spacetime-structure/chapter-08)
+- [Chapter 9: The Metric Tensor](part-3-spacetime-structure/chapter-09)
+
+### Part IV: Curvature and Field Equations
+- [Overview](part-4-curvature-equations/)
+- [Chapter 10: Two Levels of Curvature](part-4-curvature-equations/chapter-10)
+- [Chapter 11: The Einstein Field Equations](part-4-curvature-equations/chapter-11)
+
+### Part V: Physical Predictions
+- [Overview](part-5-predictions/)
+- [Chapter 12: Predictions and Testability](part-5-predictions/chapter-12)
+- [Chapter 13: Black Hole Physics](part-5-predictions/chapter-13)
+- [Chapter 14: Cosmology](part-5-predictions/chapter-14)
+
+### Part VI: The Complete Proof
+- [Overview](part-6-complete-proof/)
+- [Chapter 15: The Ultimate Theorem](part-6-complete-proof/chapter-15)
+- [Chapter 16: Summary and Conclusions](part-6-complete-proof/chapter-16)
+
+### Appendices
+- [Appendix A: Agda Code Reference](appendices/appendix-a)
+- [Appendix B: Python Validation](appendices/appendix-b)
+
 </div>
 
 ---

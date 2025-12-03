@@ -11,6 +11,11 @@
 % Typography
 \usepackage{microtype}
 \usepackage{libertine}
+
+% Math (must load before newtxmath to avoid \Bbbk conflict)
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+
 \usepackage[libertine]{newtxmath}
 \usepackage{inconsolata}
 
@@ -26,10 +31,6 @@
 % Graphics
 \usepackage{tikz}
 \usetikzlibrary{shapes,arrows,positioning}
-
-% Math
-\usepackage{amsmath,amssymb,amsthm}
-\usepackage{mathtools}
 
 % Tables
 \usepackage{booktabs}
@@ -372,6 +373,22 @@ The flags ensure:
     \item \texttt{--without-K}: No uniqueness of identity proofs
     \item \texttt{--no-libraries}: Complete self-containment
 \end{itemize}
+
+\subsection{Strengthened Proof Chain}
+
+Recent work has fortified the DRIFE proof chain with four additional formal proofs that address potential foundational criticisms:
+
+\begin{enumerate}
+    \item \textbf{$K_4$ Uniqueness} (\S 7.3): We prove that $K_4$ is the \emph{unique} stable graph under the saturation dynamics. $K_3$ (Genesis) is demonstrably unstable---it possesses uncaptured edges that force the emergence of $D_3$. $K_4$ achieves closure because all six edges are captured. $K_5$ cannot be reached: no forcing mechanism exists beyond $K_4$ since no uncaptured pairs remain.
+    
+    \item \textbf{Captures Canonicity} (\S 7.4): We prove that the \texttt{Captures} relation is not an arbitrary definition but the \emph{unique coherent} choice. The proof proceeds by level analysis: $D_2$ was introduced to capture $(D_0, D_1)$, and level coherence forbids it from also capturing $(D_0, D_2)$. This addresses the criticism ``Why does $D_2$ capture this pair and not that one?''---the answer is that no other choice is internally consistent.
+    
+    \item \textbf{Time from Asymmetry} (\S 13a): We strengthen the derivation of temporal structure by proving three properties: (i) drift is information-increasing and hence irreversible, (ii) the drift chain is totally ordered (no branching), yielding exactly one temporal dimension, and (iii) the asymmetry of drift versus the symmetry of spatial eigenvectors explains the Lorentzian signature $(-1, +1, +1, +1)$.
+    
+    \item \textbf{Einstein from $K_4$} (\S 19b): We trace the path from $K_4$ combinatorics to physical constants more explicitly: $d = 3$ from eigenvalue multiplicity, $\Lambda = 3$ from the spectral structure, $\kappa = 8$ from topological counting ($2 \times 4$ vertices), and $R = 12$ from vertex-degree summation. These are not free parameters but counting results.
+\end{enumerate}
+
+These additions close critical gaps in the argumentation chain. The reader asking ``Why $K_4$ specifically?'' or ``Is the Captures relation arbitrary?'' now has machine-verified answers.
 
 % ============================================================================
 % 9. DISCUSSION

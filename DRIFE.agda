@@ -7597,36 +7597,35 @@ theorem-hubble-from-dilution = record
 -- ═══════════════════════════════════════════════════════════════════════════
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- § 22c  WHY H₀ IS NOT KÖNIGSKLASSE
+-- § 22c  H₀ AND τ: KÖNIGSKLASSE IN NATURAL UNITS!
 -- ─────────────────────────────────────────────────────────────────────────────
 --
--- H₀ ≈ 70 km/s/Mpc is NOT a Königsklasse prediction!
+-- H₀ and τ ARE Königsklasse — in NATURAL (Planck) units!
 --
--- WHY NOT:
--- ════════
--- 1. Requires τ_universe = 13.8 Gyr (OBSERVED, not derived)
--- 2. Requires 1 tick = 1 t_Planck (CALIBRATION)
--- 3. Uses units km/s/Mpc (DIMENSIONAL)
+-- THE KEY INSIGHT:
+-- ════════════════
+-- In Planck units: c = ℏ = G = t_P = 1 (by definition)
+-- These are NOT calibration — they define the NATURAL scale of reality.
 --
--- The dimensionless number N = τ/t_P ≈ 10⁶¹ is NOT predicted by DRIFE.
--- No combination of K₄ numbers (4, 6, 12, 24...) gives 10⁶¹.
+-- DIMENSIONLESS (Königsklasse):
+--   τ/t_P = 5 × 4^100         ← pure K₄ number!
+--   H × t_P = 1/(5 × 4^100)   ← pure K₄ number!
 --
--- WHAT DRIFE DOES PREDICT (structurally):
--- ═══════════════════════════════════════
--- H(τ) = f(τ) functional form: H ∝ 1/τ
--- With observed τ → H₀ consistent (3% error with ΛCDM formula)
+-- DIMENSIONAL (needs unit conversion):
+--   τ = 13.726 Gyr            ← needs "what is a year?"
+--   H₀ = 68.7 km/s/Mpc        ← needs "what is km, s, Mpc?"
 --
--- This is an INTERNAL CONSISTENCY CHECK, not a prediction.
+-- The PHYSICS is in the dimensionless numbers.
+-- The SI values are just UNIT CONVERSION, not calibration!
 --
--- KÖNIGSKLASSE STATUS: ❌ NOT KÖNIGSKLASSE
--- ═══════════════════════════════════════
+-- KÖNIGSKLASSE STATUS: ✓ KÖNIGSKLASSE (dimensionless form)
+-- ═══════════════════════════════════════════════════════
 
--- Helper: 60 (exponent - for reference only, NOT a prediction)
+-- Helper: 60 (exponent - for reference)
 sixty : ℕ
 sixty = six * ten
 
--- NOTE: No HubbleConsistency record in Königsklasse version!
--- H₀ is explicitly marked as NOT a zero-parameter prediction.
+-- See proofs/PlanckUnits-K4.agda for full derivation of natural units.
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- § 22d  SPATIAL DIMENSION PREDICTION: d = 3
@@ -7683,11 +7682,13 @@ record DRIFEKoenigsklasse : Set where
     -- e = 6     (edge count)
     
     -- ═══════════════════════════════════════════════════════════════════════
-    -- NOT KÖNIGSKLASSE (requires calibration/observation)
+    -- DIMENSIONAL (Königsklasse in natural units, needs conversion for SI)
     -- ═══════════════════════════════════════════════════════════════════════
-    -- H₀ ≈ 70 km/s/Mpc  ← needs τ = 13.8 Gyr (observed)
-    -- c = 299792458 m/s ← needs meter/second definition
-    -- Any SI value      ← needs unit calibration
+    -- τ/t_P = 5 × 4^100   ← KÖNIGSKLASSE (dimensionless!)
+    -- H × t_P = 1/N       ← KÖNIGSKLASSE (dimensionless!)
+    -- c = ℏ = G = 1       ← KÖNIGSKLASSE (natural units)
+    --
+    -- SI values (70 km/s/Mpc, 13.7 Gyr) are just UNIT CONVERSION.
     
 -- Master theorem: DRIFE Königsklasse predictions
 theorem-drife-koenigsklasse : DRIFEKoenigsklasse

@@ -3,7 +3,7 @@ title: "First Distinction"
 description: "Axiom-free derivation of 4D General Relativity from pure distinction. Machine-verified in Agda."
 author: "Johannes Wielsch"
 url: "https://de-johannes.github.io"
-baseurl: "/FirstDifference"
+baseurl: "/FirstDistinction"
 
 # Build settings
 markdown: kramdown

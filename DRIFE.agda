@@ -3176,6 +3176,40 @@ edgeCountK4 = suc (suc (suc (suc (suc (suc zero)))))  -- E = 6 (complete graph)
 faceCountK4 : ℕ
 faceCountK4 = suc (suc (suc (suc zero)))  -- F = 4 (triangular faces)
 
+-- ═══════════════════════════════════════════════════════════════════════════
+-- EULER CHARACTERISTIC DERIVATION (NOT HARDCODED)
+-- ═══════════════════════════════════════════════════════════════════════════
+--
+-- χ = V - E + F  (Euler's polyhedral formula)
+--
+-- For K₄:  χ = 4 - 6 + 4 = 2
+--
+-- Since we work with ℕ and E > V (can't subtract), we use:
+--   χ = (V + F) - E = 8 - 6 = 2  (equivalent formula)
+
+-- Compute V + F (this avoids negative intermediate results)
+vPlusF-K4 : ℕ
+vPlusF-K4 = vertexCountK4 + faceCountK4  -- 4 + 4 = 8
+
+-- THEOREM: V + F = 8
+theorem-vPlusF : vPlusF-K4 ≡ 8
+theorem-vPlusF = refl
+
+-- Euler characteristic COMPUTED (not hardcoded!)
+-- χ = (V + F) ∸ E = 8 ∸ 6 = 2
+-- Uses monus _∸_ defined in § 2
+eulerChar-computed : ℕ
+eulerChar-computed = vPlusF-K4 ∸ edgeCountK4
+
+-- THEOREM: χ = 2 (COMPUTED from V, E, F)
+theorem-euler-computed : eulerChar-computed ≡ 2
+theorem-euler-computed = refl
+
+-- THEOREM: Euler formula V + F = E + χ holds for K₄
+-- This verifies: 8 = 6 + 2
+theorem-euler-formula : vPlusF-K4 ≡ edgeCountK4 + eulerChar-computed
+theorem-euler-formula = refl
+
 -- Euler characteristic of K₄ via V - E + F
 -- χ = 4 - 6 + 4 = 2
 eulerK4 : ℤ
@@ -3257,9 +3291,14 @@ theorem-deficit-is-pi = refl
 --
 -- This is EXACT, not an approximation!
 
--- Euler characteristic value (χ = 2 for sphere/tetrahedron)
+-- Euler characteristic value (DERIVED from V, E, F in § 18)
+-- This connects to eulerChar-computed above
 eulerCharValue : ℕ
-eulerCharValue = suc (suc zero)  -- 2
+eulerCharValue = eulerChar-computed  -- χ = 2 from V-E+F = 4-6+4
+
+-- THEOREM: eulerCharValue equals the computed Euler characteristic
+theorem-euler-consistent : eulerCharValue ≡ eulerChar-computed
+theorem-euler-consistent = refl
 
 -- Total deficit = number of vertices × deficit per vertex
 -- In π/3 units: 4 × 3 = 12 units = 4π
@@ -3619,13 +3658,24 @@ theorem-dust-offdiag-yz = refl
 K₄-vertices-count : ℕ
 K₄-vertices-count = suc (suc (suc (suc zero)))  -- 4
 
--- K₄ edge count
+-- K₄ edge count (E = V(V-1)/2 for complete graph)
+-- For V = 4: E = 4 × 3 / 2 = 6
 K₄-edges-count : ℕ
 K₄-edges-count = suc (suc (suc (suc (suc (suc zero)))))  -- 6
 
--- K₄ vertex degree (each vertex connects to 3 others)
+-- K₄ vertex degree: DERIVED as V - 1 (complete graph property!)
+-- Each vertex connects to all V-1 other vertices
 K₄-degree-count : ℕ
-K₄-degree-count = suc (suc (suc zero))  -- 3
+K₄-degree-count = K₄-vertices-count ∸ 1  -- V - 1 = 4 - 1 = 3
+
+-- THEOREM: Degree = 3 (COMPUTED from V)
+theorem-degree-from-V : K₄-degree-count ≡ 3
+theorem-degree-from-V = refl
+
+-- THEOREM: Edge count matches complete graph formula
+-- E = V × deg / 2  ↔  6 = 4 × 3 / 2  ↔  12 = 12
+theorem-complete-graph : K₄-vertices-count * K₄-degree-count ≡ 2 * K₄-edges-count
+theorem-complete-graph = refl
 
 -- K₄ triangular faces
 K₄-faces-count : ℕ
@@ -7751,14 +7801,36 @@ theorem-drife-koenigsklasse = record
 --   - MEANING: Topological renormalization correction
 --   - ANALOGY: Vacuum polarization in QED
 
--- The spectral gap as a natural number (λ = 4, from § 10)
--- This is the first non-zero eigenvalue of the K₄ Laplacian
-spectral-gap-nat : ℕ
-spectral-gap-nat = suc (suc (suc (suc zero)))  -- 4
+-- ═══════════════════════════════════════════════════════════════════════════
+-- § 22f.2a  SPECTRAL GAP FROM § 10 (FORMAL CONNECTION)
+-- ═══════════════════════════════════════════════════════════════════════════
+--
+-- The spectral gap λ = 4 is DERIVED in § 10 as the eigenvalue of the
+-- K₄ Laplacian (see λ₄ and theorem-eigenvector-{1,2,3}).
+--
+-- Here we EXTRACT the natural number from the integer representation:
+--   λ₄ = mkℤ (suc (suc (suc (suc zero)))) zero = mkℤ 4 0 ∈ ℤ
+--
+-- The natural number part is the first component:
 
--- THEOREM: The spectral gap equals 4
+-- Extract positive part of a non-negative integer
+-- For λ₄ = mkℤ n 0, this gives n
+ℤ-pos-part : ℤ → ℕ
+ℤ-pos-part (mkℤ p _) = p
+
+-- The spectral gap as a natural number (DERIVED from λ₄ in § 10)
+spectral-gap-nat : ℕ
+spectral-gap-nat = ℤ-pos-part λ₄
+
+-- THEOREM: The spectral gap equals 4 (COMPUTED from λ₄)
+-- This is verified by normalization (refl), confirming λ₄ = mkℤ 4 0
 theorem-spectral-gap : spectral-gap-nat ≡ 4
 theorem-spectral-gap = refl
+
+-- THEOREM: Spectral gap matches the K₄ eigenvalue
+-- This formally connects § 22f to § 10
+theorem-spectral-gap-from-eigenvalue : spectral-gap-nat ≡ ℤ-pos-part λ₄
+theorem-spectral-gap-from-eigenvalue = refl
 
 -- Helper: λ³ = 64
 lambda-cubed : ℕ

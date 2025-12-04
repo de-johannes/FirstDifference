@@ -91,6 +91,7 @@ These are **not** part of the formal proof, but demonstrate that the derived val
 All machine-verified in Agda under `--safe --without-K --no-libraries`:
 
 ### Geometry
+
 | Theorem | Statement | Section |
 |---------|-----------|---------|
 | `theorem-dimension-3` | d = 3 from λ=4 multiplicity | § 11 |
@@ -98,13 +99,15 @@ All machine-verified in Agda under `--safe --without-K --no-libraries`:
 | `theorem-euler-char` | χ = V − E + F = 2 | § 15 |
 
 ### Fine Structure Constant
+
 | Theorem | Statement | Section |
 |---------|-----------|---------|
 | `theorem-alpha-integer` | α⁻¹ = 137 (integer part) | § 22f |
 | `theorem-spectral-term` | λ³χ = 128 | § 22f |
 | `theorem-correction-denom` | 4/111 correction | § 22f |
 
-### Cosmic Age N = 5 × 4^100
+### Cosmic Age N = 5 × 4¹⁰⁰
+
 | Theorem | Statement | Section |
 |---------|-----------|---------|
 | `theorem-prefactor-consistent` | 5 = (d+1)+1 = V+1 = E−1 = κ−d | § 22b |

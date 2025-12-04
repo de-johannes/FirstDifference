@@ -30,19 +30,48 @@ These match observations to remarkable accuracy.
 
 ### Fine Structure Constant α
 
-$$\alpha^{-1} = \lambda^3 \chi + \delta^2 + \frac{V}{\delta(E^2 + 1)}$$
+The α formula emerges from the **Drift-CoDrift Operad** structure!
+
+#### Operad Derivation
+
+The 8 coherence laws of the operad have specific arities:
+
+| Algebraic Laws | Arity | Categorical Laws | Arity |
+|----------------|-------|------------------|-------|
+| 1. Associativity | 3 | 5. Involutivity | 2 |
+| 2. Distributivity | 3 | 6. Cancellativity | 4 |
+| 3. Neutrality | 2 | 7. Irreducibility | 2 |
+| 4. Idempotence | 1 | 8. Confluence | 4 |
+| **SUM** | **9 = deg²** | **PRODUCT** | **64 = λ³** |
+
+The formula emerges as:
+
+$$\alpha^{-1} = \underbrace{\Pi(\text{categorical arities})}_{\text{global}} \times \chi + \underbrace{\Sigma(\text{algebraic arities})}_{\text{local}}$$
+
+$$= (2 \times 4 \times 2 \times 4) \times 2 + (3+3+2+1) = 64 \times 2 + 9 = 137$$
+
+**Why this structure?**
+- Categorical laws = global structure → **Product** (tensor)
+- Algebraic laws = local operations → **Sum** (direct)
+- χ = 2 = Drift-CoDrift duality (doubles the modes)
+
+**Bonus:** κ = 8 = number of operad laws!
+
+#### Spectral Form
+
+$$\alpha^{-1} = \lambda^3 \chi + \deg^2 + \frac{V}{\deg(E^2 + 1)}$$
 
 Where ALL parameters are K₄ spectral/topological invariants:
 - λ = 4 (spectral gap of Laplacian)
 - χ = 2 (Euler characteristic)
-- δ = 3 (vertex degree)
+- deg = 3 (vertex degree)
 - V = 4 (vertices)
 - E = 6 (edges)
 
 **Calculation:**
 - λ³χ = 4³ × 2 = 128 (spectral-topological term)
-- δ² = 3² = 9 (local connectivity)
-- V/(δ(E²+1)) = 4/111 = 0.036... (higher-order correction)
+- deg² = 3² = 9 (local connectivity)
+- V/(deg(E²+1)) = 4/111 = 0.036... (higher-order correction)
 
 | | Value |
 |---|-------|

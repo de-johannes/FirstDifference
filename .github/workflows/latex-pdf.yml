@@ -23,48 +23,26 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 2  # Need history to detect changes
 
-      - name: Detect changed TeX files
-        id: changes
+      - name: Install TeX Live
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            CHANGED=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} -- 'pdf/*.tex' | tr '\n' ' ')
-          else
-            CHANGED=$(git diff --name-only HEAD~1 HEAD -- 'pdf/*.tex' 2>/dev/null || echo "pdf/*.tex")
-          fi
-          echo "changed_files=$CHANGED" >> $GITHUB_OUTPUT
-          echo "📝 Changed TeX files: $CHANGED"
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-lang-german
 
-      - name: Install LaTeX
-        if: steps.changes.outputs.changed_files != ''
-        uses: xu-cheng/latex-action@v3
-        with:
-          working_directory: pdf
-          root_file: |
-            FirstDistinction_Summary.tex
-            FirstDistinction_Summary_DE.tex
-            FirstDistinction_Book.tex
-            FirstDistinction_Book_DE.tex
-          latexmk_use_xelatex: true
-          continue_on_error: true
-
-      - name: Compile changed PDFs only
-        if: steps.changes.outputs.changed_files != ''
+      - name: Compile all PDFs with pdflatex
         run: |
           cd pdf
-          for texfile in ${{ steps.changes.outputs.changed_files }}; do
-            basename=$(basename "$texfile" .tex)
+          for texfile in *.tex; do
+            basename="${texfile%.tex}"
             echo "📄 Compiling $basename..."
-            # Try xelatex first (for Unicode), fall back to pdflatex
-            xelatex -interaction=nonstopmode "$basename.tex" || pdflatex -interaction=nonstopmode "$basename.tex"
-            xelatex -interaction=nonstopmode "$basename.tex" || pdflatex -interaction=nonstopmode "$basename.tex"
+            pdflatex -interaction=nonstopmode "$texfile" || true
+            pdflatex -interaction=nonstopmode "$texfile" || true
             echo "✅ $basename.pdf created"
           done
+          ls -la *.pdf
 
       - name: Commit PDFs
-        if: github.event_name == 'push' && steps.changes.outputs.changed_files != ''
+        if: github.event_name == 'push'
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"

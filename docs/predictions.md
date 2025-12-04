@@ -57,6 +57,8 @@ $$= (2 \times 4 \times 2 \times 4) \times 2 + (3+3+2+1) = 64 \times 2 + 9 = 137$
 
 **Bonus:** κ = 8 = number of operad laws!
 
+[→ Full Operad explanation](operad)
+
 #### Spectral Form
 
 $$\alpha^{-1} = \lambda^3 \chi + \deg^2 + \frac{V}{\deg(E^2 + 1)}$$

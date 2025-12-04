@@ -39,6 +39,25 @@ The complete proof is formalized in [Agda](https://github.com/de-johannes/FirstD
 
 ---
 
+## Was ist Agda?
+
+**Agda** ist eine funktionale Programmiersprache mit abhängigen Typen und zugleich ein interaktiver Beweisassistent. Im Gegensatz zu mathematischen Beweisen auf Papier wird hier jeder Schritt maschinell überprüft — der Compiler garantiert logische Konsistenz.
+
+**Warum Agda für First Distinction?**
+
+- **Keine versteckten Annahmen:** Der `--safe --without-K` Modus verbietet logische Axiome und Postulate. Was nicht explizit hergeleitet wird, existiert nicht.
+- **Vollständige Transparenz:** Jeder kann den Beweis selbst verifizieren — ein Compiler-Durchlauf genügt.
+- **Reproduzierbar:** Das Ergebnis hängt nicht von menschlicher Interpretation ab.
+
+**Was bedeutet "Beweis" in Agda?**
+
+Ein Beweis ist ein Programm, dessen Typ eine mathematische Aussage kodiert. Wenn das Programm kompiliert, ist die Aussage bewiesen.
+
+- *Für Physiker:* Wie ein numerisches Experiment, das immer exakt reproduzierbar ist — aber mit symbolischer statt numerischer Präzision.
+- *Für Mathematiker:* Wie ein formal verifizierter Beweis in einem Hilbert-System, maschinell auf Korrektheit geprüft.
+
+---
+
 ## What is derived?
 
 | Quantity | FD | Observation | Status |

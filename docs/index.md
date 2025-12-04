@@ -93,12 +93,16 @@ The code is the claim. If it compiles, the proof is valid.
 
 - We do not claim to have found "the truth".
 - We present a derivation that is machine-checked.
-- Compilation proves consistency, not correctness — we may have hardcoded values or circular reasoning.
-- This is AI-assisted work. Errors happen. We try to catch them, but some slip through.
 - The α formula uses K₄ spectral invariants (λ³χ + deg² + correction).
 - The cosmic age N = 5 × 4¹⁰⁰ is a conjecture.
 
 If you find an error, open an issue. We want to know.
+
+---
+
+## AI Disclosure
+
+This work was created over 12 months by one person using six different AI systems (Claude Opus, Claude Sonnet, ChatGPT, Gemini, Sonar-R1, DeepSeek-R1). Agda doesn't lie — if it compiles under `--safe --without-K`, the proofs are valid. But skepticism toward AI-assisted work is warranted. Read the code.
 
 [→ Open questions](faq)
 

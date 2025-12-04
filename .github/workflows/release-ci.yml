@@ -44,8 +44,34 @@ jobs:
       - name: Compile FirstDistinction.agda
         run: |
           echo "🚀 Compiling FirstDistinction.agda for release verification..."
-          agda --safe --without-K --no-libraries FirstDistinction.agda
+          agda --safe --without-K --no-libraries FirstDistinction.agda 2>&1 | tee agda-compile.log
           echo "✅ FirstDistinction.agda compiled successfully!"
+
+      - name: Create verification manifest
+        run: |
+          {
+            echo "=== FIRST DISTINCTION VERIFICATION MANIFEST ==="
+            echo "Timestamp: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+            echo "Commit: ${{ github.sha }}"
+            echo "Agda Version: 2.7.0.1"
+            echo "Flags: --safe --without-K --no-libraries"
+            echo ""
+            echo "=== AGDA COMPILATION OUTPUT ==="
+            cat agda-compile.log
+            echo ""
+            echo "=== FILE CHECKSUMS ==="
+            sha256sum FirstDistinction.agda
+            sha256sum FirstDistinction.agdai 2>/dev/null || echo "No .agdai generated"
+          } > verification-manifest.txt
+
+      - name: Upload verification artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: verification-artifacts
+          path: |
+            FirstDistinction.agdai
+            verification-manifest.txt
+            agda-compile.log
 
       - name: Check for holes
         run: |
@@ -90,6 +116,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Download verification artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: verification-artifacts
+          path: artifacts/
 
       - name: Compute SHORT_SHA
         id: sha
@@ -139,7 +171,10 @@ jobs:
       - name: Attest Build Provenance
         uses: actions/attest-build-provenance@v2
         with:
-          subject-path: fd-${{ steps.sha.outputs.short }}.zip
+          subject-path: |
+            fd-${{ steps.sha.outputs.short }}.zip
+            artifacts/FirstDistinction.agdai
+            artifacts/verification-manifest.txt
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
@@ -151,3 +186,5 @@ jobs:
           prerelease: false
           files: |
             fd-${{ steps.sha.outputs.short }}.zip
+            artifacts/verification-manifest.txt
+            artifacts/FirstDistinction.agdai

@@ -50,7 +50,7 @@ Where ALL parameters are K₄ spectral/topological invariants:
 | **CODATA 2018** | 137.035999084(21) |
 | **Deviation** | 0.000027% |
 
-*The spectral gap λ=4 emerges from the K₄ Laplacian eigenvalues {0,4,4,4}. This is the same λ that determines d=3.*
+*The spectral gap λ=4 emerges from the K₄ Laplacian eigenvalues {0,4,4,4}. The exponent 3 in λ³ equals d (the spatial dimension), making this a discrete analog of the QED phase-space integral ∫d³k. This is the same λ that determines d=3 via its multiplicity.*
 
 ---
 

@@ -8045,22 +8045,6 @@ record FalsificationCriteria : Set where
   They follow purely from K₄ being the minimal saturated graph.
   
   ═══════════════════════════════════════════════════════════════════════════
-  NOT KÖNIGSKLASSE ✗ (requires calibration/observation)
-  ═══════════════════════════════════════════════════════════════════════════
-  
-  • H₀ ≈ 70 km/s/Mpc
-    - Requires τ = 13.8 Gyr (observed age of universe)
-    - Requires 1 tick = 1 t_Planck (calibration)
-    - DRIFE cannot predict N = τ/t_P ≈ 10⁶¹
-    
-  • c = 299792458 m/s
-    - Requires meter/second definition
-    - In natural units: c = 1 (trivially true)
-    
-  • Any SI value
-    - Requires unit calibration
-  
-  ═══════════════════════════════════════════════════════════════════════════
   K₄ STRUCTURAL NUMBERS (mathematical, not physical predictions)
   ═══════════════════════════════════════════════════════════════════════════
   

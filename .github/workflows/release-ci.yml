@@ -6,7 +6,8 @@ on:
       - main
     paths:
       - 'DRIFE.agda'
-      - 'validate_K4.py'
+      - 'proofs/*.py'
+      - 'proofs/*.agda'
       - 'README.md'
       - '.github/workflows/release-ci.yml'
 
@@ -20,7 +21,7 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -54,11 +55,29 @@ jobs:
             echo "✅ No holes found!"
           fi
 
-      - name: Run numerical validation
+      - name: Run K₄ validation
         run: |
           echo "🧮 Running validate_K4.py..."
-          python validate_K4.py
-          echo "✅ All numerical tests passed!"
+          python proofs/validate_K4.py
+          echo "✅ K₄ tests passed!"
+
+      - name: Run α validation
+        run: |
+          echo "🧮 Running validate_alpha.py..."
+          python proofs/validate_alpha.py
+          echo "✅ α tests passed!"
+
+      - name: Run Λ validation
+        run: |
+          echo "🧮 Running validate_lambda.py..."
+          python proofs/validate_lambda.py
+          echo "✅ Λ tests passed!"
+
+      - name: Run cosmic age validation
+        run: |
+          echo "🧮 Running validate_cosmic_age.py..."
+          python proofs/validate_cosmic_age.py
+          echo "✅ Cosmic age tests passed!"
 
   release:
     name: Create release on success

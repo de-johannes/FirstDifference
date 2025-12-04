@@ -12,7 +12,7 @@ Technical references for the FD proof and validation.
 
 ## [Appendix A: Agda Code Reference](appendix-a)
 
-The complete Agda proof is available at [github.com/de-johannes/FirstDifference](https://github.com/de-johannes/FirstDifference). This appendix provides a reference to key functions and theorems.
+The complete Agda proof is available at [github.com/de-johannes/FirstDistinction](https://github.com/de-johannes/FirstDistinction). This appendix provides a reference to key functions and theorems.
 
 ## [Appendix B: Python Validation](appendix-b)
 

@@ -110,4 +110,4 @@ FD derives **spacetime geometry**. Matter content is a separate question.
 
 ---
 
-[← Back](/)
+[← Back](./)

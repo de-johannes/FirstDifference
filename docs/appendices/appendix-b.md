@@ -84,5 +84,5 @@ print(f"R = {R}")
 
 <nav class="chapter-nav">
   <a href="appendix-a" class="prev">← Appendix A</a>
-  <a href="/" class="next">Home →</a>
+  <a href=".." class="next">Home →</a>
 </nav>

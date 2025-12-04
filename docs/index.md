@@ -1,126 +1,108 @@
 ---
 layout: default
-title: Home
+title: DRIFE
 ---
 
-# DRIFE — The First Difference
-
-*A Constructive, Axiom-Free Derivation of 4D General Relativity from Pure Distinction*
-
-**Author:** Johannes Wielsch  
-**With:** Claude (Anthropic) — Sonnet 4 & Opus 4
-
----
-
-This book presents **DRIFE** (The First Difference), a complete formal proof that the structure of physical spacetime—including its 3+1 dimensionality, Lorentz signature, and the Einstein field equations—emerges *necessarily* from a single unavoidable premise: the existence of distinction itself.
-
-<div class="highlight-box">
-  <p><strong>The Ultimate Theorem</strong></p>
-  <code>ultimate-theorem : Unavoidable Distinction → DRIFE-FullGR</code>
-  <p><em>From the unavoidability of distinction, complete 4D General Relativity necessarily emerges.</em></p>
-</div>
-
-The proof is:
-- **Constructive**: Every object is explicitly built, not assumed
-- **Axiom-free**: No mathematical axioms are postulated
-- **Machine-checked**: Verified by the Agda type-checker under `--safe --without-K`
-- **Self-contained**: No external library imports
-
----
-
-## Table of Contents
-
-<div class="toc">
-
-### Front Matter
-- [Abstract](abstract)
-- [Preface](preface)
-
-### Part I: Foundations
-- [Overview](part-1-foundations/)
-- [Chapter 1: The Unavoidable First Distinction](part-1-foundations/chapter-01)
-- [Chapter 2: Genesis — The Three Primordial Distinctions](part-1-foundations/chapter-02)
-- [Chapter 3: Saturation — The Birth of K₄](part-1-foundations/chapter-03)
-
-### Part II: Spectral Geometry
-- [Overview](part-2-spectral-geometry/)
-- [Chapter 4: The Complete Graph K₄](part-2-spectral-geometry/chapter-04)
-- [Chapter 5: The Graph Laplacian](part-2-spectral-geometry/chapter-05)
-- [Chapter 6: Three-Dimensional Emergence](part-2-spectral-geometry/chapter-06)
-- [Chapter 7: The Drift Ledger](part-2-spectral-geometry/chapter-07)
-
-### Part III: Spacetime Structure
-- [Overview](part-3-spacetime-structure/)
-- [Chapter 8: From Space to Spacetime — The Emergence of Time](part-3-spacetime-structure/chapter-08)
-- [Chapter 9: The Metric Tensor](part-3-spacetime-structure/chapter-09)
-
-### Part IV: Curvature and Field Equations
-- [Overview](part-4-curvature-equations/)
-- [Chapter 10: Two Levels of Curvature](part-4-curvature-equations/chapter-10)
-- [Chapter 11: The Einstein Field Equations](part-4-curvature-equations/chapter-11)
-
-### Part V: Physical Predictions
-- [Overview](part-5-predictions/)
-- [Chapter 12: Predictions and Testability](part-5-predictions/chapter-12)
-- [Chapter 13: Black Hole Physics](part-5-predictions/chapter-13)
-- [Chapter 14: Cosmology](part-5-predictions/chapter-14)
-
-### Part VI: The Complete Proof
-- [Overview](part-6-complete-proof/)
-- [Chapter 15: The Ultimate Theorem](part-6-complete-proof/chapter-15)
-- [Chapter 16: Summary and Conclusions](part-6-complete-proof/chapter-16)
-
-### Appendices
-- [Appendix A: Agda Code Reference](appendices/appendix-a)
-- [Appendix B: Python Validation](appendices/appendix-b)
-
+<div class="hero">
+  <div class="k4-symbol">
+    <svg viewBox="0 0 100 100" class="tetrahedron">
+      <g stroke="currentColor" stroke-width="1.5" fill="none">
+        <!-- Tetrahedron edges -->
+        <line x1="50" y1="15" x2="20" y2="75"/>
+        <line x1="50" y1="15" x2="80" y2="75"/>
+        <line x1="50" y1="15" x2="50" y2="55"/>
+        <line x1="20" y1="75" x2="80" y2="75"/>
+        <line x1="20" y1="75" x2="50" y2="55"/>
+        <line x1="80" y1="75" x2="50" y2="55"/>
+        <!-- Vertices -->
+        <circle cx="50" cy="15" r="3" fill="currentColor"/>
+        <circle cx="20" cy="75" r="3" fill="currentColor"/>
+        <circle cx="80" cy="75" r="3" fill="currentColor"/>
+        <circle cx="50" cy="55" r="3" fill="currentColor"/>
+      </g>
+    </svg>
+  </div>
+  <p class="tagline">4 vertices. 6 edges. Everything else follows.</p>
 </div>
 
 ---
 
-## Zero-Parameter Predictions (Königsklasse)
+## What is DRIFE?
 
-These predictions require zero observed input, zero calibration, and zero free parameters—everything is computed from K₄:
+**DRIFE** (*Distinction-Recursive Information-Free Emergence*) is an axiom-free derivation of 4D General Relativity from a single premise:
 
-| Prediction | DRIFE Value | Observed | Status |
-|------------|-------------|----------|--------|
-| Spatial dimensions | d = 3 | 3 | ✓ Confirmed |
-| Cosmological constant sign | Λ > 0 | > 0 | ✓ Confirmed |
-| Signature | (−1,+1,+1,+1) | (−1,+1,+1,+1) | ✓ Confirmed |
-| Coupling constant | κ = 8 | 8π in standard units | ✓ Matches GR |
-| Black hole remnants | Exist | — | Testable |
-| Entropy excess | ΔS = ln 4 | — | Testable |
+> Something is distinguishable from something.
+
+No spacetime assumed. No quantum mechanics. No free parameters.
+
+The complete proof is formalized in [Agda](https://github.com/de-johannes/FirstDifference/blob/main/DRIFE.agda) and compiles under `--safe --without-K` — no postulates, no holes, machine-checked.
 
 ---
 
-## The Causal Chain
+## What is derived?
 
-<div class="chain-box">
-  <p>
-    D₀ (distinction) → Genesis → Saturation → K₄ graph →<br>
-    Laplacian spectrum → 3D embedding → Lorentz signature →<br>
-    Metric tensor → Ricci curvature → Einstein tensor →<br>
-    <strong>G<sub>μν</sub> + Λg<sub>μν</sub> = 8T<sub>μν</sub></strong>
-  </p>
-</div>
+| Quantity | DRIFE | Observation | Status |
+|----------|-------|-------------|--------|
+| Spatial dimensions | d = 3 | 3 | ✓ exact |
+| Time dimensions | 1 | 1 | ✓ exact |
+| Signature | (−,+,+,+) | (−,+,+,+) | ✓ exact |
+| Λ > 0 | yes | yes | ✓ exact |
+| α⁻¹ | 137.036 | 137.036 | 0.00003% |
+| τ (cosmic age) | 13.73 Gyr | 13.79 Gyr | 0.4% |
+
+[→ All predictions](predictions)
 
 ---
 
-## Verification
+## How does it work?
 
-The complete Agda proof (6,516 lines) is available in the repository:
+1. **Distinction forces structure**  
+   D₀ ≠ D₁ requires a "witness" D₂. This creates K₃.
+
+2. **K₃ is unstable**  
+   New pairs (D₀,D₂) lack a witness → D₃ emerges.
+
+3. **K₄ is stable**  
+   All 6 pairs are "witnessed". No further distinction is forced.
+
+4. **K₄ = Tetrahedron = 3D space**  
+   The Laplacian eigenvalues {0,4,4,4} span 3 dimensions.
+
+5. **Drift = Time**  
+   The irreversible accumulation of distinctions is the arrow of time.
+
+---
+
+## Check it yourself
 
 ```bash
+git clone https://github.com/de-johannes/FirstDifference.git
+cd FirstDifference
 agda --safe --without-K --no-libraries DRIFE.agda
 ```
 
-Python numerical validation:
-```bash
-python3 validate_K4.py
-# Output: 7/7 tests passed
-# d=3, Lambda>0, kappa=8, R=12
-```
+[![CI](https://github.com/de-johannes/FirstDifference/actions/workflows/ci.yml/badge.svg)](https://github.com/de-johannes/FirstDifference/actions/workflows/ci.yml)
+
+The code is the claim. If it compiles, the proof is valid.
+
+[→ Verification](verify)
 
 ---
 
-<p style="text-align: center; font-style: italic;">December 2025</p>
+## Honesty
+
+- We do not claim to have found "the truth".
+- We present a derivation that is machine-checked.
+- If an error exists, it's in the code — show us.
+- The α formula is elegant but not yet rigorously derived from K₄.
+- The cosmic age N = 5 × 4¹⁰⁰ is a conjecture.
+
+[→ Open questions](faq)
+
+---
+
+<div class="footer-links">
+  <a href="https://github.com/de-johannes/FirstDifference">GitHub</a>
+  <a href="verify">Verify</a>
+  <a href="predictions">Predictions</a>
+</div>

@@ -253,3 +253,6 @@ if all_pass:
 else:
     print("SOME VALIDATIONS FAILED ✗")
 print("═" * 70)
+
+# Exit with proper code for CI
+exit(0 if all_pass else 1)

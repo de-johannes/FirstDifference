@@ -113,6 +113,10 @@ def main():
     print(" CONCLUSION: α = 1/137 is TOPOLOGICALLY DETERMINED")
     print("             by minimal distinguishability (K₄ structure)")
     print("═══════════════════════════════════════════════════════════════")
+    
+    # Return success if deviation < 0.01%
+    return deviation < 0.01
 
 if __name__ == "__main__":
-    main()
+    success = main()
+    exit(0 if success else 1)

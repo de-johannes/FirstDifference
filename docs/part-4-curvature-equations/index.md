@@ -14,7 +14,7 @@ This part completes the derivation by computing curvature and deriving the Einst
 
 ### [Chapter 10: Two Levels of Curvature](chapter-10)
 
-DRIFE reveals a deeper structure than standard GR: there are two levels of curvature with different origins. Geometric curvature from Christoffel symbols vanishes on uniform K₄, but spectral curvature from the Laplacian eigenvalues contributes a positive cosmological constant.
+FD reveals a deeper structure than standard GR: there are two levels of curvature with different origins. Geometric curvature from Christoffel symbols vanishes on uniform K₄, but spectral curvature from the Laplacian eigenvalues contributes a positive cosmological constant.
 
 **Key concepts:**
 - Geometric curvature (Riemann tensor)

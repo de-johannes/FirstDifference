@@ -9,7 +9,7 @@ Three workflows, one proof.
 **Trigger:** Pull requests to `main` and pushes to `main`
 
 **Jobs:**
-1. **agda-verification:** Compile `DRIFE.agda` with `--safe --without-K --no-libraries`
+1. **agda-verification:** Compile `FirstDistinction.agda` with `--safe --without-K --no-libraries`
 2. **validation-tests:** Run `validate_K4.py` and `validate_lambda.py`
 
 ### test-ci.yml (non-main branches)
@@ -17,7 +17,7 @@ Three workflows, one proof.
 **Trigger:** Push to any branch except `main`
 
 **Steps:**
-1. Compile `DRIFE.agda` with `--safe --without-K --no-libraries`
+1. Compile `FirstDistinction.agda` with `--safe --without-K --no-libraries`
 2. Check for holes `{!!}`
 3. Run `validate_K4.py` (7 numerical tests)
 
@@ -33,16 +33,16 @@ Three workflows, one proof.
 ## What Gets Verified
 
 ```
-DRIFE.agda         # Complete proof: D₀ → G_μν = 8T_μν
-validate_K4.py     # K₄ eigenvalues, Königsklasse predictions (7 tests)
-validate_lambda.py # Λ-dilution derivation, 10^{-122} problem (7 tests)
+FirstDistinction.agda  # Complete proof: D₀ → G_μν = 8T_μν
+validate_K4.py         # K₄ eigenvalues, Königsklasse predictions (7 tests)
+validate_lambda.py     # Λ-dilution derivation, 10^{-122} problem (7 tests)
 ```
 
 ## Local Testing
 
 ```bash
 # Agda verification
-agda --safe --without-K --no-libraries DRIFE.agda
+agda --safe --without-K --no-libraries FirstDistinction.agda
 
 # Numerical validation
 python validate_K4.py

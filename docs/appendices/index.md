@@ -6,7 +6,7 @@ breadcrumb: <a href="/">Home</a> &gt; Appendices
 
 # Appendices
 
-Technical references for the DRIFE proof and validation.
+Technical references for the FD proof and validation.
 
 ---
 
@@ -16,7 +16,7 @@ The complete Agda proof is available at [github.com/de-johannes/FirstDifference]
 
 ## [Appendix B: Python Validation](appendix-b)
 
-Python scripts for numerical verification of K₄ properties and DRIFE predictions.
+Python scripts for numerical verification of K₄ properties and FD predictions.
 
 ---
 

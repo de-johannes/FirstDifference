@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'DRIFE.agda'
+      - 'FirstDistinction.agda'
       - 'src/python/*.py'
       - 'src/agda/**/*.agda'
       - 'README.md'
@@ -39,16 +39,16 @@ jobs:
       - name: Install Python dependencies
         run: pip install numpy
 
-      - name: Compile DRIFE.agda
+      - name: Compile FirstDistinction.agda
         run: |
-          echo "🚀 Compiling DRIFE.agda for release verification..."
-          agda --safe --without-K --no-libraries DRIFE.agda
-          echo "✅ DRIFE.agda compiled successfully!"
+          echo "🚀 Compiling FirstDistinction.agda for release verification..."
+          agda --safe --without-K --no-libraries FirstDistinction.agda
+          echo "✅ FirstDistinction.agda compiled successfully!"
 
       - name: Check for holes
         run: |
           echo "🔍 Checking for holes {!!}..."
-          if grep -n '{!.*!}' DRIFE.agda; then
+          if grep -n '{!.*!}' FirstDistinction.agda; then
             echo "❌ Holes found - cannot release!"
             exit 1
           else
@@ -105,7 +105,7 @@ jobs:
           echo "prev=${PREV_TAG}" >> "$GITHUB_OUTPUT"
           
           {
-            echo "## DRIFE Release ${{ steps.sha.outputs.short }}"
+            echo "## First Distinction Release ${{ steps.sha.outputs.short }}"
             echo ""
             echo "🏆 **The First Distinction → Einstein Field Equations**"
             echo ""
@@ -126,21 +126,21 @@ jobs:
             fi
             echo ""
             echo "---"
-            echo "**Verification:** \`agda --safe --without-K --no-libraries DRIFE.agda\`"
+            echo "**Verification:** \`agda --safe --without-K --no-libraries FirstDistinction.agda\`"
             echo "**Numerical:** \`python validate_K4.py\` (7/7 tests)"
           } > CHANGELOG.md
 
       - name: Create source archive
         run: |
-          git archive -o drife-${{ steps.sha.outputs.short }}.zip HEAD
+          git archive -o fd-${{ steps.sha.outputs.short }}.zip HEAD
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ github.run_number }}
-          name: DRIFE v${{ github.run_number }} (${{ steps.sha.outputs.short }})
+          name: FD v${{ github.run_number }} (${{ steps.sha.outputs.short }})
           body_path: CHANGELOG.md
           draft: false
           prerelease: false
           files: |
-            drife-${{ steps.sha.outputs.short }}.zip
+            fd-${{ steps.sha.outputs.short }}.zip

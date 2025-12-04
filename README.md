@@ -1,4 +1,4 @@
-# DRIFE — The First Difference
+# First Distinction (FD)
 
 **A Zero-Axiom Proof that Spacetime Must Be As It Is**
 
@@ -6,7 +6,7 @@
 
 ## What This Is
 
-A single Agda file (`DRIFE.agda`) that proves:
+A single Agda file (`FirstDistinction.agda`) that proves:
 
 ```
 Distinction is unavoidable
@@ -74,8 +74,8 @@ These are **theorems**, not fits.
 ## Files
 
 ```
-The-Irrefutable/
-├── DRIFE.agda           # The proof (6000+ lines, --safe --without-K)
+FirstDifference/
+├── FirstDistinction.agda           # The proof (6000+ lines, --safe --without-K)
 ├── validate_K4.py       # Numerical validation (7/7 tests pass)
 ├── simulate_collapse.py # Topological brake visualization
 └── README.md            # This file
@@ -87,7 +87,7 @@ The-Irrefutable/
 
 ### Verify the proof
 ```bash
-agda --safe --without-K --no-libraries DRIFE.agda
+agda --safe --without-K --no-libraries FirstDistinction.agda
 ```
 
 ### Validate numerically
@@ -109,7 +109,7 @@ python3 simulate_collapse.py
 
 **Traditional physics:** Assume spacetime, derive consequences.
 
-**DRIFE:** Prove spacetime from the unavoidability of distinction.
+**First Distinction (FD):** Prove spacetime from the unavoidability of distinction.
 
 The question is not "what are the laws of physics?"  
 The question is "what **must** be true if anything can be distinguished at all?"
@@ -172,12 +172,12 @@ That's it. That's the universe.
 ## Citation
 
 ```bibtex
-@software{drife_2025,
+@software{first_distinction_2025,
   author = {Wielsch, Johannes},
-  title = {DRIFE: The First Difference},
+  title = {First Distinction: An Axiom-Free Derivation of Spacetime},
   subtitle = {A Zero-Axiom Proof of Spacetime Structure},
   year = {2025},
-  url = {https://git.wielsch.org/johannes/The-Irrefutable}
+  url = {https://github.com/de-johannes/FirstDifference}
 }
 ```
 

@@ -88,7 +88,7 @@ theorem-d-equals-3 = refl
 -- In spectral geometry, the smallest nonzero eigenvalue relates to curvature
 -- For K₄: λ₁ = 4
 
--- The cosmological constant in DRIFE: Λ = d = 3
+-- The cosmological constant in FD: Λ = d = 3
 -- This comes from the relationship: Λ = (number of spatial dimensions)
 
 -- Physical interpretation:
@@ -113,7 +113,7 @@ theorem-Lambda-equals-3 = refl
 
 -- The gravitational coupling κ appears in: G_μν + Λg_μν = κ T_μν
 
--- In DRIFE: κ = 8 = 2 × K₄-vertices = 2 × 4
+-- In FD: κ = 8 = 2 × K₄-vertices = 2 × 4
 
 -- WHY 2 × vertices?
 -- The factor of 2 comes from the symmetry of the stress-energy tensor
@@ -124,7 +124,7 @@ theorem-Lambda-equals-3 = refl
 
 -- Let's think differently:
 -- κ = 8π in standard GR (with G = 1)
--- In DRIFE, we work in units where π factors are absorbed
+-- In FD, we work in units where π factors are absorbed
 -- κ = 8 comes from: 2 × (d + 1) = 2 × 4 = 8
 
 coupling-constant : ℕ
@@ -136,7 +136,7 @@ theorem-kappa-equals-8 = refl
 
 -- Physical interpretation:
 -- κ measures how strongly energy curves spacetime
--- In DRIFE: each of the 4 distinctions contributes twice
+-- In FD: each of the 4 distinctions contributes twice
 -- (once for "being" and once for "relating")
 -- Total: 2 × 4 = 8
 
@@ -207,11 +207,11 @@ k4-physics = record
 -- PREDICTIONS
 -- ============================================================================
 
--- DRIFE makes zero-parameter predictions:
+-- FD makes zero-parameter predictions:
 -- 1. d = 3 spatial dimensions ✓ (observed)
 -- 2. Λ > 0 (positive cosmological constant) ✓ (observed since 1998)
 -- 3. Λ = 3 in Planck units (testable in principle)
 -- 4. κ = 8 in our units (matches 8πG convention)
 
 -- The fact that d = 3 and Λ > 0 match observation is non-trivial!
--- Most theories must ASSUME these; DRIFE DERIVES them.
+-- Most theories must ASSUME these; FD DERIVES them.

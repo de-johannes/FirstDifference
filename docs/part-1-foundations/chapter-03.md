@@ -88,7 +88,7 @@ In the Genesis, the pair (D₀, D₂) is irreducible. This creates the **forcing
 
 ### The Formal Irreducibility Proof
 
-This is the **critical theorem** of DRIFE. We do not merely *claim* that (D₀, D₂) is irreducible—we *prove* it formally in Agda. The type checker verifies this proof.
+This is the **critical theorem** of FD. We do not merely *claim* that (D₀, D₂) is irreducible—we *prove* it formally in Agda. The type checker verifies this proof.
 
 The key insight is subtle: D₂ was *introduced* as the relation between D₀ and D₁. But once introduced, D₂ becomes an *object* in its own right. The relation between D₀ and this new object D₂ is different from D₂ itself. This is the "level shift" that forces D₃.
 
@@ -215,7 +215,7 @@ The irreducible pair (D₀, D₂) **forces** a new distinction: D₃.
 
 **Proof.** The pair (D₀, D₂) must be related (by the requirement that all distinctions be mutually distinguished). This relation cannot be expressed using only D₀, D₁, D₂ (by irreducibility). Therefore, a new distinction D₃ must exist to capture this relation. ∎
 
-This is the heart of DRIFE's generative mechanism. We did not *postulate* D₃. We *derived* it from the structure of Genesis and the necessity of relating all distinctions.
+This is the heart of FD's generative mechanism. We did not *postulate* D₃. We *derived* it from the structure of Genesis and the necessity of relating all distinctions.
 
 <div class="agda-proof">
   <h4>The Forcing Theorem</h4>

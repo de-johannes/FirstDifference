@@ -48,9 +48,9 @@ None of these explains *why* time has negative signature.
 
 ## 8.2 Drift Irreversibility
 
-In DRIFE, time emerges from the **irreversibility of the drift process**.
+In FD, time emerges from the **irreversibility of the drift process**.
 
-Recall the structure of DRIFE:
+Recall the structure of FD:
 1. D₀ exists (unavoidable)
 2. Genesis: D₀, D₁, D₂ (forced)
 3. Saturation forces D₃
@@ -211,7 +211,7 @@ Time, by contrast, has an intrinsic direction (increasing drift rank). This asym
 
 ## 8.6 Summary
 
-We have derived the Lorentz signature (−1, +1, +1, +1) from DRIFE:
+We have derived the Lorentz signature (−1, +1, +1, +1) from FD:
 
 | Dimension | Source | Sign | Reason |
 |-----------|--------|------|--------|

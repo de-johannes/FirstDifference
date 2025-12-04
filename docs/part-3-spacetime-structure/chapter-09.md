@@ -26,7 +26,7 @@ The Einstein field equations relate the metric to matter:
 
 $$G_{\mu\nu} + \Lambda g_{\mu\nu} = \kappa T_{\mu\nu}$$
 
-In standard GR, the metric is the fundamental dynamical variable. In DRIFE, we *derive* the metric from K₄ structure.
+In standard GR, the metric is the fundamental dynamical variable. In FD, we *derive* the metric from K₄ structure.
 
 ---
 
@@ -47,7 +47,7 @@ Why vertex degree? In discrete geometry, the degree of a vertex measures its "co
 
 ### The Metric Tensor
 
-The DRIFE metric tensor is:
+The FD metric tensor is:
 
 $$g_{\mu\nu} = \phi^2 \eta_{\mu\nu} = 3 \cdot \text{diag}(-1, +1, +1, +1) = \text{diag}(-3, +3, +3, +3)$$
 

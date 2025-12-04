@@ -4,7 +4,7 @@
 VALIDATE COSMIC AGE: N = 5 × 4^100 from K₄
 ═══════════════════════════════════════════════════════════════════════════════
 
-DRIFE predicts: τ = 5 × 4^100 × t_Planck = 13.726 Gyr
+FD predicts: τ = 5 × 4^100 × t_Planck = 13.726 Gyr
 
 This script compares the K₄-derived cosmic age with various measurements.
 
@@ -80,10 +80,10 @@ print(f"  t_Planck = {t_Planck_seconds:.6e} s")
 print(f"  1 Gyr = {seconds_per_Gyr:.6e} s")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# § 4  DRIFE PREDICTION
+# § 4  FD PREDICTION
 # ─────────────────────────────────────────────────────────────────────────────
 
-print("\n§ 4  DRIFE PREDICTION")
+print("\n§ 4  FD PREDICTION")
 print("─" * 70)
 
 # τ = N × t_Planck
@@ -96,7 +96,7 @@ print(f"  log₁₀(τ) = {log_N:.6f} + {math.log10(t_Planck_seconds):.6f}")
 print(f"           = {log_tau_seconds:.6f}")
 print(f"  τ = {tau_seconds:.6e} s")
 print(f"\n  ┌─────────────────────────────────────────┐")
-print(f"  │  τ_DRIFE = {tau_Gyr:.3f} Gyr              │")
+print(f"  │  τ_FD = {tau_Gyr:.3f} Gyr              │")
 print(f"  └─────────────────────────────────────────┘")
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -152,29 +152,29 @@ H0_predicted = 1 / tau_seconds * km_per_Mpc / 1000  # convert to km/s/Mpc
 # More accurate: H₀ ≈ 1/(τ × factor) where factor depends on cosmology
 # For ΛCDM with Ωm=0.3, Ωλ=0.7: τ ≈ 0.964/H₀
 factor = 0.964
-H0_from_DRIFE = factor / (tau_Gyr * 1e9 * seconds_per_year) * km_per_Mpc
+H0_from_FD = factor / (tau_Gyr * 1e9 * seconds_per_year) * km_per_Mpc
 
-print(f"  DRIFE prediction: τ = {tau_Gyr:.3f} Gyr")
-print(f"  Implied H₀ (ΛCDM): H₀ ≈ {H0_from_DRIFE:.1f} km/s/Mpc")
+print(f"  FD prediction: τ = {tau_Gyr:.3f} Gyr")
+print(f"  Implied H₀ (ΛCDM): H₀ ≈ {H0_from_FD:.1f} km/s/Mpc")
 print(f"\n  This is BETWEEN the two measurements!")
 print(f"  • Closer to Planck CMB than to Cepheids")
 print(f"  • Could indicate the 'true' value")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# § 7  WHAT IF DRIFE IS CORRECT?
+# § 7  WHAT IF FD IS CORRECT?
 # ─────────────────────────────────────────────────────────────────────────────
 
-print("\n§ 7  WHAT IF DRIFE IS CORRECT?")
+print("\n§ 7  WHAT IF FD IS CORRECT?")
 print("─" * 70)
 
 print(f"""
-  If τ_true = {tau_Gyr:.3f} Gyr (DRIFE prediction), then:
+  If τ_true = {tau_Gyr:.3f} Gyr (FD prediction), then:
   
   1. Planck CMB measurement is HIGH by {(13.787 - tau_Gyr)/tau_Gyr * 100:.2f}%
      → Possible systematic error in ΛCDM model assumptions
      
   2. Cepheid measurement is LOW by {(tau_Gyr - 12.6)/tau_Gyr * 100:.2f}%
-     → But actually DRIFE is closer to Planck!
+     → But actually FD is closer to Planck!
      
   3. The "Hubble Tension" might be resolved if BOTH measurements
      have systematic errors pointing away from the true value.
@@ -192,7 +192,7 @@ print("═" * 70)
 
 print(f"""
   ┌─────────────────────────────────────────────────────────────────────┐
-  │  DRIFE COSMIC AGE PREDICTION                                        │
+  │  FD COSMIC AGE PREDICTION                                        │
   ├─────────────────────────────────────────────────────────────────────┤
   │                                                                     │
   │  N = (V+1) × V^(E² + κ²)                                           │
@@ -211,7 +211,7 @@ print(f"""
   │  COMPARISON:                                                        │
   │    Planck 2018:  13.787 ± 0.020 Gyr  (3.0σ deviation)              │
   │    Cepheids:     12.6 ± 0.4 Gyr      (2.8σ deviation)              │
-  │    DRIFE:        {tau_Gyr:.3f} Gyr         (0 free parameters!)       │
+  │    FD:        {tau_Gyr:.3f} Gyr         (0 free parameters!)       │
   │                                                                     │
   │  STATUS: KÖNIGSKLASSE (if measurements improve toward {tau_Gyr:.2f} Gyr) │
   └─────────────────────────────────────────────────────────────────────┘

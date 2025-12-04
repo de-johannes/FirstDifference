@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
 ═══════════════════════════════════════════════════════════════════════════════
-DRIFE K₄ NUMERICAL VALIDATION
+FD K₄ NUMERICAL VALIDATION
 ═══════════════════════════════════════════════════════════════════════════════
 
-This script validates the core numerical predictions from DRIFE.agda:
+This script validates the core numerical predictions from FD.agda:
 
 1. K₄ Laplacian eigenvalues: λ = {0, 4, 4, 4}
 2. Embedding dimension from spectral gap: d = 3
@@ -212,7 +212,7 @@ def test_laplacian_symmetric():
 
 def main():
     print("═" * 75)
-    print("DRIFE K₄ NUMERICAL VALIDATION")
+    print("FD K₄ NUMERICAL VALIDATION")
     print("═" * 75)
     print()
     print("Validating KÖNIGSKLASSE (zero-parameter) predictions from K₄ topology.")

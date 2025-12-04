@@ -6,14 +6,14 @@ breadcrumb: <a href="/">Home</a> &gt; Abstract
 
 # Abstract
 
-This book presents **DRIFE** (The First Difference), a complete formal proof that the structure of physical spacetime—including its 3+1 dimensionality, Lorentz signature, and the Einstein field equations—emerges *necessarily* from a single unavoidable premise: the existence of distinction itself.
+This book presents **First Distinction (FD)** (The First Difference), a complete formal proof that the structure of physical spacetime—including its 3+1 dimensionality, Lorentz signature, and the Einstein field equations—emerges *necessarily* from a single unavoidable premise: the existence of distinction itself.
 
 ---
 
 ## The Central Result
 
 <div class="highlight-box">
-  <code>ultimate-theorem : Unavoidable Distinction → DRIFE-FullGR</code>
+  <code>ultimate-theorem : Unavoidable Distinction → FD-FullGR</code>
   <p><em>From the unavoidability of distinction, complete 4D General Relativity necessarily emerges.</em></p>
 </div>
 

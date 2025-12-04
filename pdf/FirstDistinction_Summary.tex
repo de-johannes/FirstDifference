@@ -26,7 +26,7 @@
 
 % Colors
 \usepackage{xcolor}
-\definecolor{drife-blue}{RGB}{70,130,180}
+\definecolor{fd-blue}{RGB}{70,130,180}
 
 % Graphics
 \usepackage{tikz}
@@ -39,7 +39,7 @@
 \usepackage{listings}
 \lstset{
   basicstyle=\ttfamily\small,
-  keywordstyle=\color{drife-blue}\bfseries,
+  keywordstyle=\color{fd-blue}\bfseries,
   backgroundcolor=\color{gray!5},
   frame=single,
   framerule=0.4pt,
@@ -52,9 +52,9 @@
 \usepackage{hyperref}
 \hypersetup{
   colorlinks=true,
-  linkcolor=drife-blue,
-  citecolor=drife-blue,
-  urlcolor=drife-blue
+  linkcolor=fd-blue,
+  citecolor=fd-blue,
+  urlcolor=fd-blue
 }
 
 % Theorems
@@ -73,7 +73,7 @@
 % TITLE
 % ============================================================================
 
-\title{\textbf{DRIFE: Deriving General Relativity\\from Pure Distinction}\\[0.5cm]
+\title{\textbf{First Distinction: Deriving General Relativity\\from Pure Distinction}\\[0.5cm]
 \large A Machine-Verified, Axiom-Free Construction}
 
 \author{Johannes Wielsch\\
@@ -204,10 +204,10 @@ The four distinctions $\{D_0, D_1, D_2, D_3\}$ form the vertices of the complete
 
 \begin{center}
 \begin{tikzpicture}[scale=1.5]
-    \node[circle,fill=drife-blue,text=white,minimum size=20pt] (v0) at (0,1.2) {$D_0$};
-    \node[circle,fill=drife-blue,text=white,minimum size=20pt] (v1) at (-1,0) {$D_1$};
-    \node[circle,fill=drife-blue,text=white,minimum size=20pt] (v2) at (1,0) {$D_2$};
-    \node[circle,fill=drife-blue,text=white,minimum size=20pt] (v3) at (0,-0.8) {$D_3$};
+    \node[circle,fill=fd-blue,text=white,minimum size=20pt] (v0) at (0,1.2) {$D_0$};
+    \node[circle,fill=fd-blue,text=white,minimum size=20pt] (v1) at (-1,0) {$D_1$};
+    \node[circle,fill=fd-blue,text=white,minimum size=20pt] (v2) at (1,0) {$D_2$};
+    \node[circle,fill=fd-blue,text=white,minimum size=20pt] (v3) at (0,-0.8) {$D_3$};
     \draw[thick] (v0)--(v1) (v0)--(v2) (v0)--(v3) (v1)--(v2) (v1)--(v3) (v2)--(v3);
 \end{tikzpicture}
 \end{center}
@@ -325,7 +325,7 @@ with all constants derived, not assumed.
 \begin{center}
 \begin{tabular}{lcc}
 \toprule
-\textbf{Prediction} & \textbf{DRIFE} & \textbf{Observed} \\
+\textbf{Prediction} & \textbf{FD} & \textbf{Observed} \\
 \midrule
 Spatial dimension $d$ & 3 & \checkmark\ 3 \\
 $\Lambda$ sign & $> 0$ & \checkmark\ Dark energy \\
@@ -353,8 +353,8 @@ The complete proof is implemented in Agda:
 
 \begin{lstlisting}[language=Haskell]
 -- Main theorem
-ultimate-theorem : Unavoidable Distinction -> DRIFE-FullGR
-ultimate-theorem _ = DRIFE-FullGR-proof
+ultimate-theorem : Unavoidable Distinction -> FD-FullGR
+ultimate-theorem _ = FD-FullGR-proof
 
 -- Component proofs
 theorem-3D : embeddingDimension == 3
@@ -364,7 +364,7 @@ theorem-kappa-is-eight : kappa-discrete == 8
 
 Verification command:
 \begin{verbatim}
-agda --safe --without-K --no-libraries DRIFE.agda
+agda --safe --without-K --no-libraries FirstDistinction.agda
 \end{verbatim}
 
 The flags ensure:
@@ -376,7 +376,7 @@ The flags ensure:
 
 \subsection{Strengthened Proof Chain}
 
-Recent work has fortified the DRIFE proof chain with four additional formal proofs that address potential foundational criticisms:
+Recent work has fortified the FD proof chain with four additional formal proofs that address potential foundational criticisms:
 
 \begin{enumerate}
     \item \textbf{$K_4$ Uniqueness} (\S 7.3): We prove that $K_4$ is the \emph{unique} stable graph under the saturation dynamics. $K_3$ (Genesis) is demonstrably unstable---it possesses uncaptured edges that force the emergence of $D_3$. $K_4$ achieves closure because all six edges are captured. $K_5$ cannot be reached: no forcing mechanism exists beyond $K_4$ since no uncaptured pairs remain.
@@ -398,7 +398,7 @@ These additions close critical gaps in the argumentation chain. The reader askin
 
 \subsection{Relation to Prior Work}
 
-DRIFE connects to:
+FD connects to:
 \begin{itemize}
     \item Spencer-Brown's \emph{Laws of Form}: $D_0$ is his ``mark''
     \item Regge calculus: Discrete spacetime geometry
@@ -406,11 +406,11 @@ DRIFE connects to:
     \item Causal set theory: Discrete causality
 \end{itemize}
 
-Unlike these, DRIFE derives structure from pure construction without positing it.
+Unlike these, FD derives structure from pure construction without positing it.
 
 \subsection{Limitations}
 
-DRIFE does not yet derive:
+FD does not yet derive:
 \begin{itemize}
     \item Standard Model particle content
     \item Fine structure constant $\alpha \approx 1/137$
@@ -419,7 +419,7 @@ DRIFE does not yet derive:
 
 \subsection{Philosophical Implications}
 
-If correct, DRIFE implies the laws of physics are \emph{necessary}, not contingent. The universe must be 3+1 dimensional with positive $\Lambda$ because distinction must distinguish.
+If correct, FD implies the laws of physics are \emph{necessary}, not contingent. The universe must be 3+1 dimensional with positive $\Lambda$ because distinction must distinguish.
 
 % ============================================================================
 % 10. CONCLUSION
@@ -427,7 +427,7 @@ If correct, DRIFE implies the laws of physics are \emph{necessary}, not continge
 
 \section{Conclusion}
 
-We have presented DRIFE, a machine-verified proof that 4D General Relativity emerges from the unavoidable first distinction. The derivation is:
+We have presented FD, a machine-verified proof that 4D General Relativity emerges from the unavoidable first distinction. The derivation is:
 
 \begin{itemize}
     \item \textbf{Constructive}: All objects are built, not assumed
@@ -436,7 +436,7 @@ We have presented DRIFE, a machine-verified proof that 4D General Relativity eme
     \item \textbf{Machine-checked}: 6,367 lines verified by Agda
 \end{itemize}
 
-The main result---\texttt{ultimate-theorem : Unavoidable Distinction → DRIFE-FullGR}---represents a new paradigm: physics not \emph{from} first principles, but physics \emph{as} first principles.
+The main result---\texttt{ultimate-theorem : Unavoidable Distinction → FD-FullGR}---represents a new paradigm: physics not \emph{from} first principles, but physics \emph{as} first principles.
 
 \paragraph{Code availability.} The complete Agda proof is available at \url{https://github.com/de-johannes/FirstDifference}.
 

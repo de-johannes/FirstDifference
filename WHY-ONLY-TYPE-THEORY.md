@@ -25,7 +25,7 @@ In ZFC, you can **assume** existence:
 
 These are **postulates**. You declare something exists, then work with it.
 
-But DRIFE asks: **What MUST exist?**
+But FD asks: **What MUST exist?**
 
 Not "assume X exists" — but "prove X cannot NOT exist."
 
@@ -89,7 +89,7 @@ This says:
 
 ## The Meta-Axiom
 
-DRIFE has exactly one meta-axiom:
+FD has exactly one meta-axiom:
 
 > **Being = Constructibility**
 
@@ -167,7 +167,7 @@ Type theory is **the only language where ontology can be formal**.
 Classical mathematics can describe what we assume.
 Type theory can prove what must be.
 
-That's why DRIFE is in Agda.
+That's why FD is in Agda.
 That's why it compiles.
 That's why it's irrefutable.
 

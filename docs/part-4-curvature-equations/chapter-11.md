@@ -9,7 +9,7 @@ breadcrumb: <a href="/">Home</a> &gt; <a href="./">Part IV</a> &gt; Chapter 11
 > *"The Einstein field equations are the most beautiful equations in all of physics."*  
 > — Various physicists
 
-We now derive the Einstein field equations from DRIFE structure. The derivation yields not only the form of the equations but also the values of the constants: Λ = 3 and κ = 8.
+We now derive the Einstein field equations from FD structure. The derivation yields not only the form of the equations but also the values of the constants: Λ = 3 and κ = 8.
 
 ---
 
@@ -29,9 +29,9 @@ where:
 
 ---
 
-## 11.2 DRIFE Values of the Constants
+## 11.2 FD Values of the Constants
 
-DRIFE determines both constants from K₄ structure:
+FD determines both constants from K₄ structure:
 
 ### Cosmological Constant: Λ = 3
 
@@ -90,11 +90,11 @@ In standard general relativity (with c = 1):
 
 $$\kappa_{\text{GR}} = \frac{8\pi G}{c^4} = 8\pi G$$
 
-DRIFE gives κ = 8 in natural (Planck) units. The difference is that DRIFE uses units where G = 1/(8π), so κ<sub>DRIFE</sub> = 8 corresponds to 8πG in conventional units. The numerical value matches when the appropriate unit conversion is applied.
+FD gives κ = 8 in natural (Planck) units. The difference is that FD uses units where G = 1/(8π), so κ<sub>FD</sub> = 8 corresponds to 8πG in conventional units. The numerical value matches when the appropriate unit conversion is applied.
 
 ---
 
-## 11.3 The Complete DRIFE Einstein Equation
+## 11.3 The Complete FD Einstein Equation
 
 Putting it together:
 
@@ -165,7 +165,7 @@ $$R - \frac{4}{2} R = -\Lambda \cdot 4 \implies -R = -4\Lambda \implies R = 4\La
   <p style="text-align: center;">$$R = 12$$</p>
 </div>
 
-This is consistent with the spectral Ricci scalar, confirming the internal coherence of DRIFE.
+This is consistent with the spectral Ricci scalar, confirming the internal coherence of FD.
 
 ---
 
@@ -235,7 +235,7 @@ All physical constants emerge from K₄ counting:
 
 ---
 
-## 11.8 Summary: The DRIFE Derivation
+## 11.8 Summary: The FD Derivation
 
 We have derived the Einstein field equations from K₄ structure:
 

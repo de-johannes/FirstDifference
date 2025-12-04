@@ -155,7 +155,7 @@ Since L = 4I − J:
   <p>with multiplicities 1 and 3 respectively.</p>
 </div>
 
-This three-fold degeneracy is the *central result* of DRIFE's spectral analysis. It is not assumed—it is computed from the structure of K₄, which was itself derived from the unavoidability of distinction.
+This three-fold degeneracy is the *central result* of FD's spectral analysis. It is not assumed—it is computed from the structure of K₄, which was itself derived from the unavoidability of distinction.
 
 ### Agda Verification
 

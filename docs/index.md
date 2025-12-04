@@ -67,6 +67,7 @@ A proof is a program whose type encodes a mathematical statement. If the program
 | Signature | (−,+,+,+) | (−,+,+,+) | ✓ exact |
 | Λ > 0 | yes | yes | ✓ exact |
 | α⁻¹ | 137.036 | 137.036 | 0.00003% |
+| N (Planck times) | 5×4¹⁰⁰ | ~10⁶¹ | ✓ derived |
 | τ (cosmic age) | 13.73 Gyr | 13.79 Gyr | 0.4% |
 
 [→ All predictions](predictions)
@@ -113,7 +114,7 @@ The code is the claim. If it compiles, the proof is valid.
 - We do not claim to have found "the truth".
 - We present a derivation that is machine-checked.
 - The α formula uses K₄ spectral invariants (λ³χ + deg² + correction).
-- The cosmic age N = 5 × 4¹⁰⁰ is a conjecture.
+- The cosmic age N = 5 × 4¹⁰⁰ is now fully derived from K₄ (see § 22b'').
 
 If you find an error, open an issue. We want to know.
 

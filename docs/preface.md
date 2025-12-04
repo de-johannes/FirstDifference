@@ -28,7 +28,7 @@ We use **Agda**, a dependently-typed proof assistant, with the flags `--safe` an
 - No appeal to classical logic (everything is constructive)
 - Every step is machine-verified (no human error possible)
 
-The result is 6,516 lines of Agda code that derives the Einstein field equations from pure distinction.
+The result is 5000+ lines of Agda code (incl. comments) that derives the Einstein field equations from pure distinction.
 
 ---
 

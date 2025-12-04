@@ -62,7 +62,7 @@ FirstDistinction.agda
 
 ## Statistics (as of December 2025)
 
-- **Total lines**: ~6,500
+- **Total lines**: 5000+ (incl. comments)
 - **Theorems**: 47
 - **Type-checked**: Yes
 - **External dependencies**: None

@@ -6,7 +6,7 @@
 
 ## What This Is
 
-A single Agda file (`FirstDistinction.agda`, ~8700 lines) that proves:
+A single Agda file (`FirstDistinction.agda`, 5000+ lines incl. comments) that proves:
 
 ```
 Distinction is unavoidable
@@ -85,7 +85,7 @@ The fine structure constant emerges from the Drift-CoDrift Operad:
 
 ```
 FirstDifference/
-├── FirstDistinction.agda  # The proof (~8700 lines, --safe --without-K)
+├── FirstDistinction.agda  # The proof (5000+ lines, --safe --without-K)
 ├── validate_K4.py         # Numerical validation
 ├── simulate_collapse.py   # Topological brake visualization
 ├── docs/                  # Website (GitHub Pages)

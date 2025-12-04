@@ -126,7 +126,7 @@ The cosmic age formula is **fully derived**:
 ## Proof structure
 
 ```
-FirstDistinction.agda (~8400 lines)
+FirstDistinction.agda (5000+ lines incl. comments)
 ├── § 1-10   Foundations (distinctions, K₄ emergence)
 ├── § 11-15  Spectral geometry (Laplacian, eigenvalues)
 ├── § 16-18  Spacetime structure (3+1, signature)

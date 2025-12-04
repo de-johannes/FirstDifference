@@ -21,7 +21,7 @@ FD derives the following from the unavoidability of distinction:
 7. **Einstein field equations** G<sub>μν</sub> + Λg<sub>μν</sub> = 8T<sub>μν</sub>
 8. **Conservation laws** ∇<sup>μ</sup>T<sub>μν</sub> = 0 from Bianchi identity
 
-All results are machine-verified in 6,516 lines of Agda code under `--safe --without-K --no-libraries`.
+All results are machine-verified in 5000+ lines of Agda code (incl. comments) under `--safe --without-K --no-libraries`.
 
 ---
 

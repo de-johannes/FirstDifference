@@ -229,6 +229,35 @@ data ℕ : Set where
   zero : ℕ
   suc  : ℕ → ℕ
 
+-- ═══════════════════════════════════════════════════════════════════════════
+-- BUILTIN NATURAL PRAGMA - EXPLANATION
+-- ═══════════════════════════════════════════════════════════════════════════
+--
+-- The following pragma is PURELY SYNTACTIC SUGAR. It allows writing:
+--   3  instead of  suc (suc (suc zero))
+--   12 instead of  suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc zero)))))))))))
+--
+-- WHAT IT DOES:
+--   • Enables decimal literals (0, 1, 2, 3, ...) in source code
+--   • Each literal is EXPANDED by Agda to the corresponding suc-chain
+--   • Example: 4 ≡ suc (suc (suc (suc zero)))
+--
+-- WHAT IT DOES NOT DO:
+--   • Does NOT add any axioms
+--   • Does NOT change the semantics of ℕ
+--   • Does NOT introduce any assumptions
+--   • Does NOT affect --safe or --without-K compliance
+--
+-- WHY WE USE IT:
+--   • Readability: "137" is clearer than 137 nested suc constructors
+--   • The ℕ type is ALREADY fully defined by the data declaration above
+--   • All proofs work identically with or without this pragma
+--
+-- VERIFICATION:
+--   • Removing this pragma and replacing all literals with suc-chains
+--     would produce IDENTICAL proofs (just much harder to read)
+--   • The pragma is allowed under --safe (it's not in the unsafe list)
+--
 {-# BUILTIN NATURAL ℕ #-}
 
 -- § 2.3 EMERGENCE: count - The Bridge from Events to Numbers

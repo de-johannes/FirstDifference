@@ -39,22 +39,22 @@ The complete proof is formalized in [Agda](https://github.com/de-johannes/FirstD
 
 ---
 
-## Was ist Agda?
+## What is Agda?
 
-**Agda** ist eine funktionale Programmiersprache mit abhängigen Typen und zugleich ein interaktiver Beweisassistent. Im Gegensatz zu mathematischen Beweisen auf Papier wird hier jeder Schritt maschinell überprüft — der Compiler garantiert logische Konsistenz.
+**Agda** is a functional programming language with dependent types and an interactive proof assistant. Unlike mathematical proofs on paper, every step is machine-checked — the compiler guarantees logical consistency.
 
-**Warum Agda für First Distinction?**
+**Why Agda for First Distinction?**
 
-- **Keine versteckten Annahmen:** Der `--safe --without-K` Modus verbietet logische Axiome und Postulate. Was nicht explizit hergeleitet wird, existiert nicht.
-- **Vollständige Transparenz:** Jeder kann den Beweis selbst verifizieren — ein Compiler-Durchlauf genügt.
-- **Reproduzierbar:** Das Ergebnis hängt nicht von menschlicher Interpretation ab.
+- **No hidden assumptions:** The `--safe --without-K` mode forbids logical axioms and postulates. What is not explicitly derived does not exist.
+- **Full transparency:** Anyone can verify the proof themselves — a single compiler run suffices.
+- **Reproducible:** The result does not depend on human interpretation.
 
-**Was bedeutet "Beweis" in Agda?**
+**What does "proof" mean in Agda?**
 
-Ein Beweis ist ein Programm, dessen Typ eine mathematische Aussage kodiert. Wenn das Programm kompiliert, ist die Aussage bewiesen.
+A proof is a program whose type encodes a mathematical statement. If the program compiles, the statement is proven.
 
-- *Für Physiker:* Wie ein numerisches Experiment, das immer exakt reproduzierbar ist — aber mit symbolischer statt numerischer Präzision.
-- *Für Mathematiker:* Wie ein formal verifizierter Beweis in einem Hilbert-System, maschinell auf Korrektheit geprüft.
+- *For physicists:* Like a numerical experiment that is always exactly reproducible — but with symbolic rather than numerical precision.
+- *For mathematicians:* Like a formally verified proof in a Hilbert system, machine-checked for correctness.
 
 ---
 

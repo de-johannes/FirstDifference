@@ -1,0 +1,73 @@
+name: Build PDFs from LaTeX
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'pdf/*.tex'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'pdf/*.tex'
+  workflow_dispatch:  # Allow manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  build-pdfs:
+    name: Compile LaTeX to PDF
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Need history to detect changes
+
+      - name: Detect changed TeX files
+        id: changes
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            CHANGED=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} -- 'pdf/*.tex' | tr '\n' ' ')
+          else
+            CHANGED=$(git diff --name-only HEAD~1 HEAD -- 'pdf/*.tex' 2>/dev/null || echo "pdf/*.tex")
+          fi
+          echo "changed_files=$CHANGED" >> $GITHUB_OUTPUT
+          echo "📝 Changed TeX files: $CHANGED"
+
+      - name: Install LaTeX
+        if: steps.changes.outputs.changed_files != ''
+        uses: xu-cheng/latex-action@v3
+        with:
+          working_directory: pdf
+          root_file: |
+            FirstDistinction_Summary.tex
+            FirstDistinction_Summary_DE.tex
+            FirstDistinction_Book.tex
+            FirstDistinction_Book_DE.tex
+          latexmk_use_xelatex: true
+          continue_on_error: true
+
+      - name: Compile changed PDFs only
+        if: steps.changes.outputs.changed_files != ''
+        run: |
+          cd pdf
+          for texfile in ${{ steps.changes.outputs.changed_files }}; do
+            basename=$(basename "$texfile" .tex)
+            echo "📄 Compiling $basename..."
+            # Try xelatex first (for Unicode), fall back to pdflatex
+            xelatex -interaction=nonstopmode "$basename.tex" || pdflatex -interaction=nonstopmode "$basename.tex"
+            xelatex -interaction=nonstopmode "$basename.tex" || pdflatex -interaction=nonstopmode "$basename.tex"
+            echo "✅ $basename.pdf created"
+          done
+
+      - name: Commit PDFs
+        if: github.event_name == 'push' && steps.changes.outputs.changed_files != ''
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add pdf/*.pdf
+          git diff --staged --quiet || git commit -m "🤖 Auto-build PDFs from LaTeX changes"
+          git push

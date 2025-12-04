@@ -1,4 +1,4 @@
-name: DRIFE CI
+name: First Distinction CI
 
 on:
   pull_request:
@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   agda-verification:
-    name: Verify DRIFE.agda compiles
+    name: Verify FirstDistinction.agda compiles
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -28,11 +28,11 @@ jobs:
         with:
           agda-version: '2.7.0.1'
 
-      - name: Compile DRIFE.agda
+      - name: Compile FirstDistinction.agda
         run: |
-          echo "⏳ Compiling DRIFE.agda (--safe --without-K --no-libraries)..."
-          agda --safe --without-K --no-libraries DRIFE.agda
-          echo "✅ DRIFE.agda compiles successfully"
+          echo "⏳ Compiling FirstDistinction.agda (--safe --without-K --no-libraries)..."
+          agda --safe --without-K --no-libraries FirstDistinction.agda
+          echo "✅ FirstDistinction.agda compiles successfully"
 
   validation-tests:
     name: Run validation tests

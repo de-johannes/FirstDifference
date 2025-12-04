@@ -1,11 +1,11 @@
-/* DRIFE Book - Custom Styles */
+/* First Distinction Book - Custom Styles */
 /* Clean, academic styling matching the LaTeX theme */
 
 :root {
-  --drife-blue: rgb(70, 130, 180);
-  --drife-dark: rgb(50, 50, 60);
-  --drife-light: rgb(245, 248, 250);
-  --drife-accent: rgb(180, 100, 100);
+  --fd-blue: rgb(70, 130, 180);
+  --fd-dark: rgb(50, 50, 60);
+  --fd-light: rgb(245, 248, 250);
+  --fd-accent: rgb(180, 100, 100);
   --code-bg: rgb(250, 250, 252);
   --chain-color: rgb(60, 100, 60);
 }
@@ -25,7 +25,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Liberation Sans', sans-serif;
   font-size: 17px;
   line-height: 1.7;
-  color: var(--drife-dark);
+  color: var(--fd-dark);
   background: #fff;
 }
 
@@ -38,7 +38,7 @@ body {
 
 /* Header */
 .site-header {
-  background: var(--drife-light);
+  background: var(--fd-light);
   border-bottom: 1px solid #ddd;
   padding: 1rem 0;
   position: sticky;
@@ -57,7 +57,7 @@ body {
 .site-title {
   font-size: 1.2rem;
   font-weight: 600;
-  color: var(--drife-blue);
+  color: var(--fd-blue);
   text-decoration: none;
 }
 
@@ -68,13 +68,13 @@ body {
 }
 
 .site-nav a {
-  color: var(--drife-dark);
+  color: var(--fd-dark);
   text-decoration: none;
   font-size: 0.95rem;
 }
 
 .site-nav a:hover {
-  color: var(--drife-blue);
+  color: var(--fd-blue);
 }
 
 /* Main content */
@@ -90,7 +90,7 @@ main {
 }
 
 .breadcrumb a {
-  color: var(--drife-blue);
+  color: var(--fd-blue);
   text-decoration: none;
 }
 
@@ -100,7 +100,7 @@ main {
 
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
-  color: var(--drife-dark);
+  color: var(--fd-dark);
   margin-top: 2rem;
   margin-bottom: 1rem;
   line-height: 1.3;
@@ -108,14 +108,14 @@ h1, h2, h3, h4, h5, h6 {
 
 h1 {
   font-size: 2.2rem;
-  border-bottom: 2px solid var(--drife-blue);
+  border-bottom: 2px solid var(--fd-blue);
   padding-bottom: 0.5rem;
   margin-top: 0;
 }
 
 h2 {
   font-size: 1.6rem;
-  color: var(--drife-blue);
+  color: var(--fd-blue);
 }
 
 h3 {
@@ -128,11 +128,11 @@ p {
 
 /* Links */
 a {
-  color: var(--drife-blue);
+  color: var(--fd-blue);
 }
 
 a:hover {
-  color: var(--drife-accent);
+  color: var(--fd-accent);
 }
 
 /* Lists */
@@ -147,10 +147,10 @@ li {
 
 /* Blockquotes */
 blockquote {
-  border-left: 4px solid var(--drife-blue);
+  border-left: 4px solid var(--fd-blue);
   margin: 1.5rem 0;
   padding: 1rem 1.5rem;
-  background: var(--drife-light);
+  background: var(--fd-light);
   font-style: italic;
 }
 
@@ -200,7 +200,7 @@ th, td {
 }
 
 th {
-  background: var(--drife-light);
+  background: var(--fd-light);
   font-weight: 600;
 }
 
@@ -216,8 +216,8 @@ th {
 
 /* Special boxes */
 .highlight-box {
-  background: var(--drife-light);
-  border: 2px solid var(--drife-blue);
+  background: var(--fd-light);
+  border: 2px solid var(--fd-blue);
   border-radius: 6px;
   padding: 1.5rem;
   margin: 1.5rem 0;
@@ -232,33 +232,33 @@ th {
 
 .principle-box {
   background: #fff;
-  border: 2px solid var(--drife-accent);
+  border: 2px solid var(--fd-accent);
   border-radius: 6px;
   padding: 1.5rem;
   margin: 1.5rem 0;
 }
 
 .principle-box h4 {
-  color: var(--drife-accent);
+  color: var(--fd-accent);
   margin-top: 0;
 }
 
 .insight-box {
-  background: var(--drife-light);
-  border: 1px solid var(--drife-blue);
+  background: var(--fd-light);
+  border: 1px solid var(--fd-blue);
   border-radius: 6px;
   padding: 1.5rem;
   margin: 1.5rem 0;
 }
 
 .insight-box h4 {
-  color: var(--drife-blue);
+  color: var(--fd-blue);
   margin-top: 0;
 }
 
 .agda-proof {
   background: var(--code-bg);
-  border: 1px solid var(--drife-dark);
+  border: 1px solid var(--fd-dark);
   border-radius: 6px;
   padding: 1.5rem;
   margin: 1.5rem 0;
@@ -267,7 +267,7 @@ th {
 .agda-proof h4 {
   font-family: 'Inconsolata', monospace;
   margin-top: 0;
-  color: var(--drife-dark);
+  color: var(--fd-dark);
 }
 
 .chain-box {
@@ -292,8 +292,8 @@ th {
 }
 
 .definition {
-  background: var(--drife-light);
-  border-left: 4px solid var(--drife-blue);
+  background: var(--fd-light);
+  border-left: 4px solid var(--fd-blue);
 }
 
 .theorem {
@@ -326,7 +326,7 @@ th {
 
 .chapter-nav a {
   text-decoration: none;
-  color: var(--drife-blue);
+  color: var(--fd-blue);
 }
 
 .chapter-nav a:hover {
@@ -350,7 +350,7 @@ th {
 
 /* Footer */
 .site-footer {
-  background: var(--drife-light);
+  background: var(--fd-light);
   border-top: 1px solid #ddd;
   padding: 2rem 0;
   text-align: center;
@@ -364,7 +364,7 @@ th {
 
 /* Table of Contents */
 .toc {
-  background: var(--drife-light);
+  background: var(--fd-light);
   border-radius: 6px;
   padding: 1.5rem;
   margin: 1.5rem 0;
@@ -403,7 +403,7 @@ th {
 }
 
 .predictions-table th {
-  background: var(--drife-blue);
+  background: var(--fd-blue);
   color: white;
 }
 

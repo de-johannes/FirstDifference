@@ -13,7 +13,7 @@ All values derived from K₄ structure alone. No free parameters.
 
 These are **exact** — no fitting, no calibration.
 
-| Quantity | Formula | DRIFE | Observed | Deviation |
+| Quantity | Formula | FD | Observed | Deviation |
 |----------|---------|-------|----------|-----------|
 | Spatial dimensions | λ=4 multiplicity | **d = 3** | 3 | 0 |
 | Time dimensions | drift irreversibility | **1** | 1 | 0 |
@@ -46,7 +46,7 @@ Where ALL parameters are K₄ spectral/topological invariants:
 
 | | Value |
 |---|-------|
-| **DRIFE** | 137.036036... |
+| **FD** | 137.036036... |
 | **CODATA 2018** | 137.035999084(21) |
 | **Deviation** | 0.000027% |
 
@@ -67,7 +67,7 @@ $$\tau = N \times t_{\text{Planck}} = 13.726 \text{ Gyr}$$
 
 | | Value |
 |---|-------|
-| **DRIFE** | 13.726 Gyr |
+| **FD** | 13.726 Gyr |
 | **Planck 2018** | 13.787 ± 0.020 Gyr |
 | **SH0ES (Cepheids)** | 12.6 ± 0.4 Gyr |
 | **Deviation (Planck)** | 0.44% (3.0σ) |
@@ -106,7 +106,7 @@ This is not fine-tuning. It's a consequence of cosmic age.
 - Standard Model gauge groups (requires extension)
 - Dark matter distribution (requires cosmological integration)
 
-DRIFE derives **spacetime geometry**. Matter content is a separate question.
+FD derives **spacetime geometry**. Matter content is a separate question.
 
 ---
 

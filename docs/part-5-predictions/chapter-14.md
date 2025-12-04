@@ -6,13 +6,13 @@ breadcrumb: <a href="/">Home</a> &gt; <a href="./">Part V</a> &gt; Chapter 14
 
 # Chapter 14: Cosmology
 
-DRIFE offers new perspectives on the fundamental questions of cosmology: the origin of the universe, cosmic inflation, and the nature of dark energy.
+FD offers new perspectives on the fundamental questions of cosmology: the origin of the universe, cosmic inflation, and the nature of dark energy.
 
 ---
 
 ## 14.1 The Big Bang as Phase Transition
 
-Standard cosmology posits a "Big Bang" singularity at t = 0. DRIFE offers a different picture:
+Standard cosmology posits a "Big Bang" singularity at t = 0. FD offers a different picture:
 
 1. **Pre-geometric phase**: Distinctions accumulate without spatial embedding.
 2. **Saturation**: The Genesis saturates, forcing K₄.
@@ -22,14 +22,14 @@ Standard cosmology posits a "Big Bang" singularity at t = 0. DRIFE offers a diff
 The "Big Bang" is not a singularity but a **topological phase transition**—the moment when distinction-dynamics forces spatial projection.
 
 <div class="insight-box">
-  <p><strong>No Singularity:</strong> DRIFE replaces the infinite-density singularity with a finite transition from pre-geometric to geometric structure.</p>
+  <p><strong>No Singularity:</strong> FD replaces the infinite-density singularity with a finite transition from pre-geometric to geometric structure.</p>
 </div>
 
 ---
 
 ## 14.2 No Singularity
 
-DRIFE has no singularity because:
+FD has no singularity because:
 
 - Curvature is bounded: R ≤ 12/ℓ<sub>P</sub>²
 - Spacetime is discrete at the Planck scale
@@ -71,7 +71,7 @@ The ratio:
 
 $$\frac{\Lambda_{\text{obs}}}{\Lambda_{\text{Planck}}} \approx 10^{-122}$$
 
-is the famous "cosmological constant problem." DRIFE **solves** this problem through cosmological dilution.
+is the famous "cosmological constant problem." FD **solves** this problem through cosmological dilution.
 
 ### The Dilution Mechanism
 
@@ -117,9 +117,9 @@ The "cosmological constant problem" is **not** a fine-tuning problem—it is a *
 The only empirical input is the age of the universe. Everything else is derived from K₄ structure.
 
 <div class="highlight-box">
-  <h4>DRIFE Cosmology</h4>
+  <h4>FD Cosmology</h4>
   <table>
-    <tr><th>Feature</th><th>Standard</th><th>DRIFE</th></tr>
+    <tr><th>Feature</th><th>Standard</th><th>FD</th></tr>
     <tr><td>Big Bang</td><td>Singularity</td><td>Phase transition</td></tr>
     <tr><td>Λ origin</td><td>Unknown</td><td>K₄ spectral curvature</td></tr>
     <tr><td>10⁻¹²² ratio</td><td>Fine-tuning?</td><td>Dilution mechanism</td></tr>

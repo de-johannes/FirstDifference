@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
 ═══════════════════════════════════════════════════════════════════════════════
-DRIFE TOPOLOGICAL COLLAPSE SIMULATION
+FD TOPOLOGICAL COLLAPSE SIMULATION
 ═══════════════════════════════════════════════════════════════════════════════
 
-This script simulates the TOPOLOGICAL BRAKE from DRIFE:
+This script simulates the TOPOLOGICAL BRAKE from FD:
 
 The Story:
   1. Distinctions start dimensionless (pure information)
@@ -93,7 +93,7 @@ def simulate_growth():
     """Simulate distinction growth from K_1 to K_6."""
     
     print("═" * 75)
-    print("DRIFE TOPOLOGICAL COLLAPSE SIMULATION")
+    print("FD TOPOLOGICAL COLLAPSE SIMULATION")
     print("═" * 75)
     print()
     print("Simulating: Dimensionless distinctions → K₄ saturation → 3D space")
@@ -245,7 +245,7 @@ def main():
     print("  D₀ → Growth → K₄ → Saturation → 3D")
     print()
     print("  Every step is FORCED. No free parameters.")
-    print("  This is why DRIFE predicts d=3, Λ>0, κ=8, R=12.")
+    print("  This is why FD predicts d=3, Λ>0, κ=8, R=12.")
     print()
     print("  Not because we observed them.")
     print("  Because K₄ cannot be otherwise.")

@@ -2,7 +2,7 @@
 """
 explore_N_derivation.py
 
-Can we DERIVE N ≈ 10⁶¹ from DRIFE principles?
+Can we DERIVE N ≈ 10⁶¹ from FD principles?
 
 The question: Why does the universe have age τ ≈ 10⁶¹ t_Planck?
 
@@ -25,21 +25,21 @@ from typing import Optional
 
 t_Planck = 5.391247e-44  # seconds (CODATA 2018)
 
-# DRIFE PREDICTION for cosmic age:
+# FD PREDICTION for cosmic age:
 # N = 5 × 4^100 (from K₄ structure)
 # τ = N × t_Planck = 13.726 Gyr
-DRIFE_N = 5 * (4 ** 100)
-tau_universe = DRIFE_N * t_Planck  # Using DRIFE prediction!
-N_observed = DRIFE_N  # This IS the prediction
+FD_N = 5 * (4 ** 100)
+tau_universe = FD_N * t_Planck  # Using FD prediction!
+N_observed = FD_N  # This IS the prediction
 
 print("=" * 70)
 print("EXPLORING N = τ/t_Planck DERIVATION")
 print("=" * 70)
-print(f"\nDRIFE predicted values:")
-print(f"  N_predicted = 5 × 4^100 = {DRIFE_N:.3e}")
+print(f"\nFD predicted values:")
+print(f"  N_predicted = 5 × 4^100 = {FD_N:.3e}")
 print(f"  τ_predicted = {tau_universe:.2e} s = {tau_universe / (365.25*24*3600*1e9):.3f} Gyr")
 print(f"  t_Planck    = {t_Planck:.6e} s")
-print(f"  log₁₀(N)    = {math.log10(DRIFE_N):.2f}")
+print(f"  log₁₀(N)    = {math.log10(FD_N):.2f}")
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # APPROACH 1: COMBINATORIAL FROM K₄
@@ -130,7 +130,7 @@ Conditions to check:
 # 3/N² = 1/N² always true if Λ_bare = 1... not helpful
 
 # What if there's a "flatness" condition?
-# In DRIFE, curvature K ∝ Λ
+# In FD, curvature K ∝ Λ
 # "Flat" means K → 0, which happens as N → ∞
 # But why stop at N = 10⁶¹?
 
@@ -218,7 +218,7 @@ print("APPROACH 5: Drift Dynamics")
 print("─" * 70)
 
 print("""
-In DRIFE, drift is the accumulation of distinctions.
+In FD, drift is the accumulation of distinctions.
 1 distinction per t_Planck → N distinctions after time τ = N·t_P
 
 Question: Does drift have a "terminal velocity" or saturation?
@@ -230,7 +230,7 @@ Example: dN/dt = 1/N
   → N² = 2t → N = √(2t/t_P)
   This gives N ∝ √τ, so N would be 10³⁰ not 10⁶¹.
 
-Example: dN/dt = 1 (constant, current DRIFE assumption)
+Example: dN/dt = 1 (constant, current FD assumption)
   → N = t/t_P (linear)
   This gives N = 10⁶¹ at t = 13.8 Gyr, but doesn't PREDICT N.
   
@@ -259,7 +259,7 @@ WHAT'S MISSING:
   
 HONEST ASSESSMENT:
   N appears to be a CONTINGENT fact about our universe's age.
-  DRIFE explains WHY Λ_obs is small given N, but not N itself.
+  FD explains WHY Λ_obs is small given N, but not N itself.
   
 POSSIBLE FUTURE DIRECTIONS:
   1. Find α (fine structure) from K₄ → then N from Eddington relation
@@ -275,4 +275,4 @@ print("─" * 70)
 print(f"  4^100 = 10^{100 * math.log10(4):.2f}")
 print(f"  100 = 4 × 25 = 4 × (4² + 3²)")
 print(f"  Or: 100 = number of edges in K₁₁ graph")
-print(f"  Speculation: Is there a K₁₁ hiding in DRIFE?")
+print(f"  Speculation: Is there a K₁₁ hiding in FD?")

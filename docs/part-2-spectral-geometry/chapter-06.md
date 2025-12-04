@@ -171,7 +171,7 @@ This theorem answers one of the deepest questions in physics: *Why are there thr
 
 The standard answer is: we don't know. String theory says 10 or 11, compactified to 3+1. Loop quantum gravity is formulated in 4D from the start. The anthropic principle says 3D is necessary for complex life (orbits are unstable in other dimensions).
 
-DRIFE says: 3D is *forced* by the spectral structure of K₄, which is forced by saturation, which is forced by Genesis, which is forced by D₀, which is unavoidable.
+FD says: 3D is *forced* by the spectral structure of K₄, which is forced by saturation, which is forced by Genesis, which is forced by D₀, which is unavoidable.
 
 <div class="chain-box">
   <p style="text-align: center;">$$D_0 \xrightarrow{\text{unavoidable}} \text{Genesis} \xrightarrow{\text{saturation}} K_4 \xrightarrow{\text{spectral}} d = 3$$</p>

@@ -6,7 +6,7 @@ breadcrumb: <a href="/">Home</a> &gt; Part I
 
 # Part I: Foundations
 
-This part establishes the foundational concepts of DRIFE—from the unavoidable first distinction through the emergence of the K₄ graph that seeds spacetime.
+This part establishes the foundational concepts of FD—from the unavoidable first distinction through the emergence of the K₄ graph that seeds spacetime.
 
 ---
 

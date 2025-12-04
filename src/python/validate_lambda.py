@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 ═══════════════════════════════════════════════════════════════════════════════
-DRIFE Λ-DILUTION NUMERICAL VALIDATION
+FD Λ-DILUTION NUMERICAL VALIDATION
 ═══════════════════════════════════════════════════════════════════════════════
 
 This script validates the Λ-dilution derivation from distinction dynamics.
@@ -38,17 +38,17 @@ SPEED_OF_LIGHT = 299792458         # m/s
 
 # Two options for age of universe:
 # 1. OBSERVED (Planck 2018): 13.787 Gyr
-# 2. DRIFE PREDICTED: 13.726 Gyr = 5 × 4^100 × t_Planck
+# 2. FD PREDICTED: 13.726 Gyr = 5 × 4^100 × t_Planck
 #
-# We use the DRIFE prediction for consistency!
+# We use the FD prediction for consistency!
 import math
-DRIFE_N = 5 * (4 ** 100)  # N = 5 × 4^100 (K₄-derived)
-DRIFE_TAU_SECONDS = DRIFE_N * PLANCK_TIME  # τ = N × t_P
-DRIFE_TAU_YEARS = DRIFE_TAU_SECONDS / (365.25 * 24 * 3600)
-DRIFE_TAU_GYR = DRIFE_TAU_YEARS / 1e9
+FD_N = 5 * (4 ** 100)  # N = 5 × 4^100 (K₄-derived)
+FD_TAU_SECONDS = FD_N * PLANCK_TIME  # τ = N × t_P
+FD_TAU_YEARS = FD_TAU_SECONDS / (365.25 * 24 * 3600)
+FD_TAU_GYR = FD_TAU_YEARS / 1e9
 
-AGE_OF_UNIVERSE_SECONDS = DRIFE_TAU_SECONDS  # Using DRIFE prediction!
-AGE_OF_UNIVERSE_YEARS = DRIFE_TAU_YEARS      # ≈ 13.726 Gyr
+AGE_OF_UNIVERSE_SECONDS = FD_TAU_SECONDS  # Using FD prediction!
+AGE_OF_UNIVERSE_YEARS = FD_TAU_YEARS      # ≈ 13.726 Gyr
 HUBBLE_RADIUS = 4.4e26             # meters (current)
 
 # Observed cosmological constant
@@ -56,7 +56,7 @@ LAMBDA_OBSERVED_SI = 1.1056e-52    # m⁻² (from Planck 2018)
 LAMBDA_PLANCK = 1.0 / (PLANCK_LENGTH ** 2)  # Planck scale Λ
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# DRIFE VALUES (from K₄)
+# FD VALUES (from K₄)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # Λ_bare = 3 from K₄ spectral geometry
@@ -136,7 +136,7 @@ def dilution_exponent(N: float) -> float:
 
 def lambda_observed_predicted() -> float:
     """
-    Calculate predicted Λ_obs from DRIFE.
+    Calculate predicted Λ_obs from FD.
     
     Λ_obs = Λ_bare × Dilution(N)
           = 3 × N⁻²
@@ -244,7 +244,7 @@ def test_lambda_ratio():
     log_obs = np.log10(ratio_obs)
     
     print("\nTEST 4: Λ Ratio (10^{-122} Problem)")
-    print(f"  DRIFE prediction:")
+    print(f"  FD prediction:")
     print(f"    Λ_obs/Λ_Planck = Λ_bare × 1/N² = {ratio_pred:.3e}")
     print(f"    log₁₀(ratio) = {log_pred:.2f}")
     print(f"  Observed:")
@@ -296,7 +296,7 @@ def test_122_problem():
     print(f"          = {np.log10(LAMBDA_BARE):.2f} - {2 * N_exp:.2f}")
     print(f"          = -{predicted_power:.2f}")
     print(f"  Classical problem: Why 10^{{-122}}?")
-    print(f"  DRIFE answer: Because N ~ 10^{{{N_exp:.1f}}} Planck times have elapsed!")
+    print(f"  FD answer: Because N ~ 10^{{{N_exp:.1f}}} Planck times have elapsed!")
     print(f"  Expected exponent magnitude: ~122")
     
     match = (120 <= predicted_power <= 124)
@@ -322,10 +322,10 @@ def test_prediction_sign():
 
 def main():
     print("═" * 75)
-    print("DRIFE Λ-DILUTION NUMERICAL VALIDATION")
+    print("FD Λ-DILUTION NUMERICAL VALIDATION")
     print("═" * 75)
     print()
-    print("Validating the DRIFE derivation of the cosmological constant.")
+    print("Validating the FD derivation of the cosmological constant.")
     print("Λ_bare = 3 (from K₄), diluted by N⁻² where N = t/t_Planck.")
     print()
     print("─" * 75)

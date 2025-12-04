@@ -6,7 +6,7 @@ breadcrumb: <a href="/">Home</a> &gt; <a href="./">Appendices</a> &gt; Appendix 
 
 # Appendix B: Python Validation
 
-Python scripts provide numerical verification of K₄ properties and DRIFE predictions.
+Python scripts provide numerical verification of K₄ properties and FD predictions.
 
 ---
 

@@ -11,7 +11,7 @@ breadcrumb: <a href="/">Home</a> &gt; <a href="./">Part I</a> &gt; Chapter 2
 
 The Gospel of John opens with an ontological claim: existence begins with *logos*—articulation, distinction, the drawing of a boundary. Long before the scientific revolution, the theological tradition understood that being requires differentiation. The formless void of Genesis 1:2 becomes a cosmos through acts of separation: light from darkness, waters from waters, land from sea.
 
-DRIFE makes this intuition rigorous. We have established that D₀—the first distinction—is unavoidable. But D₀ cannot exist alone. In this chapter, we derive the necessary consequences of D₀'s existence and show that exactly three primordial distinctions must arise, forming what we call the **Genesis**.
+FD makes this intuition rigorous. We have established that D₀—the first distinction—is unavoidable. But D₀ cannot exist alone. In this chapter, we derive the necessary consequences of D₀'s existence and show that exactly three primordial distinctions must arise, forming what we call the **Genesis**.
 
 ---
 
@@ -31,9 +31,9 @@ This is not a contingent fact about our minds or our language. It is a *structur
 
 Hegel understood this pattern. In the *Science of Logic*, he shows that "pure being" immediately passes over into "pure nothing" because there is no determination to distinguish them. Only when *becoming*—the movement between them—is recognized do we have genuine ontological content.
 
-DRIFE captures this dialectical movement formally. D₀ is the thesis. The polarity of D₀ (that it has two states) is the antithesis—a new distinction *about* the original. The relation between them is the synthesis—a third distinction that binds the first two together.
+FD captures this dialectical movement formally. D₀ is the thesis. The polarity of D₀ (that it has two states) is the antithesis—a new distinction *about* the original. The relation between them is the synthesis—a third distinction that binds the first two together.
 
-But unlike Hegel's dialectic, which continues indefinitely through Geist and history, DRIFE's dialectic *terminates* after three steps. We will prove that three distinctions suffice—that additional distinctions can be constructed, but no new *primordial* distinctions are required.
+But unlike Hegel's dialectic, which continues indefinitely through Geist and history, FD's dialectic *terminates* after three steps. We will prove that three distinctions suffice—that additional distinctions can be constructed, but no new *primordial* distinctions are required.
 
 ---
 
@@ -102,7 +102,7 @@ We will prove this formally in [Chapter 3](chapter-03). For now, observe that:
 
 ## 2.3 The Agda Formalization
 
-In DRIFE.agda, the Genesis is formalized as follows:
+In FirstDistinction.agda, the Genesis is formalized as follows:
 
 <div class="agda-proof">
   <h4>Genesis Identifiers</h4>
@@ -175,7 +175,7 @@ This trinitarian pattern appears across intellectual history:
 - **Peirce**: Firstness, Secondness, Thirdness
 - **Category theory**: Objects, morphisms, composition
 
-DRIFE does not *assume* a trinitarian structure—it *derives* one from the logic of distinction.
+FD does not *assume* a trinitarian structure—it *derives* one from the logic of distinction.
 
 ---
 

@@ -84,7 +84,7 @@ The last two properties are important: K₄ is the *largest* complete graph that
 
 ## 4.5 The Agda Definition of K₄
 
-In DRIFE.agda, K₄ is formalized as follows:
+In FirstDistinction.agda, K₄ is formalized as follows:
 
 <div class="agda-proof">
   <h4>K₄ Vertex Type</h4>
@@ -216,7 +216,7 @@ The emergence of D₃ from Genesis is philosophically profound. It illustrates a
 
 > *Existence is not arbitrary. What exists is what must exist, given what already exists.*
 
-This is the antithesis of contingency. In standard physics, we postulate entities (particles, fields, dimensions) and check whether they match observation. In DRIFE, entities *emerge* from structural necessity. We do not choose D₃; D₃ is forced.
+This is the antithesis of contingency. In standard physics, we postulate entities (particles, fields, dimensions) and check whether they match observation. In FD, entities *emerge* from structural necessity. We do not choose D₃; D₃ is forced.
 
 This has implications for the question: *Why is there something rather than nothing?*
 

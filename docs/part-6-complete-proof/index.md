@@ -6,7 +6,7 @@ breadcrumb: <a href="/">Home</a> &gt; Part VI
 
 # Part VI: The Complete Proof
 
-This final part summarizes the complete derivation, states the Ultimate Theorem, and reflects on the implications of DRIFE for physics and philosophy.
+This final part summarizes the complete derivation, states the Ultimate Theorem, and reflects on the implications of FD for physics and philosophy.
 
 ---
 
@@ -24,10 +24,10 @@ We summarize the causal chain from D₀ to General Relativity and state the Ulti
 
 ### [Chapter 16: Summary and Conclusions](chapter-16)
 
-We reflect on what DRIFE achieves, what remains open, and the philosophical significance of deriving physics from pure distinction.
+We reflect on what FD achieves, what remains open, and the philosophical significance of deriving physics from pure distinction.
 
 **Key concepts:**
-- What DRIFE achieves
+- What FD achieves
 - Open problems (Standard Model, masses, etc.)
 - Philosophical implications
 - The nature of physical law

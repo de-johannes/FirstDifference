@@ -67,8 +67,8 @@ The derivation proceeds through the following steps:
 <div class="theorem">
   <strong>Ultimate Theorem</strong>
   <p>From the unavoidability of distinction, complete 4-dimensional General Relativity necessarily emerges:</p>
-  <p style="text-align: center;">$$\text{Unavoidable}(D_0) \implies \text{DRIFE-FullGR}$$</p>
-  <p>where DRIFE-FullGR includes:</p>
+  <p style="text-align: center;">$$\text{Unavoidable}(D_0) \implies \text{FD-FullGR}$$</p>
+  <p>where FD-FullGR includes:</p>
   <ul>
     <li>3+1 dimensional Lorentzian spacetime</li>
     <li>Metric tensor g<sub>μν</sub></li>
@@ -84,7 +84,7 @@ The derivation proceeds through the following steps:
 ```agda
 -- THE ULTIMATE THEOREM
 -- From unavoidability of D0, full General Relativity emerges
-ultimate-theorem : Unavoidable Distinction -> DRIFE-FullGR
+ultimate-theorem : Unavoidable Distinction -> FD-FullGR
 ultimate-theorem unavoidable-D0 = 
   let
     -- Step 1: Genesis
@@ -115,7 +115,7 @@ ultimate-theorem unavoidable-D0 =
     kappa = coupling-from-gauss-bonnet k4
     einstein = einstein-equations metric lambda kappa
     
-  in DRIFE-FullGR-proof spacetime metric einstein lambda kappa
+  in FD-FullGR-proof spacetime metric einstein lambda kappa
 ```
 </div>
 
@@ -148,7 +148,7 @@ The Ultimate Theorem is remarkable for several reasons:
 
 ### No Free Parameters
 
-Standard physics has ~25 free parameters (particle masses, coupling constants, etc.). DRIFE computes everything from K₄ counting.
+Standard physics has ~25 free parameters (particle masses, coupling constants, etc.). FD computes everything from K₄ counting.
 
 ### Constructive
 
@@ -164,7 +164,7 @@ No external libraries. Everything is built from primitives.
 
 <div class="highlight-box">
   <h4>The Ultimate Theorem</h4>
-  <p style="text-align: center;"><code>ultimate-theorem : Unavoidable Distinction → DRIFE-FullGR</code></p>
+  <p style="text-align: center;"><code>ultimate-theorem : Unavoidable Distinction → FD-FullGR</code></p>
   <p style="text-align: center;"><em>From the unavoidability of distinction, complete 4D General Relativity necessarily emerges.</em></p>
 </div>
 

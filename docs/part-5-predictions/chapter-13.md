@@ -6,7 +6,7 @@ breadcrumb: <a href="/">Home</a> &gt; <a href="./">Part V</a> &gt; Chapter 13
 
 # Chapter 13: Black Hole Physics
 
-Black holes provide a crucial testing ground for fundamental physics. DRIFE makes specific predictions about black hole thermodynamics, minimum masses, and the information paradox.
+Black holes provide a crucial testing ground for fundamental physics. FD makes specific predictions about black hole thermodynamics, minimum masses, and the information paradox.
 
 ---
 
@@ -22,15 +22,15 @@ This formula, derived by Bekenstein and Hawking in the 1970s, relates entropy to
 
 ---
 
-## 13.2 DRIFE Correction
+## 13.2 FD Correction
 
-DRIFE modifies this formula. The horizon is not a smooth surface but a tessellation of K₄ cells. Each cell contributes ln 4 bits of entropy (from the four vertices).
+FD modifies this formula. The horizon is not a smooth surface but a tessellation of K₄ cells. Each cell contributes ln 4 bits of entropy (from the four vertices).
 
-$$S_{\text{DRIFE}} = S_{\text{BH}} + N_{K_4} \cdot \ln 4$$
+$$S_{\text{FD}} = S_{\text{BH}} + N_{K_4} \cdot \ln 4$$
 
 For large black holes, N<sub>K₄</sub> ~ A/ℓ<sub>P</sub>², so:
 
-$$S_{\text{DRIFE}} \approx S_{\text{BH}} \left(1 + \frac{4 \ln 4}{A / \ell_P^2}\right)$$
+$$S_{\text{FD}} \approx S_{\text{BH}} \left(1 + \frac{4 \ln 4}{A / \ell_P^2}\right)$$
 
 The correction is negligible for large black holes but significant at the Planck scale.
 
@@ -62,11 +62,11 @@ This has profound implications:
 
 In standard physics, black hole evaporation leads to the "information paradox": where does the information go when the black hole disappears?
 
-DRIFE resolves this: black holes *do not fully disappear*. They evaporate down to K₄ remnants, which preserve the information.
+FD resolves this: black holes *do not fully disappear*. They evaporate down to K₄ remnants, which preserve the information.
 
 <div class="theorem">
   <strong>Theorem (Information Preservation)</strong>
-  <p>In DRIFE, black hole evaporation preserves information:</p>
+  <p>In FD, black hole evaporation preserves information:</p>
   <ol>
     <li>Information is encoded in K₄ correlations</li>
     <li>Evaporation reduces the black hole to a K₄ remnant</li>
@@ -113,7 +113,7 @@ Black hole mergers near the Planck scale would show K₄ structure effects. The 
 
 <div class="highlight-box">
   <h4>The Information Paradox: Solved</h4>
-  <p>DRIFE resolves the black hole information paradox:</p>
+  <p>FD resolves the black hole information paradox:</p>
   <ul>
     <li>Black holes don't fully evaporate</li>
     <li>K₄ remnants preserve information</li>

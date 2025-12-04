@@ -1,6 +1,6 @@
 ---
 layout: default
-title: DRIFE
+title: First Distinction
 ---
 
 <div class="hero">
@@ -27,21 +27,21 @@ title: DRIFE
 
 ---
 
-## What is DRIFE?
+## What is First Distinction?
 
-**DRIFE** (*Distinction-Recursive Information-Free Emergence*) is an axiom-free derivation of 4D General Relativity from a single premise:
+**First Distinction (FD)** is an axiom-free derivation of 4D General Relativity from a single premise:
 
 > Something is distinguishable from something.
 
 No spacetime assumed. No quantum mechanics. No free parameters.
 
-The complete proof is formalized in [Agda](https://github.com/de-johannes/FirstDifference/blob/main/DRIFE.agda) and compiles under `--safe --without-K` — no postulates, no holes, machine-checked.
+The complete proof is formalized in [Agda](https://github.com/de-johannes/FirstDifference/blob/main/FirstDistinction.agda) and compiles under `--safe --without-K` — no postulates, no holes, machine-checked.
 
 ---
 
 ## What is derived?
 
-| Quantity | DRIFE | Observation | Status |
+| Quantity | FD | Observation | Status |
 |----------|-------|-------------|--------|
 | Spatial dimensions | d = 3 | 3 | ✓ exact |
 | Time dimensions | 1 | 1 | ✓ exact |
@@ -78,7 +78,7 @@ The complete proof is formalized in [Agda](https://github.com/de-johannes/FirstD
 ```bash
 git clone https://github.com/de-johannes/FirstDifference.git
 cd FirstDifference
-agda --safe --without-K --no-libraries DRIFE.agda
+agda --safe --without-K --no-libraries FirstDistinction.agda
 ```
 
 [![CI](https://github.com/de-johannes/FirstDifference/actions/workflows/ci.yml/badge.svg)](https://github.com/de-johannes/FirstDifference/actions/workflows/ci.yml)

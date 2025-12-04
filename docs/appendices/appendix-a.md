@@ -17,7 +17,7 @@ The complete Agda proof is available at:
 To verify the proofs:
 
 ```bash
-agda --safe --without-K --no-libraries DRIFE.agda
+agda --safe --without-K --no-libraries FirstDistinction.agda
 ```
 
 The flags ensure:
@@ -45,7 +45,7 @@ The flags ensure:
 ## Code Structure
 
 ```
-DRIFE.agda
+FirstDistinction.agda
 ├── Distinction definition
 ├── Genesis construction  
 ├── Saturation and D3 forcing

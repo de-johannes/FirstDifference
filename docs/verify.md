@@ -5,7 +5,7 @@ title: Verify
 
 # Verify
 
-DRIFE is not a claim. It's code that either compiles or doesn't.
+FD is not a claim. It's code that either compiles or doesn't.
 
 ---
 
@@ -15,7 +15,7 @@ DRIFE is not a claim. It's code that either compiles or doesn't.
 
 | Check | Status |
 |-------|--------|
-| `DRIFE.agda` compiles | ✓ |
+| `FirstDistinction.agda` compiles | ✓ |
 | `--safe` (no unsafe features) | ✓ |
 | `--without-K` (no Axiom K dependency) | ✓ |
 | `--no-libraries` (no external imports) | ✓ |
@@ -52,7 +52,7 @@ Version 2.6.3+ recommended.
 ### 3. Compile
 
 ```bash
-agda --safe --without-K --no-libraries DRIFE.agda
+agda --safe --without-K --no-libraries FirstDistinction.agda
 ```
 
 If no error message appears: **The proof is valid.**
@@ -89,7 +89,7 @@ These are **not** part of the formal proof, but demonstrate that the derived val
 ## Proof structure
 
 ```
-DRIFE.agda (~8000 lines)
+FirstDistinction.agda (~8000 lines)
 ├── § 1-10   Foundations (distinctions, K₄ emergence)
 ├── § 11-15  Spectral geometry (Laplacian, eigenvalues)
 ├── § 16-18  Spacetime structure (3+1, signature)
@@ -101,7 +101,7 @@ DRIFE.agda (~8000 lines)
 The key type:
 
 ```agda
-ultimate-theorem : Unavoidable Distinction → DRIFE-FullGR
+ultimate-theorem : Unavoidable Distinction → FD-FullGR
 ultimate-theorem d = full-GR-from-distinction d
 ```
 
@@ -113,7 +113,7 @@ From the unavoidability of distinction to complete 4D General Relativity.
 
 Open a [GitHub Issue](https://github.com/de-johannes/FirstDifference/issues).
 
-If `DRIFE.agda` no longer compiles with the stated flags, that's a real bug. Everything else is discussion.
+If `FirstDistinction.agda` no longer compiles with the stated flags, that's a real bug. Everything else is discussion.
 
 ---
 

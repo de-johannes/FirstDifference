@@ -2,7 +2,7 @@
 """
 ═══════════════════════════════════════════════════════════════════════════════
   VALIDATION: Fine Structure Constant from K₄ Topology
-  DRIFE § 22f — KÖNIGSKLASSE Prediction (Zero Parameters)
+  FD § 22f — KÖNIGSKLASSE Prediction (Zero Parameters)
 ═══════════════════════════════════════════════════════════════════════════════
 
   Formula: α⁻¹ = χ^(V+d) + degree^χ + 1/(E² - κ - χ/κ)

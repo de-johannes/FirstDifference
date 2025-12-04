@@ -8,9 +8,9 @@ breadcrumb: <a href="/">Home</a> &gt; <a href="./">Part VI</a> &gt; Chapter 16
 
 ---
 
-## 16.1 What DRIFE Achieves
+## 16.1 What FD Achieves
 
-DRIFE derives the following from the unavoidability of distinction:
+FD derives the following from the unavoidability of distinction:
 
 1. **3 spatial dimensions** from K₄ spectral geometry
 2. **1 temporal dimension** from drift irreversibility
@@ -25,7 +25,7 @@ All results are machine-verified in 6,516 lines of Agda code under `--safe --wit
 
 ---
 
-## 16.2 What DRIFE Does Not Yet Achieve
+## 16.2 What FD Does Not Yet Achieve
 
 The following remain open problems:
 
@@ -43,11 +43,11 @@ These remaining problems are the next frontier.
 
 ## 16.3 The Philosophical Significance
 
-DRIFE has profound implications for our understanding of reality:
+FD has profound implications for our understanding of reality:
 
 > *Reality is not contingent but necessary. The laws of physics are not chosen but unavoidable. The universe must be as it is because distinction must distinguish.*
 
-This is a radical departure from the usual view, where physics is empirical and laws are contingent. DRIFE suggests that physics is, at its foundation, *logic*—the working-out of the consequences of the unavoidable act of distinction.
+This is a radical departure from the usual view, where physics is empirical and laws are contingent. FD suggests that physics is, at its foundation, *logic*—the working-out of the consequences of the unavoidable act of distinction.
 
 The question "Why is there something rather than nothing?" receives a new answer:
 
@@ -57,16 +57,16 @@ The question "Why is there something rather than nothing?" receives a new answer
 
 ## 16.4 The Status of Physical Law
 
-DRIFE changes our understanding of physical law:
+FD changes our understanding of physical law:
 
-### Before DRIFE
+### Before FD
 
 Physical laws were seen as:
 - Empirical regularities discovered by observation
 - Contingent (could have been otherwise)
 - Unexplained at the foundational level
 
-### After DRIFE
+### After FD
 
 Physical laws are:
 - Logical consequences of distinction
@@ -91,13 +91,13 @@ Can the particle spectrum be derived? The gauge symmetries SU(3) × SU(2) × U(1
 
 ### Unification
 
-Can DRIFE provide a path to quantum gravity? The discrete structure at the Planck scale might resolve the UV divergences that plague quantum field theory.
+Can FD provide a path to quantum gravity? The discrete structure at the Planck scale might resolve the UV divergences that plague quantum field theory.
 
 ---
 
 ## 16.6 Final Words
 
-DRIFE is not complete. It is a beginning, not an end. But it demonstrates that the dream of axiomatic physics—deriving the laws of nature from pure reason—is not impossible.
+FD is not complete. It is a beginning, not an end. But it demonstrates that the dream of axiomatic physics—deriving the laws of nature from pure reason—is not impossible.
 
 The universe is not arbitrary.  
 The laws are not contingent.  

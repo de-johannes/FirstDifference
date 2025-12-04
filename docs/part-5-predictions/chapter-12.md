@@ -9,7 +9,7 @@ breadcrumb: <a href="/">Home</a> &gt; <a href="./">Part V</a> &gt; Chapter 12
 > *"It doesn't matter how beautiful your theory is, it doesn't matter how smart you are. If it doesn't agree with experiment, it's wrong."*  
 > — Richard Feynman
 
-A theory without predictions is not science—it is philosophy. DRIFE makes specific, testable predictions. Some have already been confirmed; others await future experiments.
+A theory without predictions is not science—it is philosophy. FD makes specific, testable predictions. Some have already been confirmed; others await future experiments.
 
 ---
 
@@ -29,7 +29,7 @@ Königsklasse predictions are the gold standard of theoretical physics. They are
 
 The following predictions have already been confirmed by observation:
 
-| **Prediction** | **DRIFE Value** | **Observed** | **Status** |
+| **Prediction** | **FD Value** | **Observed** | **Status** |
 |----------------|-----------------|--------------|------------|
 | Spatial dimensions | d = 3 | 3 | ✓ Confirmed |
 | Λ sign | > 0 | > 0 | ✓ Confirmed |
@@ -38,19 +38,19 @@ The following predictions have already been confirmed by observation:
 
 ### Three Spatial Dimensions
 
-DRIFE predicts d = 3 from the three-fold degeneracy of λ = 4. Observation confirms: space has three dimensions.
+FD predicts d = 3 from the three-fold degeneracy of λ = 4. Observation confirms: space has three dimensions.
 
 This is Königsklasse: no input was used, no parameters were adjusted. The number 3 is *computed*.
 
 ### Positive Cosmological Constant
 
-DRIFE predicts Λ > 0 from the positive spectral curvature of K₄. Observation confirms: the universe has a positive cosmological constant (discovered 1998, Nobel Prize 2011).
+FD predicts Λ > 0 from the positive spectral curvature of K₄. Observation confirms: the universe has a positive cosmological constant (discovered 1998, Nobel Prize 2011).
 
 This is Königsklasse: the *sign* of Λ is predicted without any cosmological input.
 
 ### Lorentz Signature
 
-DRIFE predicts the signature (−1, +1, +1, +1) from drift irreversibility (time) and spectral symmetry (space). Observation confirms: spacetime has Lorentz signature.
+FD predicts the signature (−1, +1, +1, +1) from drift irreversibility (time) and spectral symmetry (space). Observation confirms: spacetime has Lorentz signature.
 
 ---
 
@@ -58,7 +58,7 @@ DRIFE predicts the signature (−1, +1, +1, +1) from drift irreversibility (time
 
 The following predictions are testable with future technology:
 
-| **Prediction** | **DRIFE Value** | **Test Method** |
+| **Prediction** | **FD Value** | **Test Method** |
 |----------------|-----------------|-----------------|
 | Minimum BH mass | M<sub>Planck</sub> | Hawking radiation endpoint |
 | BH entropy excess | ΔS = ln 4 | Primordial BH evaporation |
@@ -67,15 +67,15 @@ The following predictions are testable with future technology:
 
 ### Black Hole Remnants
 
-DRIFE predicts that black holes cannot evaporate completely. At the Planck scale, the K₄ structure becomes irreducible—you cannot have fewer than four distinctions. The remnant has mass ~ M<sub>Planck</sub>.
+FD predicts that black holes cannot evaporate completely. At the Planck scale, the K₄ structure becomes irreducible—you cannot have fewer than four distinctions. The remnant has mass ~ M<sub>Planck</sub>.
 
 This could be tested if primordial black holes exist and have been evaporating since the Big Bang. The endpoint of evaporation should show signatures of K₄ remnants.
 
 ### Entropy Correction
 
-DRIFE predicts a correction to the Bekenstein-Hawking entropy formula:
+FD predicts a correction to the Bekenstein-Hawking entropy formula:
 
-$$S_{\text{DRIFE}} = S_{\text{BH}} + N_{K_4} \cdot \ln 4$$
+$$S_{\text{FD}} = S_{\text{BH}} + N_{K_4} \cdot \ln 4$$
 
 where N<sub>K₄</sub> is the number of K₄ cells on the horizon. For a Planck-mass black hole (N<sub>K₄</sub> = 1), the correction is ln 4 ≈ 1.39 bits.
 
@@ -85,9 +85,9 @@ This could be tested through precise observations of black hole thermodynamics.
 
 ## 12.4 The Cosmological Constant Problem
 
-DRIFE predicts Λ = 3 in Planck units. Observation gives Λ<sub>obs</sub> ≈ 10⁻¹²² in Planck units.
+FD predicts Λ = 3 in Planck units. Observation gives Λ<sub>obs</sub> ≈ 10⁻¹²² in Planck units.
 
-This is the famous "cosmological constant problem." DRIFE does not solve it completely, but offers a new perspective:
+This is the famous "cosmological constant problem." FD does not solve it completely, but offers a new perspective:
 
 - The *bare* cosmological constant (from K₄) is Λ = 3.
 - The *observed* cosmological constant is diluted by cosmic expansion.
@@ -115,7 +115,7 @@ $$\frac{\Lambda_{\text{obs}}}{\Lambda_{\text{Planck}}} = \frac{1}{N^2} \sim 10^{
 
 ## 12.5 Summary
 
-DRIFE makes testable predictions at multiple levels:
+FD makes testable predictions at multiple levels:
 
 <div class="highlight-box">
   <h4>Prediction Summary</h4>

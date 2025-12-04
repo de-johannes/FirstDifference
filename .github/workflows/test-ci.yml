@@ -6,7 +6,7 @@ on:
       - '**'
       - '!main'  # Exclude main (release-ci handles that)
     paths:
-      - 'DRIFE.agda'
+      - 'FirstDistinction.agda'
       - 'src/python/*.py'
       - 'src/agda/**/*.agda'
       - '.github/workflows/test-ci.yml'
@@ -39,16 +39,16 @@ jobs:
       - name: Install Python dependencies
         run: pip install numpy
 
-      - name: Compile DRIFE.agda
+      - name: Compile FirstDistinction.agda
         run: |
-          echo "⏳ Compiling DRIFE.agda (--safe --without-K --no-libraries)..."
-          agda --safe --without-K --no-libraries DRIFE.agda
-          echo "✅ DRIFE.agda compiled successfully!"
+          echo "⏳ Compiling FirstDistinction.agda (--safe --without-K --no-libraries)..."
+          agda --safe --without-K --no-libraries FirstDistinction.agda
+          echo "✅ FirstDistinction.agda compiled successfully!"
 
       - name: Check for holes
         run: |
           echo "🔍 Checking for holes {!!}..."
-          if grep -n '{!.*!}' DRIFE.agda; then
+          if grep -n '{!.*!}' FirstDistinction.agda; then
             echo "❌ Holes found!"
             exit 1
           else
@@ -85,7 +85,7 @@ jobs:
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           if [ "${{ job.status }}" == "success" ]; then
             echo "🎉 Test CI passed!"
-            echo "   ✅ DRIFE.agda compiles (--safe --without-K)"
+            echo "   ✅ FirstDistinction.agda compiles (--safe --without-K)"
             echo "   ✅ No holes detected"
             echo "   ✅ K₄, α, Λ, cosmic age validations"
           else

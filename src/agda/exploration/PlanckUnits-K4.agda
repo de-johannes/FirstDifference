@@ -9,7 +9,7 @@
 -- Planck units are NOT arbitrary human conventions.
 -- They emerge from the STRUCTURE of distinguishability itself!
 --
--- In DRIFE:
+-- In FD:
 --   t_P = 1 tick (minimal time = one distinction)
 --   ℓ_P = 1 edge (minimal length = one K₄ edge)
 --   m_P = 1 node (minimal mass = one distinction's "weight")
@@ -114,7 +114,7 @@ theorem-G-is-one = refl
 -- ─────────────────────────────────────────────────────────────────────────────
 
 -- The speed of light is the MAXIMUM rate of information propagation.
--- In DRIFE: one distinction can propagate at most one edge per tick.
+-- In FD: one distinction can propagate at most one edge per tick.
 --
 -- WHY? Because:
 --   1. A distinction IS an edge (it connects two states)
@@ -136,7 +136,7 @@ theorem-c-from-structure = refl
 -- ─────────────────────────────────────────────────────────────────────────────
 
 -- The Planck constant is the MINIMUM action quantum.
--- In DRIFE: one distinction IS one quantum of action.
+-- In FD: one distinction IS one quantum of action.
 --
 -- Action = Energy × Time = "something happening for some duration"
 -- Minimum action = one distinction happening in one tick = 1
@@ -158,7 +158,7 @@ theorem-ℏ-from-structure = refl
 -- Newton's gravitational constant G appears in Einstein's equation:
 --   G_μν = 8πG T_μν
 --
--- In DRIFE: The "8π" comes from κ = 8 (Einstein coupling from K₄)
+-- In FD: The "8π" comes from κ = 8 (Einstein coupling from K₄)
 -- And G = 1 in natural units.
 --
 -- The factor 8πG = κπ in natural units (with G = 1).

@@ -9,13 +9,13 @@ breadcrumb: <a href="/">Home</a> &gt; <a href="./">Part IV</a> &gt; Chapter 10
 > *"Curvature is the language in which the physical world speaks to us."*  
 > — Attributed to various geometers
 
-In standard general relativity, there is one notion of curvature: the Riemann tensor, derived from the Christoffel symbols, which themselves come from metric derivatives. But DRIFE reveals a deeper structure: there are *two* levels of curvature, with different origins and different physical meanings.
+In standard general relativity, there is one notion of curvature: the Riemann tensor, derived from the Christoffel symbols, which themselves come from metric derivatives. But FD reveals a deeper structure: there are *two* levels of curvature, with different origins and different physical meanings.
 
 ---
 
 ## 10.1 The Two Curvatures
 
-DRIFE distinguishes:
+FD distinguishes:
 
 1. **Geometric curvature** (from Christoffel symbols): This is the standard Riemannian curvature, measuring how the metric varies from point to point.
 
@@ -110,11 +110,11 @@ The spectral curvature does not vanish—it is a positive constant. This constan
 
 ### The Sign of Λ
 
-The cosmological constant Λ = 3 > 0 is *positive*. This is a prediction of DRIFE:
+The cosmological constant Λ = 3 > 0 is *positive*. This is a prediction of FD:
 
 > *The cosmological constant is positive because the spectral curvature of K₄ is positive.*
 
-This matches observation! The universe has a positive cosmological constant ("dark energy"). DRIFE *explains* the sign of Λ from the structure of K₄.
+This matches observation! The universe has a positive cosmological constant ("dark energy"). FD *explains* the sign of Λ from the structure of K₄.
 
 <div class="agda-proof">
   <h4>Cosmological Constant</h4>
@@ -138,7 +138,7 @@ theorem-Lambda-positive = 3>0   -- 3 > 0, verified
 
 ## 10.5 Combining the Two Curvatures
 
-In DRIFE, the total curvature has two sources:
+In FD, the total curvature has two sources:
 1. Geometric curvature $R^{\text{geom}}_{\mu\nu}$ (from metric derivatives)
 2. Spectral curvature, contributing via Λg<sub>μν</sub>
 
@@ -174,7 +174,7 @@ This is the curvature of de Sitter space—a spacetime with positive cosmologica
     <li><strong>Geometric</strong>: vanishes for uniform K₄ → local flatness</li>
     <li><strong>Spectral</strong>: comes from Laplacian → positive Λ → de Sitter geometry</li>
   </ul>
-  <p>The separation of these two curvatures is a key insight of DRIFE.</p>
+  <p>The separation of these two curvatures is a key insight of FD.</p>
 </div>
 
 In the next chapter, we derive the full Einstein field equations with their constants.

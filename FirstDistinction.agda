@@ -11,7 +11,7 @@
    ABSTRACT
    ════════
    
-   This document presents DRIFE (The First Difference), a complete formal proof
+   This document presents First Distinction (FD), a complete formal proof
    that the structure of physical spacetime—including its 3+1 dimensionality and
    the Einstein field equations—emerges necessarily from a single unavoidable
    premise: the existence of distinction itself (D₀).
@@ -24,7 +24,7 @@
    
    The central result is:
    
-     ultimate-theorem : Unavoidable Distinction → DRIFE-FullGR
+     ultimate-theorem : Unavoidable Distinction → FD-FullGR
    
    This states: From the unavoidability of distinction, complete 4D General
    Relativity necessarily emerges.
@@ -71,9 +71,9 @@
      § 20  Bianchi Identity and Conservation Laws
    
    PART VII: THE COMPLETE PROOF
-     § 21  DRIFE-Emergence: D₀ → 3D
-     § 22  DRIFE-Complete: D₀ → 3+1D Spacetime
-     § 23  DRIFE-FullGR: D₀ → General Relativity
+     § 21  FD-Emergence: D₀ → 3D
+     § 22  FD-Complete: D₀ → 3+1D Spacetime
+     § 23  FD-FullGR: D₀ → General Relativity
      § 24  The Ultimate Theorem
    
    ═══════════════════════════════════════════════════════════════════════════════
@@ -109,7 +109,7 @@
    ═══════════════════════════════════════════════════════════════════════════════
 -}
 
-module DRIFE where
+module FirstDistinction where
 
 
 -- ═══════════════════════════════════════════════════════════════════════════════
@@ -696,7 +696,7 @@ open ConstructiveOntology public
 -- § 5  THE UNAVOIDABLE FIRST DISTINCTION (D₀)
 -- ─────────────────────────────────────────────────────────────────────────────
 --
--- The foundation of DRIFE is not an axiom but an OBSERVATION: any expressible
+-- The foundation of FD is not an axiom but an OBSERVATION: any expressible
 -- statement presupposes the ability to distinguish. The statement "there is
 -- no distinction" is itself a distinction (between 'distinction exists' and
 -- 'distinction does not exist').
@@ -2482,7 +2482,7 @@ theorem-metric-symmetric v z-idx z-idx = refl
 -- § 15  RICCI CURVATURE: TWO LEVELS OF DESCRIPTION
 -- ─────────────────────────────────────────────────────────────────────────────
 --
--- DRIFE distinguishes TWO types of curvature:
+-- FD distinguishes TWO types of curvature:
 --
 -- 1. SPECTRAL RICCI (from Laplacian eigenvalues)
 --    - Measures intrinsic graph curvature (Ollivier-Ricci)
@@ -3121,7 +3121,7 @@ theorem-einstein-symmetric v z-idx z-idx = refl
 -- § 17  STRESS-ENERGY FROM DRIFT DENSITY
 -- ─────────────────────────────────────────────────────────────────────────────
 --
--- Matter in DRIFE is concentrated drift—regions of high parent density in
+-- Matter in FD is concentrated drift—regions of high parent density in
 -- the drift graph. The stress-energy tensor T_μν encodes this distribution.
 --
 -- For dust (pressureless matter): T_μν = ρ u_μ u_ν
@@ -3411,7 +3411,7 @@ corollary-kappa-fixed d χ refl refl = refl
 -- ─────────────────────────────────────────────────────────────────────────────
 --
 -- The Einstein Field Equations G_μν = κ T_μν are a CONSISTENCY condition,
--- not an automatic identity. In DRIFE, they emerge as follows:
+-- not an automatic identity. In FD, they emerge as follows:
 --
 -- 1. Geometry (G_μν) comes from the metric structure (Ricci, scalar curvature)
 -- 2. Matter (T_μν) is DEFINED as G_μν / κ when EFE holds
@@ -3526,11 +3526,11 @@ geometricPressure v μ = einsteinTensorK4 v μ μ
 --   - G_xx ≠ 0 (spatial curvature exists)
 --   - T_xx = 0 (dust has no pressure)
 --
--- DRIFE SOLUTION:
+-- FD SOLUTION:
 -- Matter is not an independent input — it IS geometry!
 -- We DEFINE T_μν := G_μν / κ, which automatically satisfies EFE.
 --
--- This is the DRIFE principle: "Matter is frozen geometry"
+-- This is the FD principle: "Matter is frozen geometry"
 
 -- Geometrically consistent stress-energy (T defined from G)
 stressEnergyFromGeometry : K4Vertex → SpacetimeIndex → SpacetimeIndex → ℤ
@@ -3540,7 +3540,7 @@ stressEnergyFromGeometry v μ ν =
   einsteinTensorK4 v μ ν
 
 -- THEOREM: EFE holds DEFINITIONALLY when T is defined from G
--- This is the DRIFE insight: matter IS frozen geometry!
+-- This is the FD insight: matter IS frozen geometry!
 theorem-EFE-from-geometry : ∀ (v : K4Vertex) (μ ν : SpacetimeIndex) →
   einsteinTensorK4 v μ ν ≃ℤ stressEnergyFromGeometry v μ ν
 theorem-EFE-from-geometry v τ-idx τ-idx = refl
@@ -3566,7 +3566,7 @@ theorem-EFE-from-geometry v z-idx z-idx = refl
 --
 -- The EFE G_μν = T_μν (with κ = 1 in geometric units) holds when:
 -- - T_μν is DEFINED as the geometric stress-energy (from G_μν)
--- - This is the DRIFE principle: matter IS frozen geometry!
+-- - This is the FD principle: matter IS frozen geometry!
 
 -- Record for complete EFE (all 16 components)
 record GeometricEFE (v : K4Vertex) : Set where
@@ -3711,7 +3711,7 @@ theorem-spatial-dim-from-K4 = refl
 -- In spectral geometry, the smallest nonzero eigenvalue relates to curvature.
 -- For K₄: λ₁ = 4
 --
--- The cosmological constant in DRIFE: Λ = d = 3
+-- The cosmological constant in FD: Λ = d = 3
 -- This comes from: Λ = (number of spatial dimensions)
 --
 -- Physical interpretation:
@@ -3730,7 +3730,7 @@ theorem-Lambda-from-K4 = refl
 -- ═══════════════════════════════════════════════════════════════════════════
 --
 -- The gravitational coupling κ appears in: G_μν + Λg_μν = κ T_μν
--- In DRIFE: κ = 8 = 2 × K₄-vertices = 2 × 4
+-- In FD: κ = 8 = 2 × K₄-vertices = 2 × 4
 --
 -- WHY 2 × vertices?
 -- κ = 2 × (d + 1) = 2 × 4 = 8
@@ -3815,7 +3815,7 @@ k4-derived-physics = record
 --   4. κ = 8 in our units (matches 8πG convention)
 --
 -- The fact that d = 3 and Λ > 0 match observation is non-trivial!
--- Most theories must ASSUME these; DRIFE DERIVES them from K₄.
+-- Most theories must ASSUME these; FD DERIVES them from K₄.
 
 
 -- ─────────────────────────────────────────────────────────────────────────────
@@ -4247,7 +4247,7 @@ theorem-conformally-flat = theorem-weyl-vanishes
 -- This is the standard GR approach:
 --   Background (vacuum) + Perturbation (matter) = Full solution
 --
--- In DRIFE terms:
+-- In FD terms:
 --   Uniform K₄ (frozen symmetric drift) + Drift inhomogeneities = Physics
 --
 -- ═══════════════════════════════════════════════════════════════════════════
@@ -4267,7 +4267,7 @@ fullMetric h v μ ν = metricK4 v μ ν +ℤ h v μ ν
 -- § 20d.2  DRIFT DENSITY AS PERTURBATION SOURCE
 -- ═══════════════════════════════════════════════════════════════════════════
 --
--- In DRIFE, metric perturbations arise from DRIFT INHOMOGENEITIES:
+-- In FD, metric perturbations arise from DRIFT INHOMOGENEITIES:
 --   - Regions with high parent density → higher h_ττ
 --   - Drift flow gradients → off-diagonal h_τi
 --   - This connects to D05.Gravity.PositionDependentChristoffel
@@ -4448,7 +4448,7 @@ record VacuumWaveEquation (h : MetricPerturbation) : Set where
 -- With matter source T_μν, the full linearized EFE is:
 --   □h̄_μν = -16π G T_μν = -2κ T_μν
 --
--- For DRIFE: κ = 8, so:
+-- For FD: κ = 8, so:
 --   □h̄_μν = -16 T_μν
 
 -- Linearized EFE residual (should be zero when EFE satisfied)
@@ -4672,7 +4672,7 @@ theorem-4-patches-negative = refl
 --
 -- This is the Regge form of Einstein's equations!
 --
--- For DRIFE: Patches with different drift densities (φ²) create
+-- For FD: Patches with different drift densities (φ²) create
 -- metric mismatches that source curvature at interfaces.
 
 -- Patch-local Einstein tensor (inside patch: vacuum)
@@ -4726,7 +4726,7 @@ interfaceEinsteinContribution φ² i j μ ν =
 --   Deficit angles → Riemann tensor
 --
 -- This is the standard path from discrete to continuous GR!
--- DRIFE provides the MICROSCOPIC origin: Drift density → φ² → curvature
+-- FD provides the MICROSCOPIC origin: Drift density → φ² → curvature
 
 -- Record capturing the background-perturbation split
 record BackgroundPerturbationSplit : Set where
@@ -4772,7 +4772,7 @@ theorem-split-exists = record
 --   String tension σ > 0 → Energy cost ~ distance
 --   → Quarks cannot exist freely (QCD phenomenon!)
 --
--- DRIFE INTERPRETATION:
+-- FD INTERPRETATION:
 --   Gauge connection A_μ = ℏ_eff gradient (from D05.GaugeEmergence)
 --   Wilson loop = holonomy of effective action
 --   Area law = topological stiffness of phase field
@@ -4829,7 +4829,7 @@ closedPathLength c = pathLength (vertices c)
 -- ═══════════════════════════════════════════════════════════════════════════
 --
 -- Gauge connection A_μ : Phase field on the graph
--- In DRIFE: A_μ emerges from ℏ_eff gradient (D05.GaugeEmergence)
+-- In FD: A_μ emerges from ℏ_eff gradient (D05.GaugeEmergence)
 -- Here we define the abstract structure on K₄
 
 -- Gauge configuration: Phase at each vertex
@@ -5003,7 +5003,7 @@ theorem-triangle-013-holonomy = refl
 --   - Flux tubes (line defects)
 --   - Vortices (topological excitations)
 --
--- In DRIFE: Topological defects = phase singularities in drift field
+-- In FD: Topological defects = phase singularities in drift field
 -- These are the sources of CONFINEMENT!
 
 -- Exact gauge field: A_μ = ∂_μ φ (pure gauge)
@@ -5408,7 +5408,7 @@ theorem-face-vertex-ratio = refl
 --   Λ_physical = Λ × ℓ_P^{-2}
 --   where ℓ_P = Planck length
 --
--- The dimensionless ratio Λ × ℓ_P^2 = 3 is predicted by DRIFE.
+-- The dimensionless ratio Λ × ℓ_P^2 = 3 is predicted by FD.
 
 -- Cosmological constant from spectral curvature
 -- Λ = 3 (derived in §16)
@@ -5495,7 +5495,7 @@ wilson-ratio-denominator = thirty-seven
 -- § 20h.7  SUMMARY OF NUMERICAL PREDICTIONS
 -- ═══════════════════════════════════════════════════════════════════════════
 --
--- DRIFE makes the following TESTABLE numerical predictions:
+-- FD makes the following TESTABLE numerical predictions:
 --
 -- ┌─────────────────────────┬──────────┬───────────────────────────┐
 -- │ Observable              │ Predicted│ Source                    │
@@ -5542,7 +5542,7 @@ theorem-numerical-predictions = record
 -- Each value is COMPUTED (refl proof), not assumed.
 --
 -- ┌────────────────────────────────────────────────────────────────────────────┐
--- │  PREDICTION          DRIFE VALUE       UNIVERSE                STATUS      │
+-- │  PREDICTION          FD VALUE       UNIVERSE                STATUS      │
 -- │ ────────────────────────────────────────────────────────────────────────── │
 -- │  Spatial Dim.        d = 3             3D (observed)           ✓ MATCH     │
 -- │  Temporal Dim.       d = 1             1D (causal)             ✓ MATCH     │
@@ -5637,27 +5637,27 @@ theorem-all-eigenvector-equations = record
 -- The question "Is K₄ the Universe?" is answered by COMPUTATION:
 --
 -- 1. SPATIAL DIMENSIONS = 3
---    DRIFE: Eigenvalue degeneracy of K₄ Laplacian = 3
+--    FD: Eigenvalue degeneracy of K₄ Laplacian = 3
 --    Universe: We observe 3 spatial dimensions
 --    Match: COMPUTED, not assumed
 --
 -- 2. COUPLING CONSTANT κ = 8
---    DRIFE: κ = dim × χ = 4 × 2 = 8 (Gauss-Bonnet)
+--    FD: κ = dim × χ = 4 × 2 = 8 (Gauss-Bonnet)
 --    Universe: Einstein equation G_μν = 8πG/c⁴ T_μν
 --    Match: The factor 8 emerges from topology!
 --
 -- 3. COSMOLOGICAL CONSTANT Λ > 0
---    DRIFE: Λ = 3 (discrete spectral curvature)
+--    FD: Λ = 3 (discrete spectral curvature)
 --    Universe: Λ ≈ 10⁻⁵² m⁻² (Dark Energy)
 --    Match: Sign and existence match; units require Planck-scale conversion
 --
 -- 4. EULER CHARACTERISTIC χ = 2
---    DRIFE: V - E + F = 4 - 6 + 4 = 2
+--    FD: V - E + F = 4 - 6 + 4 = 2
 --    Universe: Topology of S³ or T³ (observed spatial sections)
 --    Match: Consistent with closed/flat universe
 --
 -- 5. LORENTZ SIGNATURE (-,+,+,+)
---    DRIFE: Time from drift irreversibility, space from K₄
+--    FD: Time from drift irreversibility, space from K₄
 --    Universe: Minkowski spacetime structure
 --    Match: Signature DERIVED from process structure
 
@@ -5666,12 +5666,12 @@ theorem-all-eigenvector-equations = record
 -- § 20i  CALIBRATION THEORY: DISCRETE ↔ PHYSICAL UNITS
 -- ═══════════════════════════════════════════════════════════════════════════════
 --
--- This section bridges DRIFE's discrete quantities to measured physical constants.
--- The key insight: DRIFE works in "natural units" where the fundamental scale ℓ = 1.
+-- This section bridges FD's discrete quantities to measured physical constants.
+-- The key insight: FD works in "natural units" where the fundamental scale ℓ = 1.
 -- Physical units emerge when we identify ℓ with the Planck length.
 --
 -- ┌─────────────────────────────────────────────────────────────────────────────┐
--- │  DISCRETE (DRIFE)         PHYSICAL                  CALIBRATION            │
+-- │  DISCRETE (FD)         PHYSICAL                  CALIBRATION            │
 -- │ ───────────────────────────────────────────────────────────────────────────│
 -- │  κ_discrete = 8           κ_phys = 8πG/c⁴          π G/c⁴ = 1 (nat. units) │
 -- │  Λ_discrete = 3           Λ_phys = 3/ℓ²            ℓ = ℓ_Planck            │
@@ -5683,7 +5683,7 @@ theorem-all-eigenvector-equations = record
 -- § 20i.1  THE PLANCK SCALE IDENTIFICATION
 -- ─────────────────────────────────────────────────────────────────────────────
 --
--- In DRIFE, the fundamental length scale is SET BY the graph structure.
+-- In FD, the fundamental length scale is SET BY the graph structure.
 -- Each edge of K₄ has length 1 in discrete units.
 --
 -- CALIBRATION PRINCIPLE:
@@ -5710,14 +5710,14 @@ record CalibrationScale : Set where
 -- § 20i.2  COUPLING CONSTANT CALIBRATION: κ_discrete ↔ κ_phys
 -- ─────────────────────────────────────────────────────────────────────────────
 --
--- DRIFE derives: κ_discrete = 8 (dimensionless, from topology)
+-- FD derives: κ_discrete = 8 (dimensionless, from topology)
 -- Einstein wrote: G_μν = (8πG/c⁴) T_μν
 --
 -- The BRIDGE:
 --   κ_phys = 8πG/c⁴
 --   κ_discrete = 8
 --
--- This means: πG/c⁴ = 1 in DRIFE's natural units.
+-- This means: πG/c⁴ = 1 in FD's natural units.
 -- Equivalently: G = c⁴/π in units where c = 1.
 --
 -- VERIFICATION (in SI):
@@ -5729,7 +5729,7 @@ record CalibrationScale : Set where
 -- In Planck units (G = c = 1):
 --   8πG/c⁴ = 8π × 1 / 1 = 8π
 --
--- DRIFE CLAIM:
+-- FD CLAIM:
 --   The TOPOLOGICAL factor is 8.
 --   The GEOMETRIC factor π comes from the continuum limit.
 --   In the discrete theory, we get the INTEGER part exactly.
@@ -5756,7 +5756,7 @@ theorem-kappa-calibration = record
 -- § 20i.3  CURVATURE CALIBRATION: R_discrete ↔ R_phys
 -- ─────────────────────────────────────────────────────────────────────────────
 --
--- DRIFE computes: R_discrete = 12 (scalar curvature from λ₄)
+-- FD computes: R_discrete = 12 (scalar curvature from λ₄)
 -- Physical curvature has dimension [length]⁻²
 --
 -- CALIBRATION:
@@ -5803,7 +5803,7 @@ theorem-curvature-calibration = record
 -- § 20i.4  COSMOLOGICAL CONSTANT CALIBRATION: Λ_discrete ↔ Λ_phys
 -- ─────────────────────────────────────────────────────────────────────────────
 --
--- DRIFE computes: Λ_discrete = 3 (from spectral gap)
+-- FD computes: Λ_discrete = 3 (from spectral gap)
 -- Observed: Λ_phys ≈ 1.1 × 10⁻⁵² m⁻² (Dark Energy)
 --
 -- CALIBRATION:
@@ -5814,12 +5814,12 @@ theorem-curvature-calibration = record
 -- THE COSMOLOGICAL CONSTANT PROBLEM:
 --   Λ_observed / Λ_Planck ≈ 10⁻¹²²
 --
--- DRIFE INTERPRETATION:
+-- FD INTERPRETATION:
 --   The discrete Λ = 3 is the BARE value at Planck scale.
 --   The observed Λ_phys is RENORMALIZED by the expansion history.
 --   The ratio 10⁻¹²² comes from (ℓ_P / ℓ_H)², same as for R.
 --
--- CRUCIALLY: DRIFE predicts Λ > 0 (positive!)
+-- CRUCIALLY: FD predicts Λ > 0 (positive!)
 -- This matches observation (accelerating expansion).
 -- The SIGN is correct, the MAGNITUDE requires cosmological evolution.
 
@@ -5993,7 +5993,7 @@ theorem-statistical-area-law = record
 -- MATHEMATICALLY:
 --   This is the Regge calculus → GR limit, well-established in physics.
 --
--- DRIFE CONTRIBUTION:
+-- FD CONTRIBUTION:
 --   We show WHERE K₄ comes from (D₀ → Drift → Saturation → K₄)
 --   The limit N → ∞ is standard differential geometry.
 
@@ -6010,7 +6010,7 @@ record ContinuumLimitConcept : Set where
     -- Limit: As N → ∞, discrete geometry → smooth manifold
     -- This is Regge calculus, proven to converge to GR
     
-    -- DRIFE provides: The ORIGIN of the seed (not assumed, derived)
+    -- FD provides: The ORIGIN of the seed (not assumed, derived)
 
 -- The continuum limit concept
 continuum-limit : ContinuumLimitConcept
@@ -6029,7 +6029,7 @@ continuum-limit = record
 -- 1. κ CALIBRATION:
 --    κ_discrete = 8 (computed) ↔ κ_phys = 8πG/c⁴
 --    Bridge: In natural units (G = c = 1), πG/c⁴ = π.
---    DRIFE gives the INTEGER part 8 exactly from topology.
+--    FD gives the INTEGER part 8 exactly from topology.
 --
 -- 2. CURVATURE CALIBRATION:
 --    R_discrete = 12 (computed) ↔ R_phys = 12/ℓ_P²
@@ -6049,7 +6049,7 @@ continuum-limit = record
 -- 5. CONTINUUM LIMIT:
 --    K₄ is the seed structure.
 --    N → ∞ is standard Regge calculus.
---    DRIFE provides the ORIGIN of K₄, not the limit theory.
+--    FD provides the ORIGIN of K₄, not the limit theory.
 
 -- Master calibration record
 record FullCalibration : Set where
@@ -6252,12 +6252,12 @@ theorem-expansion-after-collapse = refl
 
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- § 21  DRIFE-EMERGENCE: D₀ → 3D
+-- § 21  FD-EMERGENCE: D₀ → 3D
 -- ─────────────────────────────────────────────────────────────────────────────
 --
 -- This record captures the complete chain from D₀ to 3D spatial emergence.
 
-record DRIFE-Emergence : Set where
+record FD-Emergence : Set where
   field
     -- Ontological foundation
     step1-D₀          : Unavoidable Distinction
@@ -6311,8 +6311,8 @@ theorem-D₀-to-3D unavoid =
   in dimension-from-eigenvectors eig
 
 -- The complete emergence proof
-DRIFE-proof : DRIFE-Emergence
-DRIFE-proof = record
+FD-proof : FD-Emergence
+FD-proof = record
   { step1-D₀          = unavoidability-of-D₀
   ; step2-genesis     = theorem-genesis-count
   ; step3-saturation  = theorem-saturation
@@ -6327,14 +6327,14 @@ DRIFE-proof = record
 
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- § 22  DRIFE-COMPLETE: D₀ → 3+1D SPACETIME
+-- § 22  FD-COMPLETE: D₀ → 3+1D SPACETIME
 -- ─────────────────────────────────────────────────────────────────────────────
 --
 -- This record extends the emergence to full 3+1D spacetime with curvature.
 
-record DRIFE-Complete : Set where
+record FD-Complete : Set where
   field
-    -- All of DRIFE-Emergence
+    -- All of FD-Emergence
     d₀-unavoidable    : Unavoidable Distinction
     genesis-3         : genesis-count ≡ suc (suc (suc zero))
     saturation        : Saturated
@@ -6351,8 +6351,8 @@ record DRIFE-Complete : Set where
     ricci-scalar-12   : ∀ (v : K4Vertex) → ricciScalar v ≃ℤ mkℤ (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc zero)))))))))))) zero
     einstein-symmetric : ∀ (v : K4Vertex) (μ ν : SpacetimeIndex) → einsteinTensorK4 v μ ν ≡ einsteinTensorK4 v ν μ
 
-DRIFE-complete-proof : DRIFE-Complete
-DRIFE-complete-proof = record
+FD-complete-proof : FD-Complete
+FD-complete-proof = record
   { d₀-unavoidable    = unavoidability-of-D₀
   ; genesis-3         = theorem-genesis-count
   ; saturation        = theorem-saturation
@@ -6369,7 +6369,7 @@ DRIFE-complete-proof = record
 
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- § 23  DRIFE-FULLGR: D₀ → GENERAL RELATIVITY
+-- § 23  FD-FULLGR: D₀ → GENERAL RELATIVITY
 -- ─────────────────────────────────────────────────────────────────────────────
 --
 -- The ultimate record: complete 4D General Relativity from D₀.
@@ -6378,7 +6378,7 @@ DRIFE-complete-proof = record
 data _≡₁_ {A : Set₁} (x : A) : A → Set₁ where
   refl₁ : x ≡₁ x
 
-record DRIFE-FullGR : Set₁ where
+record FD-FullGR : Set₁ where
   field
     -- ONTOLOGICAL FOUNDATION
     -- The meta-axiom: Being = Constructibility
@@ -6389,7 +6389,7 @@ record DRIFE-FullGR : Set₁ where
     d₀-is-ontology    : ontology ≡₁ D₀-is-ConstructiveOntology
     
     -- Complete spacetime emergence
-    spacetime         : DRIFE-Complete
+    spacetime         : FD-Complete
     
     -- Topological coupling
     euler-characteristic : eulerK4 ≃ℤ mkℤ (suc (suc zero)) zero
@@ -6403,12 +6403,12 @@ record DRIFE-FullGR : Set₁ where
     conservation      : ∀ (v : K4Vertex) (ν : SpacetimeIndex) → divergenceT v ν ≃ℤ 0ℤ
 
 -- THE PROOF: From D₀ to General Relativity
-DRIFE-FullGR-proof : DRIFE-FullGR
-DRIFE-FullGR-proof = record
+FD-FullGR-proof : FD-FullGR
+FD-FullGR-proof = record
   { ontology            = D₀-is-ConstructiveOntology
   ; d₀                  = unavoidability-of-D₀
   ; d₀-is-ontology      = refl₁
-  ; spacetime           = DRIFE-complete-proof
+  ; spacetime           = FD-complete-proof
   ; euler-characteristic = theorem-euler-K4
   ; kappa-from-topology = theorem-kappa-is-eight
   ; lambda-from-K4      = theorem-lambda-from-K4
@@ -6443,16 +6443,16 @@ final-theorem-3D : Unavoidable Distinction → EmbeddingDimension ≡ suc (suc (
 final-theorem-3D = theorem-D₀-to-3D
 
 -- The complete theorem: D₀ → 3+1D spacetime
-final-theorem-spacetime : Unavoidable Distinction → DRIFE-Complete
-final-theorem-spacetime _ = DRIFE-complete-proof
+final-theorem-spacetime : Unavoidable Distinction → FD-Complete
+final-theorem-spacetime _ = FD-complete-proof
 
 -- THE ULTIMATE THEOREM: D₀ → General Relativity
-ultimate-theorem : Unavoidable Distinction → DRIFE-FullGR
-ultimate-theorem _ = DRIFE-FullGR-proof
+ultimate-theorem : Unavoidable Distinction → FD-FullGR
+ultimate-theorem _ = FD-FullGR-proof
 
 -- THE ONTOLOGICAL THEOREM: Being = D₀ → Reality = Physics
-ontological-theorem : ConstructiveOntology → DRIFE-FullGR
-ontological-theorem _ = DRIFE-FullGR-proof
+ontological-theorem : ConstructiveOntology → FD-FullGR
+ontological-theorem _ = FD-FullGR-proof
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- § 24.1  UNIFIED PROOF SUMMARY
@@ -6480,7 +6480,7 @@ theorem-unified-chain = record
   ; constants-from-K4  = k4-derived-physics
   }
 
--- The full GR proof is available as: DRIFE-FullGR-proof : DRIFE-FullGR
+-- The full GR proof is available as: FD-FullGR-proof : FD-FullGR
 
 
 -- ═══════════════════════════════════════════════════════════════════════════════
@@ -6649,10 +6649,10 @@ G_μν + Λg_μν = 8 T_μν                     EINSTEIN FIELD EQUATIONS with �
                       T H E   U L T I M A T E   T H E O R E M
 ═══════════════════════════════════════════════════════════════════════════════
 
-  DRIFE-Ultimate : Set
-  DRIFE-Ultimate = 
+  FD-Ultimate : Set
+  FD-Ultimate = 
     record 
-      physics   = DRIFE-FullGR      -- All physical laws
+      physics   = FD-FullGR      -- All physical laws
       ontology  = ConstructiveOntology   -- Meta-axiom grounding
       claim     = OntologicalClaim  -- Self-verification
 
@@ -6671,13 +6671,13 @@ G_μν + Λg_μν = 8 T_μν                     EINSTEIN FIELD EQUATIONS with �
 
 -- ═══════════════════════════════════════════════════════════════════════════════
 -- ███████████████████████████████████████████████████████████████████████████████
--- § 21  BLACK HOLE PHYSICS FROM DRIFE
+-- § 21  BLACK HOLE PHYSICS FROM FD
 -- ███████████████████████████████████████████████████████████████████████████████
 -- ═══════════════════════════════════════════════════════════════════════════════
 --
--- BLACK HOLES are where DRIFE makes its most TESTABLE predictions.
+-- BLACK HOLES are where FD makes its most TESTABLE predictions.
 --
--- The key insight: A black hole horizon in DRIFE is NOT a geometric boundary.
+-- The key insight: A black hole horizon in FD is NOT a geometric boundary.
 -- It is a SATURATION BOUNDARY - where drift can no longer propagate outward.
 --
 -- This leads to concrete, quantitative predictions.
@@ -6686,15 +6686,15 @@ G_μν + Λg_μν = 8 T_μν                     EINSTEIN FIELD EQUATIONS with �
 
 
 -- ═══════════════════════════════════════════════════════════════════════════════
--- § 21a  DRIFT HORIZON: THE DRIFE DEFINITION OF BLACK HOLE
+-- § 21a  DRIFT HORIZON: THE FD DEFINITION OF BLACK HOLE
 -- ═══════════════════════════════════════════════════════════════════════════════
 --
 -- CLASSICAL DEFINITION: r < r_s = 2GM/c² (Schwarzschild radius)
--- DRIFE DEFINITION: Region where outward drift is impossible
+-- FD DEFINITION: Region where outward drift is impossible
 --
 -- The horizon emerges when LOCAL SATURATION prevents causal propagation.
 --
--- KEY INSIGHT: In DRIFE, the horizon is not "where light can't escape"
+-- KEY INSIGHT: In FD, the horizon is not "where light can't escape"
 -- but "where new distinctions can't propagate outward".
 --
 -- This is MORE FUNDAMENTAL because:
@@ -6739,7 +6739,7 @@ module BlackHolePhysics where
 --
 --   S = A / (4 ℓ_P²)   where A = horizon area, ℓ_P = Planck length
 --
--- In DRIFE, this has a DIRECT interpretation:
+-- In FD, this has a DIRECT interpretation:
 --
 --   S = number of Planck-area cells on the horizon
 --
@@ -6754,7 +6754,7 @@ module BlackHolePhysics where
 --
 -- But entropy must be ≥ ln(2) ≈ 0.693 for one bit of information!
 --
--- DRIFE PREDICTION #1:
+-- FD PREDICTION #1:
 -- ════════════════════
 --   The minimal black hole has entropy S_min ≈ ln(4) ≈ 1.39
 --   because K₄ has 4 vertices = 4 distinguishable states = 2 bits
@@ -6781,38 +6781,38 @@ module BekensteinHawking where
   BH-entropy-scaled : ℕ
   BH-entropy-scaled = 43  -- ≈ 0.43 in natural units
   
-  -- DRIFE entropy: ln(4) ≈ 1.39, scaled by 100 = 139
+  -- FD entropy: ln(4) ≈ 1.39, scaled by 100 = 139
   -- Because K₄ has 4 vertices = 4 distinguishable configurations
-  DRIFE-entropy-scaled : ℕ
-  DRIFE-entropy-scaled = 139  -- ln(4) × 100
+  FD-entropy-scaled : ℕ
+  FD-entropy-scaled = 139  -- ln(4) × 100
   
-  -- THE KEY THEOREM: DRIFE entropy > Bekenstein-Hawking
+  -- THE KEY THEOREM: FD entropy > Bekenstein-Hawking
   -- This is because K₄ carries MORE information than area suggests
   
   -- 139 > 43 means suc 43 ≤ 139, i.e., 44 ≤ 139
   -- We prove: 44 ≤ 139 (need 44 s≤s then z≤n)
-  DRIFE-exceeds-BH : suc BH-entropy-scaled ≤ DRIFE-entropy-scaled
-  DRIFE-exceeds-BH = s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (
+  FD-exceeds-BH : suc BH-entropy-scaled ≤ FD-entropy-scaled
+  FD-exceeds-BH = s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (
                      s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (
                      s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (
                      s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (
                      s≤s (s≤s (s≤s (s≤s (
                      z≤n))))))))))))))))))))))))))))))))))))))))))))
-  -- The ratio: DRIFE / BH ≈ 139/43 ≈ 3.23
+  -- The ratio: FD / BH ≈ 139/43 ≈ 3.23
   -- Minimal black holes have ~3× MORE entropy than area law suggests!
 
 
 -- ═══════════════════════════════════════════════════════════════════════════════
--- § 21c  THE DRIFE BLACK HOLE PREDICTION
+-- § 21c  THE FD BLACK HOLE PREDICTION
 -- ═══════════════════════════════════════════════════════════════════════════════
 --
 -- ╔═══════════════════════════════════════════════════════════════════════════╗
--- ║  DRIFE PREDICTION: ENTROPY EXCESS FOR SMALL BLACK HOLES                  ║
+-- ║  FD PREDICTION: ENTROPY EXCESS FOR SMALL BLACK HOLES                  ║
 -- ╠═══════════════════════════════════════════════════════════════════════════╣
 -- ║                                                                           ║
 -- ║  Classical Bekenstein-Hawking:  S = A / (4 ℓ_P²)                         ║
 -- ║                                                                           ║
--- ║  DRIFE correction:              S = A / (4 ℓ_P²) + N_vertices · ln(2)    ║
+-- ║  FD correction:              S = A / (4 ℓ_P²) + N_vertices · ln(2)    ║
 -- ║                                                                           ║
 -- ║  where N_vertices = number of K₄ cells in horizon                        ║
 -- ║                                                                           ║
@@ -6832,7 +6832,7 @@ module BekensteinHawking where
 -- WHY THIS IS IMPORTANT:
 --
 -- 1. Bekenstein-Hawking is a SEMI-CLASSICAL result (not full quantum gravity)
--- 2. DRIFE provides a QUANTUM CORRECTION from discrete structure
+-- 2. FD provides a QUANTUM CORRECTION from discrete structure
 -- 3. The correction is COMPUTABLE, not a free parameter
 -- 4. The correction affects observable Hawking radiation
 --
@@ -6845,7 +6845,7 @@ module BekensteinHawking where
 --   - Different spectral distribution
 --   - Quantized energy levels (from K₄ structure)
 
-module DRIFEBlackHolePrediction where
+module FDBlackHolePrediction where
 
   -- The entropy correction from K₄ discrete structure
   -- Each K₄ cell contributes ln(4) ≈ 1.39 bits of entropy
@@ -6859,19 +6859,19 @@ module DRIFEBlackHolePrediction where
       -- Area-based entropy (Bekenstein-Hawking)
       S-BH : ℕ
       
-      -- DRIFE total entropy = S_BH + K4-cells × ln(4)
+      -- FD total entropy = S_BH + K4-cells × ln(4)
       -- (In integer units scaled by 100)
-      S-DRIFE : ℕ
+      S-FD : ℕ
       
-      -- The correction is always positive (S_BH ≤ S_DRIFE)
-      correction-positive : S-BH ≤ S-DRIFE
+      -- The correction is always positive (S_BH ≤ S_FD)
+      correction-positive : S-BH ≤ S-FD
       
   -- For minimal black hole (one K₄ cell)
   minimal-BH-correction : EntropyCorrection
   minimal-BH-correction = record
     { K4-cells = one
     ; S-BH = 43          -- √3/4 × 100 ≈ 43
-    ; S-DRIFE = 182      -- 43 + 139 (one K₄ correction)
+    ; S-FD = 182      -- 43 + 139 (one K₄ correction)
     ; correction-positive = s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (
                            s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (
                            s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (
@@ -6889,7 +6889,7 @@ module DRIFEBlackHolePrediction where
 --
 -- For a Planck-mass black hole: T_H ~ T_Planck ~ 10³² K
 --
--- DRIFE MODIFICATION:
+-- FD MODIFICATION:
 -- ───────────────────
 -- The discrete K₄ structure means the black hole doesn't evaporate
 -- continuously, but in DISCRETE STEPS corresponding to K₄ transitions.
@@ -6909,11 +6909,11 @@ module DRIFEBlackHolePrediction where
 --   - Loop Quantum Gravity (which predicts area quantization A = 8πγ√3 n)
 --   - String Theory (which predicts specific microstate counting)
 --
--- DRIFE's K₄ structure gives a UNIQUE signature.
+-- FD's K₄ structure gives a UNIQUE signature.
 
 module HawkingModification where
 
-  -- In DRIFE, a black hole loses mass by "shedding" K₄ cells
+  -- In FD, a black hole loses mass by "shedding" K₄ cells
   -- Each K₄ cell has energy ~ E_Planck
   
   -- The number of K₄ cells in a black hole of mass M:
@@ -6944,13 +6944,13 @@ module HawkingModification where
 
 
 -- ═══════════════════════════════════════════════════════════════════════════════
--- § 21e  BLACK HOLE REMNANTS: THE DRIFE PREDICTION
+-- § 21e  BLACK HOLE REMNANTS: THE FD PREDICTION
 -- ═══════════════════════════════════════════════════════════════════════════════
 --
 -- MOST SIGNIFICANT PREDICTION:
 --
 -- ╔═══════════════════════════════════════════════════════════════════════════╗
--- ║  DRIFE PREDICTS: BLACK HOLES CANNOT FULLY EVAPORATE                      ║
+-- ║  FD PREDICTS: BLACK HOLES CANNOT FULLY EVAPORATE                      ║
 -- ╠═══════════════════════════════════════════════════════════════════════════╣
 -- ║                                                                           ║
 -- ║  A black hole cannot shrink below K₄ because:                            ║
@@ -6983,7 +6983,7 @@ module HawkingModification where
 --   3. No singularity - K₄ has finite, discrete geometry
 --
 -- The paradox only arises if BH evaporates completely.
--- DRIFE says: it doesn't.
+-- FD says: it doesn't.
 
 module BlackHoleRemnant where
 
@@ -7030,13 +7030,13 @@ module BlackHoleRemnant where
 -- ═══════════════════════════════════════════════════════════════════════════════
 --
 -- ╔═══════════════════════════════════════════════════════════════════════════╗
--- ║                    DRIFE BLACK HOLE PREDICTIONS                          ║
+-- ║                    FD BLACK HOLE PREDICTIONS                          ║
 -- ╠═══════════════════════════════════════════════════════════════════════════╣
 -- ║                                                                           ║
 -- ║  PREDICTION 1: ENTROPY EXCESS                                            ║
 -- ║  ─────────────────────────────────                                        ║
 -- ║  Small black holes have MORE entropy than Bekenstein-Hawking:            ║
--- ║    S_DRIFE = S_BH + N_K4 × ln(4)                                         ║
+-- ║    S_FD = S_BH + N_K4 × ln(4)                                         ║
 -- ║  Deviation: ~320% for Planck-mass BH, decreasing with mass               ║
 -- ║  Testable via: Hawking radiation spectrum analysis                       ║
 -- ║                                                                           ║
@@ -7063,10 +7063,10 @@ module BlackHoleRemnant where
 module TestablePredictions where
 
   -- Summary record of all predictions
-  record DRIFEBlackHolePredictions : Set where
+  record FDBlackHolePredictions : Set where
     field
       -- Prediction 1: Entropy excess
-      entropy-excess-ratio : ℕ  -- DRIFE/BH ratio × 100
+      entropy-excess-ratio : ℕ  -- FD/BH ratio × 100
       excess-is-significant : 320 ≤ entropy-excess-ratio  -- ≥320%
       
       -- Prediction 2: Quantized evaporation
@@ -7081,11 +7081,11 @@ module TestablePredictions where
       max-curvature : ℕ  -- R_max in units of 1/ℓ_P²
       max-is-twelve : max-curvature ≡ 12
       
-  -- The DRIFE predictions  
+  -- The FD predictions  
   -- Simplified record without the long inequality proof
-  record DRIFEBlackHolePredictionsSummary : Set where
+  record FDBlackHolePredictionsSummary : Set where
     field
-      -- Prediction 1: Entropy excess ratio (423% means S_DRIFE/S_BH ≈ 4.23)
+      -- Prediction 1: Entropy excess ratio (423% means S_FD/S_BH ≈ 4.23)
       entropy-excess-ratio : ℕ
       
       -- Prediction 2: Quantized evaporation
@@ -7100,9 +7100,9 @@ module TestablePredictions where
       max-curvature : ℕ
       max-is-twelve : max-curvature ≡ 12
       
-  drife-BH-predictions : DRIFEBlackHolePredictionsSummary
-  drife-BH-predictions = record
-    { entropy-excess-ratio = 423     -- S_DRIFE/S_BH = 182/43 ≈ 4.23 = 423%
+  fd-BH-predictions : FDBlackHolePredictionsSummary
+  fd-BH-predictions = record
+    { entropy-excess-ratio = 423     -- S_FD/S_BH = 182/43 ≈ 4.23 = 423%
     ; quantum-of-mass = one
     ; quantum-is-one = refl
     ; remnant-vertices = four
@@ -7123,7 +7123,7 @@ module TestablePredictions where
 -- ┌─────────────────────────────────────────────────────────────────────────────┐
 -- │                        BLACK HOLE PREDICTIONS                               │
 -- ├──────────────────┬──────────────┬──────────────┬───────────────┬───────────┤
--- │    Prediction    │    DRIFE     │     LQG      │  String Thy   │ Semiclass │
+-- │    Prediction    │    FD       │     LQG      │  String Thy   │ Semiclass │
 -- ├──────────────────┼──────────────┼──────────────┼───────────────┼───────────┤
 -- │ Entropy formula  │ S_BH + Δ     │ S_BH         │ S_BH          │ S_BH      │
 -- │ Min. entropy     │ ln(4)≈1.4    │ ~γ ln(2)     │ Depends       │ 0         │
@@ -7135,11 +7135,11 @@ module TestablePredictions where
 -- │ Dark matter?     │ Remnants!    │ Possible     │ Possible      │ N/A       │
 -- └──────────────────┴──────────────┴──────────────┴───────────────┴───────────┘
 --
--- KEY DISTINGUISHING FEATURES OF DRIFE:
+-- KEY DISTINGUISHING FEATURES OF FD:
 --
--- 1. ENTROPY EXCESS is unique to DRIFE
+-- 1. ENTROPY EXCESS is unique to FD
 --    - LQG and String Theory both match Bekenstein-Hawking
---    - DRIFE predicts HIGHER entropy for small BHs
+--    - FD predicts HIGHER entropy for small BHs
 --
 -- 2. REMNANT STRUCTURE is K₄ specifically
 --    - Not just "some Planck-scale object"
@@ -7237,7 +7237,7 @@ theorem-c-from-counting = refl
 -- § 22b  THE COSMOLOGICAL CONSTANT PREDICTION
 -- ─────────────────────────────────────────────────────────────────────────────
 --
--- DRIFE PREDICTS: Λ = 3 > 0 (positive!)
+-- FD PREDICTS: Λ = 3 > 0 (positive!)
 -- This is a TRUE prediction, not a fit!
 --
 -- DERIVATION:
@@ -7245,7 +7245,7 @@ theorem-c-from-counting = refl
 --   where R_K4 = 4 × λ₄ = 4 × 3 = 12 (spectral Ricci)
 --
 -- OBSERVED: Λ_obs > 0 (dark energy causes accelerated expansion)
--- MATCH: DRIFE correctly predicts the SIGN of Λ!
+-- MATCH: FD correctly predicts the SIGN of Λ!
 
 -- Record capturing Λ prediction
 record CosmologicalConstantPrediction : Set where
@@ -7269,25 +7269,25 @@ theorem-lambda-positive = record
   }
 
 -- ═══════════════════════════════════════════════════════════════════════════
--- § 22b′  THE N-PROBLEM: WHAT DRIFE CANNOT DERIVE
+-- § 22b′  THE N-PROBLEM: WHAT FD CANNOT DERIVE
 -- ═══════════════════════════════════════════════════════════════════════════
 --
 -- CRITICAL DISCLAIMER: N = τ/t_Planck ≈ 10⁶¹ is OBSERVED, not derived!
 --
 -- ┌─────────────────────────────────────────────────────────────────────────┐
 -- │  N = 10⁶¹ is the age of the universe in Planck time units.             │
--- │  This number CANNOT be derived from DRIFE's axiom-free framework.      │
+-- │  This number CANNOT be derived from FD's axiom-free framework.      │
 -- │  No combination of K₄ numbers (4, 6, 12, 24, 720...) gives 10⁶¹.       │
 -- └─────────────────────────────────────────────────────────────────────────┘
 --
--- WHAT DRIFE DERIVES (structure):
+-- WHAT FD DERIVES (structure):
 -- ═══════════════════════════════
 --   ✓ Λ_bare = 3 (from K₄ Ricci curvature)
 --   ✓ Dilution exponent = 2 (from curvature dimension)
 --   ✓ Λ_obs = Λ_bare / N²  (structural scaling law)
 --   ✓ H = 1/N (functional form from Friedmann)
 --
--- WHAT DRIFE NEEDS AS INPUT (observation):
+-- WHAT FD NEEDS AS INPUT (observation):
 -- ════════════════════════════════════════
 --   ✗ N = τ_universe / t_Planck ≈ 10⁶¹ (measured cosmic age)
 --   ✗ τ_universe ≈ 13.8 Gyr (observed)
@@ -7299,7 +7299,7 @@ theorem-lambda-positive = record
 --   • H₀ ≈ 1/N (Planck units) ← Uses observed N!
 --
 -- This is an INTERNAL CONSISTENCY CHECK, not a zero-parameter prediction.
--- DRIFE explains WHY Λ_obs is small (dilution), but not the exact value.
+-- FD explains WHY Λ_obs is small (dilution), but not the exact value.
 --
 -- KÖNIGSKLASSE STATUS:
 -- ════════════════════
@@ -7519,7 +7519,7 @@ number-systems-from-K4 = record
 -- § 22b‴  THE 10⁻¹²² PROBLEM: LAMBDA DILUTION
 -- ─────────────────────────────────────────────────────────────────────────────
 --
--- DRIFE SOLVES the cosmological constant problem!
+-- FD SOLVES the cosmological constant problem!
 --
 -- THE PROBLEM:
 -- ════════════
@@ -7527,7 +7527,7 @@ number-systems-from-K4 = record
 -- Λ_obs ~ 10⁻¹²² (Planck units) from observation
 -- Why the 10¹²² ratio?
 --
--- DRIFE'S ANSWER:
+-- FD'S ANSWER:
 -- ═══════════════
 -- 1. Λ has dimension [length]⁻² (curvature)
 -- 2. The horizon scale grows as r_H = N × ℓ_P where N = t/t_P
@@ -7681,7 +7681,7 @@ sixty = six * ten
 -- § 22d  SPATIAL DIMENSION PREDICTION: d = 3
 -- ─────────────────────────────────────────────────────────────────────────────
 --
--- DRIFE PREDICTS: Spatial dimension d = 3
+-- FD PREDICTS: Spatial dimension d = 3
 -- 
 -- DERIVATION: Spectral stress minimization on K₄ seed
 --   σ(d) = Σᵢⱼ wᵢⱼ (‖φᵢ - φⱼ‖ - dᵢⱼ)²
@@ -7703,9 +7703,9 @@ theorem-dimension-3 = refl
 
 -- Open the black hole modules for access to types
 open BlackHoleRemnant using (MinimalBlackHole; K4-remnant)
-open DRIFEBlackHolePrediction using (EntropyCorrection; minimal-BH-correction)
+open FDBlackHolePrediction using (EntropyCorrection; minimal-BH-correction)
 
-record DRIFEKoenigsklasse : Set where
+record FDKoenigsklasse : Set where
   field
     -- ═══════════════════════════════════════════════════════════════════════
     -- KÖNIGSKLASSE: Pure K₄ predictions, NO inputs whatsoever
@@ -7740,9 +7740,9 @@ record DRIFEKoenigsklasse : Set where
     --
     -- SI values (70 km/s/Mpc, 13.7 Gyr) are just UNIT CONVERSION.
     
--- Master theorem: DRIFE Königsklasse predictions
-theorem-drife-koenigsklasse : DRIFEKoenigsklasse
-theorem-drife-koenigsklasse = record
+-- Master theorem: FD Königsklasse predictions
+theorem-fd-koenigsklasse : FDKoenigsklasse
+theorem-fd-koenigsklasse = record
   { lambda-sign-positive = s≤s z≤n
   ; dimension-is-3 = refl
   ; remnant-exists = K4-remnant
@@ -7992,16 +7992,16 @@ theorem-correction-num = refl
 -- § 22f.5  PRECISION COMPARISON
 -- ═══════════════════════════════════════════════════════════════════════════
 --
--- DRIFE PREDICTIONS vs OBSERVATION:
+-- FD PREDICTIONS vs OBSERVATION:
 --
--- │ Quantity        │ DRIFE          │ Observed       │ Deviation │
+-- │ Quantity        │ FD          │ Observed       │ Deviation │
 -- ├─────────────────┼────────────────┼────────────────┼───────────┤
 -- │ α⁻¹             │ 137.036036     │ 137.035999     │ 0.000027% │
 -- │ τ (cosmic age)  │ 13.726 Gyr     │ 13.787 Gyr     │ 0.44%     │
 -- │ d (dimensions)  │ 3              │ 3              │ 0%        │
 -- │ Λ > 0           │ yes            │ yes            │ exact     │
 --
--- The α prediction is the MOST PRECISE of all DRIFE predictions!
+-- The α prediction is the MOST PRECISE of all FD predictions!
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- § 22f.6  THE SPECTRAL-TOPOLOGICAL CONNECTION
@@ -8107,29 +8107,29 @@ theorem-alpha-137 = refl
 -- § 22h  FALSIFICATION CRITERIA
 -- ─────────────────────────────────────────────────────────────────────────────
 --
--- DRIFE is FALSIFIABLE. The theory would be WRONG if:
+-- FD is FALSIFIABLE. The theory would be WRONG if:
 --
 -- 1. Black hole below Planck mass is found
---    → DRIFE: M ≥ M_Planck mandatory (K₄ is minimum)
+--    → FD: M ≥ M_Planck mandatory (K₄ is minimum)
 --    
 -- 2. Complete BH evaporation is observed
---    → DRIFE: Evaporation stops at K₄ remnant
+--    → FD: Evaporation stops at K₄ remnant
 --    
 -- 3. Perfectly continuous Hawking spectrum measured
---    → DRIFE: Spectrum must be discrete (K₄ structure)
+--    → FD: Spectrum must be discrete (K₄ structure)
 --    
 -- 4. GW echoes definitively ruled out (high SNR)
---    → DRIFE: Echoes from discrete horizon structure
+--    → FD: Echoes from discrete horizon structure
 --    
 -- 5. Space not 3D at Planck scale
---    → DRIFE: d = 3 from spectral geometry
+--    → FD: d = 3 from spectral geometry
 --    
 -- 6. Cosmological constant Λ < 0 
---    → DRIFE: Λ = +3 > 0 from K₄
+--    → FD: Λ = +3 > 0 from K₄
 
 record FalsificationCriteria : Set where
   field
-    -- If ANY of these are observed, DRIFE is false:
+    -- If ANY of these are observed, FD is false:
     criterion-1 : ℕ  -- BH below Planck mass
     criterion-2 : ℕ  -- Complete evaporation
     criterion-3 : ℕ  -- Continuous Hawking spectrum
@@ -8150,7 +8150,7 @@ record FalsificationCriteria : Set where
   ═══════════════════════════════════════════════════════════════════════════
   
   ┌─────────────────────────────────────────────────────────────────────────┐
-  │  Prediction          │ DRIFE       │ Observed    │ Status              │
+  │  Prediction          │ FD       │ Observed    │ Status              │
   ├─────────────────────────────────────────────────────────────────────────┤
   │  Λ sign              │ > 0         │ > 0         │ ✓ CONFIRMED         │
   │  d (dimension)       │ 3           │ 3           │ ✓ CONFIRMED         │
@@ -8243,7 +8243,7 @@ record FalsificationCriteria : Set where
   
 ═══════════════════════════════════════════════════════════════════════════════
 
-  SUMMARY: DRIFE makes 6 KÖNIGSKLASSE predictions
+  SUMMARY: FD makes 6 KÖNIGSKLASSE predictions
            (d=3, Λ>0, and NOW α⁻¹=137 confirmed!)
            
   Q.E.D.

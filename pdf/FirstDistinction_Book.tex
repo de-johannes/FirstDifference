@@ -36,10 +36,10 @@
 
 % Colors
 \usepackage{xcolor}
-\definecolor{drife-blue}{RGB}{70,130,180}
-\definecolor{drife-dark}{RGB}{50,50,60}
-\definecolor{drife-light}{RGB}{245,248,250}
-\definecolor{drife-accent}{RGB}{180,100,100}
+\definecolor{fd-blue}{RGB}{70,130,180}
+\definecolor{fd-dark}{RGB}{50,50,60}
+\definecolor{fd-light}{RGB}{245,248,250}
+\definecolor{fd-accent}{RGB}{180,100,100}
 \definecolor{code-bg}{RGB}{250,250,252}
 \definecolor{chain-color}{RGB}{60,100,60}
 
@@ -53,9 +53,9 @@
 \lstset{
   language=Haskell,
   basicstyle=\ttfamily\small,
-  keywordstyle=\color{drife-blue}\bfseries,
+  keywordstyle=\color{fd-blue}\bfseries,
   commentstyle=\color{gray}\itshape,
-  stringstyle=\color{drife-accent},
+  stringstyle=\color{fd-accent},
   backgroundcolor=\color{code-bg},
   frame=single,
   framerule=0.5pt,
@@ -79,11 +79,11 @@
 \usepackage{hyperref}
 \hypersetup{
   colorlinks=true,
-  linkcolor=drife-blue,
-  citecolor=drife-blue,
-  urlcolor=drife-blue,
+  linkcolor=fd-blue,
+  citecolor=fd-blue,
+  urlcolor=fd-blue,
   bookmarksnumbered=true,
-  pdftitle={DRIFE - The First Difference},
+  pdftitle={First Distinction (FD)},
   pdfauthor={Johannes Wielsch}
 }
 \usepackage[nameinlink]{cleveref}
@@ -105,8 +105,8 @@
 \tcbuselibrary{skins,breakable}
 
 \newtcolorbox{insight}[1][]{
-  colback=drife-light,
-  colframe=drife-blue,
+  colback=fd-light,
+  colframe=fd-blue,
   fonttitle=\bfseries,
   title=Insight,
   breakable,
@@ -116,7 +116,7 @@
 
 \newtcolorbox{principle}[1][]{
   colback=white,
-  colframe=drife-accent,
+  colframe=fd-accent,
   fonttitle=\bfseries,
   title=Principle,
   breakable,
@@ -126,7 +126,7 @@
 
 \newtcolorbox{agdaproof}[1][]{
   colback=code-bg,
-  colframe=drife-dark,
+  colframe=fd-dark,
   fonttitle=\bfseries\ttfamily,
   title=Agda Proof,
   breakable,
@@ -165,8 +165,8 @@
 
 % Special formatting
 \newcommand{\code}[1]{\texttt{\small #1}}
-\newcommand{\keyword}[1]{\textbf{\color{drife-blue}#1}}
-\newcommand{\emphasis}[1]{\textit{\color{drife-accent}#1}}
+\newcommand{\keyword}[1]{\textbf{\color{fd-blue}#1}}
+\newcommand{\emphasis}[1]{\textit{\color{fd-accent}#1}}
 
 % ============================================================================
 % HEADER/FOOTER
@@ -199,7 +199,7 @@
 \centering
 \vspace*{3cm}
 
-{\Huge\bfseries DRIFE}\\[0.5cm]
+{\Huge\bfseries First Distinction}\\[0.5cm]
 {\Large\itshape The First Difference}\\[2cm]
 
 {\large A Constructive, Axiom-Free Derivation of\\[0.3cm]
@@ -225,7 +225,7 @@
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
 
-This book presents \textbf{DRIFE} (The First Difference), a complete formal proof that the structure of physical spacetime---including its 3+1 dimensionality, Lorentz signature, and the Einstein field equations---emerges \emph{necessarily} from a single unavoidable premise: the existence of distinction itself.
+This book presents \textbf{First Distinction (FD)}, a complete formal proof that the structure of physical spacetime---including its 3+1 dimensionality, Lorentz signature, and the Einstein field equations---emerges \emph{necessarily} from a single unavoidable premise: the existence of distinction itself.
 
 \bigskip
 
@@ -234,7 +234,7 @@ The central result is:
 \begin{center}
 \fbox{\parbox{0.85\textwidth}{
 \centering
-\texttt{ultimate-theorem : Unavoidable Distinction -> DRIFE-FullGR}\\[0.3cm]
+\texttt{ultimate-theorem : Unavoidable Distinction -> FD-FullGR}\\[0.3cm]
 \textit{From the unavoidability of distinction,\\complete 4D General Relativity necessarily emerges.}
 }}
 \end{center}
@@ -429,7 +429,7 @@ This pattern of argument has a distinguished philosophical pedigree. In the \tex
 
 Wittgenstein's response was to gesture at what lies beyond sayable propositions---to ``throw away the ladder'' after climbing it. But this leaves us with silence where we want understanding.
 
-DRIFE takes a different path. Instead of abandoning the attempt to articulate foundational conditions, we \emph{formalize them in a system where self-reference is controlled}. Type theory, unlike naive set theory or first-order logic, can express statements about its own structure without falling into paradox. The unavoidability of distinction can be captured not as a philosophical observation but as a \emph{theorem}.
+First Distinction takes a different path. Instead of abandoning the attempt to articulate foundational conditions, we \emph{formalize them in a system where self-reference is controlled}. Type theory, unlike naive set theory or first-order logic, can express statements about its own structure without falling into paradox. The unavoidability of distinction can be captured not as a philosophical observation but as a \emph{theorem}.
 
 \subsection{Comparison with Other ``First Principles''}
 
@@ -534,7 +534,7 @@ Every formal system requires a meta-level choice: the choice of \emph{which syst
 
 The question is not whether we make a meta-level choice, but \emph{which} choice we make and \emph{why}.
 
-\begin{principle}[title=The Meta-Axiom of DRIFE]
+\begin{principle}[title=The Meta-Axiom of FD]
 \textbf{Being = Constructibility}
 
 To exist is to be constructible. What cannot be constructed does not exist within the system.
@@ -599,7 +599,7 @@ We have \emph{one} starting point: $D_0$. The entire subsequent development will
 
 The Gospel of John opens with an ontological claim: existence begins with \emph{logos}---articulation, distinction, the drawing of a boundary. Long before the scientific revolution, the theological tradition understood that being requires differentiation. The formless void of Genesis 1:2 becomes a cosmos through acts of separation: light from darkness, waters from waters, land from sea.
 
-DRIFE makes this intuition rigorous. We have established that $D_0$---the first distinction---is unavoidable. But $D_0$ cannot exist alone. In this chapter, we derive the necessary consequences of $D_0$'s existence and show that exactly three primordial distinctions must arise, forming what we call the \textbf{Genesis}.
+FD makes this intuition rigorous. We have established that $D_0$---the first distinction---is unavoidable. But $D_0$ cannot exist alone. In this chapter, we derive the necessary consequences of $D_0$'s existence and show that exactly three primordial distinctions must arise, forming what we call the \textbf{Genesis}.
 
 \section{The Impossibility of a Solitary Distinction}
 
@@ -619,9 +619,9 @@ This is not a contingent fact about our minds or our language. It is a \emph{str
 
 Hegel understood this pattern. In the \textit{Science of Logic}, he shows that ``pure being'' immediately passes over into ``pure nothing'' because there is no determination to distinguish them. Only when \emph{becoming}---the movement between them---is recognized do we have genuine ontological content.
 
-DRIFE captures this dialectical movement formally. $D_0$ is the thesis. The polarity of $D_0$ (that it has two states) is the antithesis---a new distinction \emph{about} the original. The relation between them is the synthesis---a third distinction that binds the first two together.
+FD captures this dialectical movement formally. $D_0$ is the thesis. The polarity of $D_0$ (that it has two states) is the antithesis---a new distinction \emph{about} the original. The relation between them is the synthesis---a third distinction that binds the first two together.
 
-But unlike Hegel's dialectic, which continues indefinitely through Geist and history, DRIFE's dialectic \emph{terminates} after three steps. We will prove that three distinctions suffice---that additional distinctions can be constructed, but no new \emph{primordial} distinctions are required.
+But unlike Hegel's dialectic, which continues indefinitely through Geist and history, FD's dialectic \emph{terminates} after three steps. We will prove that three distinctions suffice---that additional distinctions can be constructed, but no new \emph{primordial} distinctions are required.
 
 \section{The Three Genesis Distinctions}
 
@@ -689,7 +689,7 @@ We will prove this formally in Chapter~\ref{ch:saturation}. For now, observe tha
 
 \section{The Agda Formalization}
 
-In DRIFE.agda, the Genesis is formalized as follows:
+In FirstDistinction.agda, the Genesis is formalized as follows:
 
 \begin{agdaproof}[title=Genesis Identifiers]
 \begin{lstlisting}
@@ -761,7 +761,7 @@ This trinitarian pattern appears across intellectual history:
     \item \textbf{Category theory}: Objects, morphisms, composition
 \end{itemize}
 
-DRIFE does not \emph{assume} a trinitarian structure---it \emph{derives} one from the logic of distinction.
+FD does not \emph{assume} a trinitarian structure---it \emph{derives} one from the logic of distinction.
 
 \section{From Genesis to Graph}
 
@@ -908,7 +908,7 @@ In the Genesis, the pair $(D_0, D_2)$ is irreducible. This creates the \textbf{f
 
 \subsection{The Formal Irreducibility Proof}
 
-This is the \textbf{critical theorem} of DRIFE. We do not merely \emph{claim} that $(D_0, D_2)$ is irreducible---we \emph{prove} it formally in Agda. The type checker verifies this proof.
+This is the \textbf{critical theorem} of FD. We do not merely \emph{claim} that $(D_0, D_2)$ is irreducible---we \emph{prove} it formally in Agda. The type checker verifies this proof.
 
 The key insight is subtle: $D_2$ was \emph{introduced} as the relation between $D_0$ and $D_1$. But once introduced, $D_2$ becomes an \emph{object} in its own right. The relation between $D_0$ and this new object $D_2$ is different from $D_2$ itself. This is the ``level shift'' that forces $D_3$.
 
@@ -1050,7 +1050,7 @@ Given the Genesis $\{D_0, D_1, D_2\}$ and the irreducible pair $(D_0, D_2)$, a f
 The pair $(D_0, D_2)$ must be related (by the requirement that all distinctions be mutually distinguished). This relation cannot be expressed using only $D_0$, $D_1$, $D_2$ (by irreducibility). Therefore, a new distinction $D_3$ must exist to capture this relation.
 \end{proof}
 
-This is the heart of DRIFE's generative mechanism. We did not \emph{postulate} $D_3$. We \emph{derived} it from the structure of Genesis and the necessity of relating all distinctions.
+This is the heart of FD's generative mechanism. We did not \emph{postulate} $D_3$. We \emph{derived} it from the structure of Genesis and the necessity of relating all distinctions.
 
 \begin{agdaproof}[title=The Forcing Theorem]
 \begin{lstlisting}
@@ -1103,11 +1103,11 @@ The emergence of $D_3$ from Genesis is philosophically profound. It illustrates 
 \textit{Existence is not arbitrary. What exists is what must exist, given what already exists.}
 \end{quote}
 
-This is the antithesis of contingency. In standard physics, we postulate entities (particles, fields, dimensions) and check whether they match observation. In DRIFE, entities \emph{emerge} from structural necessity. We do not choose $D_3$; $D_3$ is forced.
+This is the antithesis of contingency. In standard physics, we postulate entities (particles, fields, dimensions) and check whether they match observation. In FD, entities \emph{emerge} from structural necessity. We do not choose $D_3$; $D_3$ is forced.
 
 This has implications for the question: \emph{Why is there something rather than nothing?}
 
-The traditional answer is that existence is brute fact, or that God chose to create, or that existence is necessary for observers (anthropic reasoning). DRIFE offers a different answer:
+The traditional answer is that existence is brute fact, or that God chose to create, or that existence is necessary for observers (anthropic reasoning). FD offers a different answer:
 
 \begin{quote}
 \textit{Given the unavoidability of $D_0$, the rest follows by logical necessity.}
@@ -1177,7 +1177,7 @@ This is our first hint that $K_4$ is connected to three-dimensional space.
 
 We have shown that Genesis ($K_3$) forces the emergence of $D_3$, yielding $K_4$. But why does the forcing stop there? Why not $K_5$, $K_6$, or an infinite sequence?
 
-This question is critical. If the forcing continued indefinitely, DRIFE would predict infinitely many dimensions---contradicting observation. The answer lies in a formal proof of $K_4$'s uniqueness as the stable fixed point.
+This question is critical. If the forcing continued indefinitely, FD would predict infinitely many dimensions---contradicting observation. The answer lies in a formal proof of $K_4$'s uniqueness as the stable fixed point.
 
 \subsection{$K_3$ is Unstable}
 
@@ -1337,7 +1337,7 @@ theorem-no-capture-D0D2 D2-id ()
 The Captures relation is \emph{canonical}---not because we \emph{chose} it to be so, but because any other choice would violate level coherence. The irreducibility of $(D_0, D_2)$ is forced by the logic of levels, not by definitional fiat.
 \end{insight}
 
-This addresses one of the deepest potential criticisms of DRIFE: that the ``forcing'' of $D_3$ depends on an arbitrary definition. It does not. The definition is the unique coherent one.
+This addresses one of the deepest potential criticisms of FD: that the ``forcing'' of $D_3$ depends on an arbitrary definition. It does not. The definition is the unique coherent one.
 
 \section{Summary: From Genesis to $K_4$}
 
@@ -1378,10 +1378,10 @@ The four distinctions $\{D_0, D_1, D_2, D_3\}$ form the vertices of $K_4$. Every
 \begin{center}
 \begin{tikzpicture}[scale=2]
     % Vertices
-    \node[circle,fill=drife-blue,text=white,minimum size=25pt] (v0) at (0,1.5) {$D_0$};
-    \node[circle,fill=drife-blue,text=white,minimum size=25pt] (v1) at (-1.3,0) {$D_1$};
-    \node[circle,fill=drife-blue,text=white,minimum size=25pt] (v2) at (1.3,0) {$D_2$};
-    \node[circle,fill=drife-blue,text=white,minimum size=25pt] (v3) at (0,-1) {$D_3$};
+    \node[circle,fill=fd-blue,text=white,minimum size=25pt] (v0) at (0,1.5) {$D_0$};
+    \node[circle,fill=fd-blue,text=white,minimum size=25pt] (v1) at (-1.3,0) {$D_1$};
+    \node[circle,fill=fd-blue,text=white,minimum size=25pt] (v2) at (1.3,0) {$D_2$};
+    \node[circle,fill=fd-blue,text=white,minimum size=25pt] (v3) at (0,-1) {$D_3$};
     
     % Edges
     \draw[thick] (v0) -- (v1);
@@ -1442,10 +1442,10 @@ $K_4$ is the 1-skeleton (edge graph) of the regular tetrahedron. This is the sim
     \draw[thick] (B) -- (C);
     
     % Vertices
-    \fill[drife-blue] (A) circle (3pt) node[above] {$D_0$};
-    \fill[drife-blue] (B) circle (3pt) node[left] {$D_1$};
-    \fill[drife-blue] (C) circle (3pt) node[right] {$D_2$};
-    \fill[drife-blue] (D) circle (3pt) node[below] {$D_3$};
+    \fill[fd-blue] (A) circle (3pt) node[above] {$D_0$};
+    \fill[fd-blue] (B) circle (3pt) node[left] {$D_1$};
+    \fill[fd-blue] (C) circle (3pt) node[right] {$D_2$};
+    \fill[fd-blue] (D) circle (3pt) node[below] {$D_3$};
     
     % Label
     \node at (0, -1) {$K_4$ as tetrahedron skeleton};
@@ -1482,7 +1482,7 @@ The last two properties are important: $K_4$ is the \emph{largest} complete grap
 
 \section{The Agda Definition of $K_4$}
 
-In DRIFE.agda, $K_4$ is formalized as follows:
+In FirstDistinction.agda, $K_4$ is formalized as follows:
 
 \begin{agdaproof}[title=$K_4$ Vertex Type]
 \begin{lstlisting}
@@ -1693,7 +1693,7 @@ The eigenvalues of the $K_4$ Laplacian are:
 with multiplicities 1 and 3 respectively.
 \end{theorem}
 
-This three-fold degeneracy is the \emph{central result} of DRIFE's spectral analysis. It is not assumed---it is computed from the structure of $K_4$, which was itself derived from the unavoidability of distinction.
+This three-fold degeneracy is the \emph{central result} of FD's spectral analysis. It is not assumed---it is computed from the structure of $K_4$, which was itself derived from the unavoidability of distinction.
 
 \subsection{Agda Verification}
 
@@ -1946,7 +1946,7 @@ This theorem answers one of the deepest questions in physics: \emph{Why are ther
 
 The standard answer is: we don't know. String theory says 10 or 11, compactified to 3+1. Loop quantum gravity is formulated in 4D from the start. The anthropic principle says 3D is necessary for complex life (orbits are unstable in other dimensions).
 
-DRIFE says: 3D is \emph{forced} by the spectral structure of $K_4$, which is forced by saturation, which is forced by Genesis, which is forced by $D_0$, which is unavoidable.
+FD says: 3D is \emph{forced} by the spectral structure of $K_4$, which is forced by saturation, which is forced by Genesis, which is forced by $D_0$, which is unavoidable.
 
 \begin{equation}
 \boxed{D_0 \xrightarrow{\text{unavoidable}} \text{Genesis} \xrightarrow{\text{saturation}} K_4 \xrightarrow{\text{spectral}} d = 3}
@@ -2055,9 +2055,9 @@ None of these explains \emph{why} time has negative signature.
 
 \section{Drift Irreversibility}
 
-In DRIFE, time emerges from the \textbf{irreversibility of the drift process}.
+In FD, time emerges from the \textbf{irreversibility of the drift process}.
 
-Recall the structure of DRIFE:
+Recall the structure of FD:
 \begin{enumerate}
     \item $D_0$ exists (unavoidable)
     \item Genesis: $D_0, D_1, D_2$ (forced)
@@ -2263,17 +2263,17 @@ This is remarkable. The signature of spacetime---one of the most fundamental fea
 
 \section{Comparison with Other Approaches}
 
-How does DRIFE's derivation of Lorentz signature compare with other approaches?
+How does FD's derivation of Lorentz signature compare with other approaches?
 
 \textbf{String theory}: Lorentz invariance is assumed as a symmetry of the worldsheet. The signature is input, not output.
 
 \textbf{Loop quantum gravity}: The signature is fixed by choosing to quantize Ashtekar variables in Lorentzian (not Euclidean) form.
 
-\textbf{Causal set theory}: Lorentz invariance emerges statistically from the causal structure. This is similar in spirit to DRIFE, but causal sets postulate a partial order rather than deriving it.
+\textbf{Causal set theory}: Lorentz invariance emerges statistically from the causal structure. This is similar in spirit to FD, but causal sets postulate a partial order rather than deriving it.
 
 \textbf{Emergent gravity}: Approaches like Verlinde's try to derive gravity from entropy. Time's arrow comes from thermodynamics, but the signature is not directly addressed.
 
-DRIFE is unique in deriving the signature from a single unavoidable starting point.
+FD is unique in deriving the signature from a single unavoidable starting point.
 
 \chapter{The Metric Tensor}
 \label{ch:metric}
@@ -2287,10 +2287,10 @@ We have the signature. Now we need the full metric tensor. In general relativity
 
 \section{The Conformal Metric}
 
-In DRIFE, the metric at each point is determined by the local $K_4$ structure. The key quantity is the \textbf{conformal factor} $\phi^2$, which scales the flat Minkowski metric.
+In FD, the metric at each point is determined by the local $K_4$ structure. The key quantity is the \textbf{conformal factor} $\phi^2$, which scales the flat Minkowski metric.
 
-\begin{definition}[DRIFE Metric]
-The spacetime metric in DRIFE is:
+\begin{definition}[FD Metric]
+The spacetime metric in FD is:
 \begin{equation}
 g_{\mu\nu} = \phi^2 \eta_{\mu\nu}
 \end{equation}
@@ -2438,11 +2438,11 @@ The metric is derived, not assumed. In the next chapter, we will compute the cur
 --- Attributed to various geometers
 \end{quote}
 
-In standard general relativity, there is one notion of curvature: the Riemann tensor, derived from the Christoffel symbols, which themselves come from metric derivatives. But DRIFE reveals a deeper structure: there are \emph{two} levels of curvature, with different origins and different physical meanings.
+In standard general relativity, there is one notion of curvature: the Riemann tensor, derived from the Christoffel symbols, which themselves come from metric derivatives. But FD reveals a deeper structure: there are \emph{two} levels of curvature, with different origins and different physical meanings.
 
 \section{The Two Curvatures}
 
-DRIFE distinguishes:
+FD distinguishes:
 
 \begin{enumerate}
     \item \textbf{Geometric curvature} (from Christoffel symbols): This is the standard Riemannian curvature, measuring how the metric varies from point to point.
@@ -2546,13 +2546,13 @@ The cosmological constant is:
 
 \subsection{The Sign of $\Lambda$}
 
-The cosmological constant $\Lambda = 3 > 0$ is \emph{positive}. This is a prediction of DRIFE:
+The cosmological constant $\Lambda = 3 > 0$ is \emph{positive}. This is a prediction of FD:
 
 \begin{quote}
 \textit{The cosmological constant is positive because the spectral curvature of $K_4$ is positive.}
 \end{quote}
 
-This matches observation! The universe has a positive cosmological constant (``dark energy''). DRIFE \emph{explains} the sign of $\Lambda$ from the structure of $K_4$.
+This matches observation! The universe has a positive cosmological constant (``dark energy''). FD \emph{explains} the sign of $\Lambda$ from the structure of $K_4$.
 
 \begin{agdaproof}[title=Cosmological Constant]
 \begin{lstlisting}
@@ -2572,7 +2572,7 @@ theorem-Lambda-positive = 3>0   -- 3 > 0, verified
 
 \section{Combining the Two Curvatures}
 
-In DRIFE, the total curvature has two sources:
+In FD, the total curvature has two sources:
 \begin{enumerate}
     \item Geometric curvature $R^{\text{geom}}_{\mu\nu}$ (from metric derivatives)
     \item Spectral curvature, contributing via $\Lambda g_{\mu\nu}$
@@ -2606,7 +2606,7 @@ This is the curvature of de Sitter space---a spacetime with positive cosmologica
 --- Various physicists
 \end{quote}
 
-We now derive the Einstein field equations from DRIFE structure. The derivation yields not only the form of the equations but also the values of the constants: $\Lambda = 3$ and $\kappa = 8$.
+We now derive the Einstein field equations from FD structure. The derivation yields not only the form of the equations but also the values of the constants: $\Lambda = 3$ and $\kappa = 8$.
 
 \section{The Form of the Equations}
 
@@ -2623,9 +2623,9 @@ where:
     \item $T_{\mu\nu}$ is the stress-energy tensor (matter content)
 \end{itemize}
 
-\section{DRIFE Values of the Constants}
+\section{FD Values of the Constants}
 
-DRIFE determines both constants from $K_4$ structure:
+FD determines both constants from $K_4$ structure:
 
 \subsection{Cosmological Constant: $\Lambda = 3$}
 
@@ -2687,9 +2687,9 @@ In standard general relativity (with $c = 1$):
 \kappa = \frac{8\pi G}{c^4} = 8\pi G
 \]
 
-DRIFE gives $\kappa = 8$ in natural units. The factor of $\pi$ can be absorbed into the definition of Newton's constant $G$.
+FD gives $\kappa = 8$ in natural units. The factor of $\pi$ can be absorbed into the definition of Newton's constant $G$.
 
-\section{The Complete DRIFE Einstein Equation}
+\section{The Complete FD Einstein Equation}
 
 Putting it together:
 \begin{equation}
@@ -2760,7 +2760,7 @@ R = 12
 \]
 \end{theorem}
 
-This is consistent with the spectral Ricci scalar, confirming the internal coherence of DRIFE.
+This is consistent with the spectral Ricci scalar, confirming the internal coherence of FD.
 
 \section{Einstein from $K_4$: The Explicit Derivation}
 \label{sec:einstein-from-k4}
@@ -2878,7 +2878,7 @@ $R$ & 12 & $|V| \times \deg$ & Curvature distribution \\
 These are \emph{zero-parameter predictions}. The numbers 3, 3, 8, and 12 are not chosen to match observation---they are computed from the combinatorics of $K_4$. The fact that $d = 3$ and $\Lambda > 0$ match the observed universe is non-trivial confirmation.
 \end{insight}
 
-\section{Summary: The DRIFE Derivation}
+\section{Summary: The FD Derivation}
 
 We have derived the Einstein field equations from $K_4$ structure:
 
@@ -2913,7 +2913,7 @@ No free parameters. No fine-tuning. The Einstein equations, with their constants
 --- Richard Feynman
 \end{quote}
 
-A theory without predictions is not science---it is philosophy. DRIFE makes specific, testable predictions. Some have already been confirmed; others await future experiments.
+A theory without predictions is not science---it is philosophy. FD makes specific, testable predictions. Some have already been confirmed; others await future experiments.
 
 \section{What Makes a Prediction ``K\"onigsklasse''?}
 
@@ -2934,7 +2934,7 @@ The following predictions have already been confirmed by observation:
 \begin{center}
 \begin{tabular}{lccc}
 \toprule
-\textbf{Prediction} & \textbf{DRIFE Value} & \textbf{Observed} & \textbf{Status} \\
+\textbf{Prediction} & \textbf{FD Value} & \textbf{Observed} & \textbf{Status} \\
 \midrule
 Spatial dimensions & $d = 3$ & 3 & \checkmark\ Confirmed \\
 $\Lambda$ sign & $> 0$ & $> 0$ & \checkmark\ Confirmed \\
@@ -2946,19 +2946,19 @@ Signature trace & $\text{tr}(\eta) = 2$ & 2 & \checkmark\ Confirmed \\
 
 \subsection{Three Spatial Dimensions}
 
-DRIFE predicts $d = 3$ from the three-fold degeneracy of $\lambda = 4$. Observation confirms: space has three dimensions.
+FD predicts $d = 3$ from the three-fold degeneracy of $\lambda = 4$. Observation confirms: space has three dimensions.
 
 This is K\"onigsklasse: no input was used, no parameters were adjusted. The number 3 is \emph{computed}.
 
 \subsection{Positive Cosmological Constant}
 
-DRIFE predicts $\Lambda > 0$ from the positive spectral curvature of $K_4$. Observation confirms: the universe has a positive cosmological constant (discovered 1998, Nobel Prize 2011).
+FD predicts $\Lambda > 0$ from the positive spectral curvature of $K_4$. Observation confirms: the universe has a positive cosmological constant (discovered 1998, Nobel Prize 2011).
 
 This is K\"onigsklasse: the \emph{sign} of $\Lambda$ is predicted without any cosmological input.
 
 \subsection{Lorentz Signature}
 
-DRIFE predicts the signature $(-1, +1, +1, +1)$ from drift irreversibility (time) and spectral symmetry (space). Observation confirms: spacetime has Lorentz signature.
+FD predicts the signature $(-1, +1, +1, +1)$ from drift irreversibility (time) and spectral symmetry (space). Observation confirms: spacetime has Lorentz signature.
 
 \section{Testable Predictions}
 
@@ -2967,7 +2967,7 @@ The following predictions are testable with future technology:
 \begin{center}
 \begin{tabular}{lcc}
 \toprule
-\textbf{Prediction} & \textbf{DRIFE Value} & \textbf{Test Method} \\
+\textbf{Prediction} & \textbf{FD Value} & \textbf{Test Method} \\
 \midrule
 Minimum BH mass & $M_{\text{Planck}}$ & Hawking radiation endpoint \\
 BH entropy excess & $\Delta S = \ln 4$ & Primordial BH evaporation \\
@@ -2979,15 +2979,15 @@ Discrete spacetime & $K_4$ cells & Planck-scale dispersion \\
 
 \subsection{Black Hole Remnants}
 
-DRIFE predicts that black holes cannot evaporate completely. At the Planck scale, the $K_4$ structure becomes irreducible---you cannot have fewer than four distinctions. The remnant has mass $\sim M_{\text{Planck}}$.
+FD predicts that black holes cannot evaporate completely. At the Planck scale, the $K_4$ structure becomes irreducible---you cannot have fewer than four distinctions. The remnant has mass $\sim M_{\text{Planck}}$.
 
 This could be tested if primordial black holes exist and have been evaporating since the Big Bang. The endpoint of evaporation should show signatures of $K_4$ remnants.
 
 \subsection{Entropy Correction}
 
-DRIFE predicts a correction to the Bekenstein-Hawking entropy formula:
+FD predicts a correction to the Bekenstein-Hawking entropy formula:
 \[
-S_{\text{DRIFE}} = S_{\text{BH}} + N_{K_4} \cdot \ln 4
+S_{\text{FD}} = S_{\text{BH}} + N_{K_4} \cdot \ln 4
 \]
 
 where $N_{K_4}$ is the number of $K_4$ cells on the horizon. For a Planck-mass black hole ($N_{K_4} = 1$), the correction is $\ln 4 \approx 1.39$ bits.
@@ -2996,9 +2996,9 @@ This could be tested through precise observations of black hole thermodynamics.
 
 \section{The Cosmological Constant Problem}
 
-DRIFE predicts $\Lambda = 3$ in Planck units. Observation gives $\Lambda_{\text{obs}} \approx 10^{-122}$ in Planck units.
+FD predicts $\Lambda = 3$ in Planck units. Observation gives $\Lambda_{\text{obs}} \approx 10^{-122}$ in Planck units.
 
-This is the famous ``cosmological constant problem.'' DRIFE does not solve it completely, but offers a new perspective:
+This is the famous ``cosmological constant problem.'' FD does not solve it completely, but offers a new perspective:
 
 \begin{itemize}
     \item The \emph{bare} cosmological constant (from $K_4$) is $\Lambda = 3$.
@@ -3020,17 +3020,17 @@ S_{\text{BH}} = \frac{A}{4 \ell_P^2}
 
 where $A$ is the horizon area and $\ell_P$ is the Planck length.
 
-\section{DRIFE Correction}
+\section{FD Correction}
 
-DRIFE modifies this formula. The horizon is not a smooth surface but a tessellation of $K_4$ cells. Each cell contributes $\ln 4$ bits of entropy (from the four vertices).
+FD modifies this formula. The horizon is not a smooth surface but a tessellation of $K_4$ cells. Each cell contributes $\ln 4$ bits of entropy (from the four vertices).
 
 \[
-S_{\text{DRIFE}} = S_{\text{BH}} + N_{K_4} \cdot \ln 4
+S_{\text{FD}} = S_{\text{BH}} + N_{K_4} \cdot \ln 4
 \]
 
 For large black holes, $N_{K_4} \sim A / \ell_P^2$, so:
 \[
-S_{\text{DRIFE}} \approx S_{\text{BH}} \left(1 + \frac{4 \ln 4}{A / \ell_P^2}\right)
+S_{\text{FD}} \approx S_{\text{BH}} \left(1 + \frac{4 \ln 4}{A / \ell_P^2}\right)
 \]
 
 The correction is negligible for large black holes but significant at the Planck scale.
@@ -3046,10 +3046,10 @@ M_{\min} = M_{\text{Planck}} = \sqrt{\frac{\hbar c}{G}} \approx 2.2 \times 10^{-
 
 In standard physics, black hole evaporation leads to the ``information paradox'': where does the information go when the black hole disappears?
 
-DRIFE resolves this: black holes \emph{do not fully disappear}. They evaporate down to $K_4$ remnants, which preserve the information.
+FD resolves this: black holes \emph{do not fully disappear}. They evaporate down to $K_4$ remnants, which preserve the information.
 
 \begin{theorem}[Information Preservation]
-In DRIFE, black hole evaporation preserves information:
+In FD, black hole evaporation preserves information:
 \begin{enumerate}
     \item Information is encoded in $K_4$ correlations
     \item Evaporation reduces the black hole to a $K_4$ remnant
@@ -3063,7 +3063,7 @@ In DRIFE, black hole evaporation preserves information:
 
 \section{The Big Bang as Phase Transition}
 
-Standard cosmology posits a ``Big Bang'' singularity at $t = 0$. DRIFE offers a different picture:
+Standard cosmology posits a ``Big Bang'' singularity at $t = 0$. FD offers a different picture:
 
 \begin{enumerate}
     \item \textbf{Pre-geometric phase}: Distinctions accumulate without spatial embedding.
@@ -3076,7 +3076,7 @@ The ``Big Bang'' is not a singularity but a \textbf{topological phase transition
 
 \section{No Singularity}
 
-DRIFE has no singularity because:
+FD has no singularity because:
 \begin{itemize}
     \item Curvature is bounded: $R \leq 12 / \ell_P^2$
     \item Spacetime is discrete at the Planck scale
@@ -3103,7 +3103,7 @@ The ratio:
 \frac{\Lambda_{\text{obs}}}{\Lambda_{\text{Planck}}} \approx 10^{-122}
 \end{equation}
 
-is the famous ``cosmological constant problem.'' DRIFE \textbf{solves} this problem through cosmological dilution.
+is the famous ``cosmological constant problem.'' FD \textbf{solves} this problem through cosmological dilution.
 
 \subsection{The Dilution Mechanism}
 
@@ -3240,9 +3240,9 @@ $\boxed{G_{\mu\nu} + 3 g_{\mu\nu} = 8 T_{\mu\nu}}$
 \begin{theorem}[Ultimate Theorem]
 From the unavoidability of distinction, complete 4-dimensional General Relativity necessarily emerges:
 \begin{equation}
-\text{Unavoidable}(D_0) \implies \text{DRIFE-FullGR}
+\text{Unavoidable}(D_0) \implies \text{FD-FullGR}
 \end{equation}
-where DRIFE-FullGR includes:
+where FD-FullGR includes:
 \begin{itemize}
     \item 3+1 dimensional Lorentzian spacetime
     \item Metric tensor $g_{\mu\nu}$
@@ -3256,7 +3256,7 @@ where DRIFE-FullGR includes:
 \begin{lstlisting}
 -- THE ULTIMATE THEOREM
 -- From unavoidability of D0, full General Relativity emerges
-ultimate-theorem : Unavoidable Distinction -> DRIFE-FullGR
+ultimate-theorem : Unavoidable Distinction -> FD-FullGR
 ultimate-theorem unavoidable-D0 = 
   let
     -- Step 1: Genesis
@@ -3287,7 +3287,7 @@ ultimate-theorem unavoidable-D0 =
     kappa = coupling-from-gauss-bonnet k4
     einstein = einstein-equations metric lambda kappa
     
-  in DRIFE-FullGR-proof spacetime metric einstein lambda kappa
+  in FD-FullGR-proof spacetime metric einstein lambda kappa
 \end{lstlisting}
 \end{agdaproof}
 
@@ -3315,9 +3315,9 @@ Each step is a logical implication. The chain is unbroken from $D_0$ to Einstein
 \chapter{Summary and Conclusions}
 \label{ch:summary}
 
-\section{What DRIFE Achieves}
+\section{What FD Achieves}
 
-DRIFE derives the following from the unavoidability of distinction:
+FD derives the following from the unavoidability of distinction:
 
 \begin{enumerate}
     \item \textbf{3 spatial dimensions} from $K_4$ spectral geometry
@@ -3332,7 +3332,7 @@ DRIFE derives the following from the unavoidability of distinction:
 
 All results are machine-verified in 6,516 lines of Agda code under \texttt{--safe --without-K --no-libraries}.
 
-\section{What DRIFE Does Not Yet Achieve}
+\section{What FD Does Not Yet Achieve}
 
 The following remain open problems:
 
@@ -3349,13 +3349,13 @@ These remaining problems are the next frontier.
 
 \section{The Philosophical Significance}
 
-DRIFE has profound implications for our understanding of reality:
+FD has profound implications for our understanding of reality:
 
 \begin{quote}
 \textit{Reality is not contingent but necessary. The laws of physics are not chosen but unavoidable. The universe must be as it is because distinction must distinguish.}
 \end{quote}
 
-This is a radical departure from the usual view, where physics is empirical and laws are contingent. DRIFE suggests that physics is, at its foundation, \emph{logic}---the working-out of the consequences of the unavoidable act of distinction.
+This is a radical departure from the usual view, where physics is empirical and laws are contingent. FD suggests that physics is, at its foundation, \emph{logic}---the working-out of the consequences of the unavoidable act of distinction.
 
 The question ``Why is there something rather than nothing?'' receives a new answer:
 \begin{quote}
@@ -3364,7 +3364,7 @@ The question ``Why is there something rather than nothing?'' receives a new answ
 
 \section{Final Words}
 
-DRIFE is not complete. It is a beginning, not an end. But it demonstrates that the dream of axiomatic physics---deriving the laws of nature from pure reason---is not impossible.
+FD is not complete. It is a beginning, not an end. But it demonstrates that the dream of axiomatic physics---deriving the laws of nature from pure reason---is not impossible.
 
 The universe is not arbitrary.\\
 The laws are not contingent.\\
@@ -3372,10 +3372,10 @@ Reality is the unique structure compatible with the unavoidability of distinctio
 
 \begin{center}
 \begin{tikzpicture}[scale=2]
-    \node[circle,fill=drife-blue,text=white,minimum size=30pt] (D0) at (90:1.2) {$D_0$};
-    \node[circle,fill=drife-blue,text=white,minimum size=30pt] (D1) at (210:1.2) {$D_1$};
-    \node[circle,fill=drife-blue,text=white,minimum size=30pt] (D2) at (330:1.2) {$D_2$};
-    \node[circle,fill=drife-blue,text=white,minimum size=30pt] (D3) at (0,0) {$D_3$};
+    \node[circle,fill=fd-blue,text=white,minimum size=30pt] (D0) at (90:1.2) {$D_0$};
+    \node[circle,fill=fd-blue,text=white,minimum size=30pt] (D1) at (210:1.2) {$D_1$};
+    \node[circle,fill=fd-blue,text=white,minimum size=30pt] (D2) at (330:1.2) {$D_2$};
+    \node[circle,fill=fd-blue,text=white,minimum size=30pt] (D3) at (0,0) {$D_3$};
     
     \draw[thick] (D0) -- (D1);
     \draw[thick] (D0) -- (D2);
@@ -3405,7 +3405,7 @@ The complete Agda proof is available at:
 
 To verify:
 \begin{verbatim}
-agda --safe --without-K --no-libraries DRIFE.agda
+agda --safe --without-K --no-libraries FirstDistinction.agda
 \end{verbatim}
 
 \section{Key Functions}

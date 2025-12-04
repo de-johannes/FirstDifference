@@ -79,7 +79,7 @@ This pattern of argument has a distinguished philosophical pedigree. In the *Tra
 
 Wittgenstein's response was to gesture at what lies beyond sayable propositions—to "throw away the ladder" after climbing it. But this leaves us with silence where we want understanding.
 
-DRIFE takes a different path. Instead of abandoning the attempt to articulate foundational conditions, we *formalize them in a system where self-reference is controlled*. Type theory, unlike naive set theory or first-order logic, can express statements about its own structure without falling into paradox. The unavoidability of distinction can be captured not as a philosophical observation but as a *theorem*.
+FD takes a different path. Instead of abandoning the attempt to articulate foundational conditions, we *formalize them in a system where self-reference is controlled*. Type theory, unlike naive set theory or first-order logic, can express statements about its own structure without falling into paradox. The unavoidability of distinction can be captured not as a philosophical observation but as a *theorem*.
 
 ### Comparison with Other "First Principles"
 
@@ -191,7 +191,7 @@ Every formal system requires a meta-level choice: the choice of *which system to
 The question is not whether we make a meta-level choice, but *which* choice we make and *why*.
 
 <div class="principle-box">
-  <h4>The Meta-Axiom of DRIFE</h4>
+  <h4>The Meta-Axiom of FD</h4>
   <p><strong>Being = Constructibility</strong></p>
   <p>To exist is to be constructible. What cannot be constructed does not exist within the system.</p>
 </div>

@@ -57,20 +57,28 @@ These govern how Drift and CoDrift interact **across** systems.
 
 ## Why Sum vs Product?
 
-This is **not arbitrary**. It's forced by the K₄ Laplacian spectral structure.
+This is **not arbitrary**. It's forced by the **signatures** of Drift and CoDrift:
 
-| Type | Operations | Measure | K₄ Invariant |
-|------|-----------|---------|--------------|
-| **Algebraic** | Local, internal | **Sum** (extensive) | deg² = 9 |
-| **Categorical** | Global, relational | **Product** (intensive) | λ³ = 64 |
+```
+Δ : D × D → D    (2 inputs, 1 output)  = CONVERGENT
+∇ : D → D × D    (1 input, 2 outputs)  = DIVERGENT
+```
 
-**Physical analogy:**
-- Sum = counting degrees of freedom (local)
-- Product = phase space volume (global, like ∫d³k in QED)
+| Operation | Signature | Channels | Combination |
+|-----------|-----------|----------|-------------|
+| **Δ (Drift)** | Convergent (many→one) | Inputs ADD | **Sum** |
+| **∇ (CoDrift)** | Divergent (one→many) | Outputs MULTIPLY | **Product** |
 
-The Laplacian spectrum determines:
-- deg² arises from **local** vertex structure (additive)
-- λ³ arises from **global** eigenspace volume (multiplicative)
+**Why?**
+- **Convergent (Δ):** Multiple channels flow INTO one result → ANY input can contribute (OR logic) → channels ADD
+- **Divergent (∇):** One source flows OUT to multiple branches → ALL branches taken (AND logic) → branches MULTIPLY
+
+This is the same as the Σ vs Π duality in type theory:
+- Σ (Sum type) = "A OR B" = choice = additive
+- Π (Product type) = "A AND B" = pairing = multiplicative
+
+**The algebraic laws describe Δ (convergent) → SUM of arities**
+**The categorical laws describe ∇ (divergent) → PRODUCT of arities**
 
 ---
 

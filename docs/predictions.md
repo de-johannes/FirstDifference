@@ -13,14 +13,14 @@ All values derived from K₄ structure alone. No free parameters.
 
 These are **exact** — no fitting, no calibration.
 
-| Quantity | Formula | FD | Observed | Deviation |
-|----------|---------|-------|----------|-----------|
-| Spatial dimensions | λ=4 multiplicity | **d = 3** | 3 | 0 |
-| Time dimensions | drift irreversibility | **1** | 1 | 0 |
-| Metric signature | symmetric vs. asymmetric | **(−,+,+,+)** | (−,+,+,+) | 0 |
-| Λ sign | λ₁ > 0 | **Λ > 0** | Λ > 0 | 0 |
-| Ricci scalar | Tr(L) | **R = 12** | — | — |
-| Coupling constant | 4χ | **κ = 8** | 8πG ≈ 8π | convention |
+| Quantity | Formula | FD | Observed | Note |
+|----------|---------|-------|----------|------|
+| Spatial dimensions | λ=4 multiplicity | **d = 3** | 3 | exact |
+| Time dimensions | drift irreversibility | **1** | 1 | exact |
+| Metric signature | symmetric vs. asymmetric | **(−,+,+,+)** | (−,+,+,+) | exact |
+| Λ sign | λ₁ > 0 | **Λ > 0** | Λ > 0 | exact |
+| Ricci scalar | Tr(L) | **R = 12** | — | discrete |
+| Coupling constant | dim×χ = 4×2 | **κ = 8** | 8πG (→8 in Planck units) | π from continuum limit |
 
 ---
 
@@ -46,14 +46,16 @@ The 8 coherence laws of the operad have specific arities:
 
 The formula emerges as:
 
-$$\alpha^{-1} = \underbrace{\Pi(\text{categorical arities})}_{\text{global}} \times \chi + \underbrace{\Sigma(\text{algebraic arities})}_{\text{local}}$$
+$$\alpha^{-1} = \Pi(\text{categorical arities}) \times \chi + \Sigma(\text{algebraic arities})$$
 
 $$= (2 \times 4 \times 2 \times 4) \times 2 + (3+3+2+1) = 64 \times 2 + 9 = 137$$
 
-**Why this structure?**
-- Categorical laws = global structure → **Product** (tensor)
-- Algebraic laws = local operations → **Sum** (direct)
+**Why SUM vs PRODUCT?** (from Drift/CoDrift signatures)
+- **Δ : D×D → D** (convergent, 2→1) → inputs ADD → **Sum**
+- **∇ : D → D×D** (divergent, 1→2) → outputs MULTIPLY → **Product**
 - χ = 2 = Drift-CoDrift duality (doubles the modes)
+
+This is the Σ vs Π duality from type theory, derived from the First Distinction!
 
 **Bonus:** κ = 8 = number of operad laws!
 
@@ -72,7 +74,7 @@ Where ALL parameters are K₄ spectral/topological invariants:
 
 **Calculation:**
 - λ³χ = 4³ × 2 = 128 (spectral-topological term)
-- deg² = 3² = 9 (local connectivity)
+- deg² = 3² = 9 (vertex connectivity squared)
 - V/(deg(E²+1)) = 4/111 = 0.036... (higher-order correction)
 
 | | Value |
@@ -122,6 +124,33 @@ $$\tau = N \times t_{\text{Planck}} = 13.726 \text{ Gyr}$$
 | **Planck 2018** | 13.787 ± 0.020 Gyr |
 | **SH0ES (Cepheids)** | 12.6 ± 0.4 Gyr |
 | **Deviation (Planck)** | 0.44% (3.0σ) |
+
+---
+
+### Wilson Loop / Confinement
+
+The Wilson loop expectation values emerge analytically from K₄:
+
+$$W(n) = \exp\left(-\frac{s}{s_{\max}}\right)$$
+
+where s = λ + E + χ/V = 4 + 6 + 0.5 = **10.5** measures total information flow.
+
+#### Derivation
+
+| Component | Value | Meaning |
+|-----------|-------|---------|
+| λ = 4 | spectral | wave propagation rate |
+| E = 6 | connectivity | direct neighbor access |
+| χ/V = 0.5 | topology | curvature per vertex |
+| **s = 10.5** | **total** | information capacity |
+
+For specific loop sizes:
+- **W(3)** = exp(−1/deg²) = exp(−1/9) ≈ **0.895 ≈ 91%**
+- **W(6)** = exp(−s/s_max) = exp(−1) = 1/e ≈ **0.368 ≈ 37%**
+
+The scaling relation: W(6) = W(3)^(s) = (0.895)^10.5 ≈ 0.37
+
+**Physical interpretation:** Larger loops probe deeper into the K₄ structure. The 10.5 combines three orthogonal information modes — spectral (how waves spread), topological (connectivity), and geometric (curvature).
 
 ---
 

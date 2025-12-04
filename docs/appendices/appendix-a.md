@@ -8,7 +8,7 @@ breadcrumb: <a href="/">Home</a> &gt; <a href="./">Appendices</a> &gt; Appendix 
 
 The complete Agda proof is available at:
 
-**[github.com/de-johannes/FirstDifference](https://github.com/de-johannes/FirstDifference)**
+**[github.com/de-johannes/FirstDistinction](https://github.com/de-johannes/FirstDistinction)**
 
 ---
 

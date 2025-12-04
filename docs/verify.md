@@ -11,7 +11,7 @@ FD is not a claim. It's code that either compiles or doesn't.
 
 ## Status
 
-[![CI](https://github.com/de-johannes/FirstDifference/actions/workflows/ci.yml/badge.svg)](https://github.com/de-johannes/FirstDifference/actions/workflows/ci.yml)
+[![CI](https://github.com/de-johannes/FirstDistinction/actions/workflows/ci.yml/badge.svg)](https://github.com/de-johannes/FirstDistinction/actions/workflows/ci.yml)
 
 | Check | Status |
 |-------|--------|
@@ -30,8 +30,8 @@ FD is not a claim. It's code that either compiles or doesn't.
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/de-johannes/FirstDifference.git
-cd FirstDifference
+git clone https://github.com/de-johannes/FirstDistinction.git
+cd FirstDistinction
 ```
 
 ### 2. Install Agda
@@ -111,10 +111,10 @@ From the unavoidability of distinction to complete 4D General Relativity.
 
 ## Found a bug?
 
-Open a [GitHub Issue](https://github.com/de-johannes/FirstDifference/issues).
+Open a [GitHub Issue](https://github.com/de-johannes/FirstDistinction/issues).
 
 If `FirstDistinction.agda` no longer compiles with the stated flags, that's a real bug. Everything else is discussion.
 
 ---
 
-[← Back](/)
+[← Back](./)

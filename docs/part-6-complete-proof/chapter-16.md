@@ -33,7 +33,7 @@ The following remain open problems:
 - Particle masses (Higgs mechanism from K₄?)
 - Quantum mechanics (superposition from distinction?)
 
-**Note**: The fine structure constant α⁻¹ ≈ 137.036 is now derived from K₄ spectral invariants (see [Predictions](/predictions)). The formula α⁻¹ = λ³χ + deg² + V/(deg(E²+1)) uses only K₄ parameters and matches CODATA to 0.00003%.
+**Note**: The fine structure constant α⁻¹ ≈ 137.036 is now derived from K₄ spectral invariants (see [Predictions](../predictions)). The formula α⁻¹ = λ³χ + deg² + V/(deg(E²+1)) uses only K₄ parameters and matches CODATA to 0.00003%.
 
 **Note**: The Λ magnitude problem (the 10⁻¹²² ratio) is now **solved** by the dilution mechanism described in Chapter 14. The observed ratio follows from Λ<sub>obs</sub> = Λ<sub>bare</sub>/N² where N ~ 10⁶¹ is the age of the universe in Planck times.
 

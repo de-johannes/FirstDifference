@@ -8282,7 +8282,7 @@ theorem-fd-koenigsklasse = record
 -- This is NOT a choice—it's forced by the information content of K₄.
 
 -- ═══════════════════════════════════════════════════════════════════════════
--- § 22f.0b  WHY SUM vs PRODUCT (LAPLACIAN-OPERAD BRIDGE)
+-- § 22f.0b  WHY SUM vs PRODUCT (FROM DRIFT/CODRIFT SIGNATURES)
 -- ═══════════════════════════════════════════════════════════════════════════
 --
 -- The α formula has two forms that MUST agree:
@@ -8291,29 +8291,64 @@ theorem-fd-koenigsklasse = record
 --   OPERAD:    α⁻¹ = Π(cat) × χ + Σ(alg)  (from operad arities)
 --
 -- This forces:
---   Σ(algebraic arities) = deg² = 9       (local ↔ extensive ↔ SUM)
---   Π(categorical arities) = λ³ = 64      (global ↔ intensive ↔ PRODUCT)
+--   Σ(algebraic arities) = deg² = 9       → SUM
+--   Π(categorical arities) = λ³ = 64      → PRODUCT
 --
--- WHY this correspondence?
+-- ═══════════════════════════════════════════════════════════════════════════
+-- THE KEY INSIGHT: SIGNATURES DETERMINE COMBINATION
+-- ═══════════════════════════════════════════════════════════════════════════
 --
--- 1. ALGEBRAIC LAWS = LOCAL STRUCTURE
---    - Associativity, distributivity, neutrality, idempotence
---    - These constrain how Drift operates WITHIN a single system
---    - Local interactions ADD: more constraints = more channels
---    - ANALOGY: Degree² counts pairwise interaction channels
---    - Sum is the natural measure for local/extensive quantities
+-- The distinction SUM vs PRODUCT is NOT arbitrary!
+-- It follows from the SIGNATURES of Drift (Δ) and CoDrift (∇):
 --
--- 2. CATEGORICAL LAWS = GLOBAL STRUCTURE  
---    - Involutivity, cancellativity, irreducibility, confluence
---    - These constrain how Drift/CoDrift interact ACROSS systems
---    - Global modes MULTIPLY: dimensions combine as products
---    - ANALOGY: λ³ = phase space volume (∫d³k in momentum space)
---    - Product is the natural measure for global/intensive quantities
+--   Δ : D × D → D    (2 inputs, 1 output)  = CONVERGENT
+--   ∇ : D → D × D    (1 input, 2 outputs)  = DIVERGENT
 --
--- THEOREM: The distinction SUM/PRODUCT is NOT arbitrary!
---          It's forced by the Laplacian spectral structure:
---          - deg² arises from LOCAL vertex structure (additive)
---          - λ³ arises from GLOBAL eigenspace volume (multiplicative)
+-- CONVERGENT (Δ): Multiple channels flow INTO one result
+--   When counting constraints: channels ADD
+--   Why? ANY input channel can contribute (OR logic)
+--   A₁ possibilities + A₂ possibilities + ... = TOTAL
+--   This is the SUM structure
+--
+-- DIVERGENT (∇): One source flows OUT to multiple branches
+--   When counting constraints: branches MULTIPLY
+--   Why? ALL output branches are taken simultaneously (AND logic)
+--   B₁ destinations × B₂ destinations × ... = TOTAL
+--   This is the PRODUCT structure
+--
+-- ═══════════════════════════════════════════════════════════════════════════
+-- CONNECTION TO TYPE THEORY: Σ vs Π
+-- ═══════════════════════════════════════════════════════════════════════════
+--
+-- This is NOT physics intuition (extensive/intensive).
+-- This is NOT spatial intuition (local/global).
+-- This IS the fundamental duality of type theory:
+--
+--   Σ (Sum type)     = "A OR B"  = choice     = additive
+--   Π (Product type) = "A AND B" = pairing    = multiplicative
+--
+-- And THIS duality comes from the First Distinction:
+--   "Draw a distinction" → inside/outside → × vs ⊎ → Π vs Σ
+--   (See Bifurcation.agda in work/agda/D00/)
+--
+-- ═══════════════════════════════════════════════════════════════════════════
+-- THE ASSIGNMENT IS FORCED
+-- ═══════════════════════════════════════════════════════════════════════════
+--
+-- ALGEBRAIC LAWS (1-4): Assoziativität, Distributivität, Neutralität, Idempotenz
+--   - These describe how Δ (Drift) operates
+--   - Δ is CONVERGENT (many → one)
+--   - Convergent = inputs combine = SUM
+--   - Therefore: arities ADD → 3 + 3 + 2 + 1 = 9
+--
+-- CATEGORICAL LAWS (5-8): Involutivität, Kanzellativität, Irreduzibilität, Konfluenz
+--   - These describe how ∇ (CoDrift) and Δ∘∇ operate
+--   - ∇ is DIVERGENT (one → many)
+--   - Divergent = outputs branch = PRODUCT
+--   - Therefore: arities MULTIPLY → 2 × 4 × 2 × 4 = 64
+--
+-- THEOREM: SUM for algebraic, PRODUCT for categorical is NOT a choice.
+--          It's determined by the signatures Δ : D×D→D and ∇ : D→D×D.
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- § 22f.0c  OPERAD ARITIES (FORMAL VERIFICATION)
@@ -8322,7 +8357,7 @@ theorem-fd-koenigsklasse = record
 -- Each arity is the number of VARIABLES in the formal definition of the law.
 -- These are read directly from Ma'at.tex (the Drift-CoDrift Operad spec):
 
--- Algebraic law arities
+-- Algebraic law arities (describe Δ, convergent, SUM)
 arity-associativity : ℕ
 arity-associativity = 3  -- ∀ a,b,c : Δ(Δ(a,b),c) = Δ(a,Δ(b,c))
 
@@ -8335,7 +8370,7 @@ arity-neutrality = 2  -- involves 2 elements: a, e
 arity-idempotence : ℕ
 arity-idempotence = 1  -- involves 1 element: a
 
--- Sum of algebraic arities
+-- Sum of algebraic arities (Δ-laws, convergent → ADD)
 algebraic-arities-sum : ℕ
 algebraic-arities-sum = arity-associativity + arity-distributivity 
                       + arity-neutrality + arity-idempotence
@@ -8344,7 +8379,7 @@ algebraic-arities-sum = arity-associativity + arity-distributivity
 theorem-algebraic-arities : algebraic-arities-sum ≡ 9
 theorem-algebraic-arities = refl  -- 3+3+2+1 = 9 ✓
 
--- Categorical law arities
+-- Categorical law arities (∇-laws, divergent → MULTIPLY)
 arity-involutivity : ℕ
 arity-involutivity = 2  -- involves 2 operations: Δ, ∇
 
@@ -8357,7 +8392,7 @@ arity-irreducibility = 2  -- involves 2 elements + 2 comparisons
 arity-confluence : ℕ
 arity-confluence = 4  -- involves 4 elements: x, y, z, w
 
--- Product of categorical arities
+-- Product of categorical arities (∇-laws, divergent → MULTIPLY)
 categorical-arities-product : ℕ
 categorical-arities-product = arity-involutivity * arity-cancellativity 
                             * arity-irreducibility * arity-confluence

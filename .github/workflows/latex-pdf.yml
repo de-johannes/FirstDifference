@@ -24,22 +24,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install TeX Live
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-lang-german
+      - name: Compile PDFs
+        uses: xu-cheng/latex-action@v3
+        with:
+          working_directory: pdf
+          root_file: |
+            FirstDistinction_Summary.tex
+            FirstDistinction_Summary_DE.tex
+            FirstDistinction_Book.tex
+            FirstDistinction_Book_DE.tex
 
-      - name: Compile all PDFs with pdflatex
-        run: |
-          cd pdf
-          for texfile in *.tex; do
-            basename="${texfile%.tex}"
-            echo "📄 Compiling $basename..."
-            pdflatex -interaction=nonstopmode "$texfile" || true
-            pdflatex -interaction=nonstopmode "$texfile" || true
-            echo "✅ $basename.pdf created"
-          done
-          ls -la *.pdf
+      - name: List generated PDFs
+        run: ls -la pdf/*.pdf
 
       - name: Commit PDFs
         if: github.event_name == 'push'

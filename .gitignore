@@ -4,11 +4,17 @@
 # macOS cruft
 .DS_Store
 
-# LaTeX auxiliary files
-docs/*.aux
-docs/*.log
-docs/*.out
-docs/*.toc
-docs/*.synctex.gz
+# LaTeX auxiliary files (everywhere)
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bbl
+*.blg
+*.lof
+*.lot
 
 work

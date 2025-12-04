@@ -35,7 +35,7 @@
 % Tabellen
 \usepackage{booktabs}
 
-% Code
+% Code - mit UTF-8 Unterstützung via literate
 \usepackage{listings}
 \lstset{
   basicstyle=\ttfamily\small,
@@ -45,7 +45,10 @@
   framerule=0.4pt,
   rulecolor=\color{gray!50},
   breaklines=true,
-  showstringspaces=false
+  showstringspaces=false,
+  literate={ä}{{\"a}}1 {ö}{{\"o}}1 {ü}{{\"u}}1
+           {Ä}{{\"A}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1
+           {ß}{{\ss}}1
 }
 
 % Referenzen

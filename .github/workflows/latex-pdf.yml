@@ -28,6 +28,7 @@ jobs:
         uses: xu-cheng/latex-action@v3
         with:
           working_directory: pdf
+          latexmk_use_lualatex: true
           root_file: |
             FirstDistinction_Summary.tex
             FirstDistinction_Summary_DE.tex

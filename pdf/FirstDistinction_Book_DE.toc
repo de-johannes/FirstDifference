@@ -1,0 +1,87 @@
+\babel@toc {ngerman}{}\relax 
+\contentsline {chapter}{Zusammenfassung}{3}{chapter*.1}%
+\contentsline {chapter}{Vorwort}{7}{chapter*.3}%
+\contentsline {part}{I\hspace {1em}Grundlagen}{1}{part.1}%
+\contentsline {chapter}{\numberline {1}Die unvermeidliche erste Unterscheidung}{3}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Das Problem der Axiome in der Physik}{3}{section.1.1}%
+\contentsline {subsection}{\numberline {1.1.1}Der Traum vom axiomatischen Abschluss}{4}{subsection.1.1.1}%
+\contentsline {section}{\numberline {1.2}Die Unvermeidbarkeit von Unterscheidung}{4}{section.1.2}%
+\contentsline {subsection}{\numberline {1.2.1}Die Struktur der Leugnung}{5}{subsection.1.2.1}%
+\contentsline {subsection}{\numberline {1.2.2}Der Wittgensteinsche Hintergrund}{5}{subsection.1.2.2}%
+\contentsline {subsection}{\numberline {1.2.3}Vergleich mit anderen "`ersten Prinzipien"'}{6}{subsection.1.2.3}%
+\contentsline {section}{\numberline {1.3}Von Philosophie zu Formalisierung}{6}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}Die Agda-Repräsentation von Unterscheidung}{7}{subsection.1.3.1}%
+\contentsline {subsection}{\numberline {1.3.2}Unvermeidbarkeit als Typ}{7}{subsection.1.3.2}%
+\contentsline {subsection}{\numberline {1.3.3}Das Theorem der Unvermeidbarkeit}{8}{subsection.1.3.3}%
+\contentsline {section}{\numberline {1.4}Das Meta-Axiom: Sein als Konstruierbarkeit}{8}{section.1.4}%
+\contentsline {subsection}{\numberline {1.4.1}Die Unvermeidbarkeit der Meta-Ebenen-Wahl}{9}{subsection.1.4.1}%
+\contentsline {subsection}{\numberline {1.4.2}Warum konstruktive Typentheorie?}{9}{subsection.1.4.2}%
+\contentsline {subsection}{\numberline {1.4.3}Das Bootstrap-Problem}{9}{subsection.1.4.3}%
+\contentsline {section}{\numberline {1.5}Was wir etabliert haben}{10}{section.1.5}%
+\contentsline {chapter}{\numberline {2}Genesis: Die drei primordialen Unterscheidungen}{11}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Die Unmöglichkeit einer einsamen Unterscheidung}{11}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Die dialektische Notwendigkeit}{12}{subsection.2.1.1}%
+\contentsline {section}{\numberline {2.2}Die drei Genesis-Unterscheidungen}{12}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}$D_0$: Die erste Unterscheidung}{12}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}$D_1$: Polarität}{12}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}$D_2$: Beziehung}{13}{subsection.2.2.3}%
+\contentsline {subsection}{\numberline {2.2.4}Warum nicht $D_3$, $D_4$, \ldots ?}{13}{subsection.2.2.4}%
+\contentsline {section}{\numberline {2.3}Die Agda-Formalisierung}{13}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Der Genesis-Record}{14}{subsection.2.3.1}%
+\contentsline {section}{\numberline {2.4}Die trinitarische Struktur}{14}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Von Genesis zu Graph}{15}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Die Emergenz von Zahl}{16}{section.2.6}%
+\contentsline {section}{\numberline {2.7}Zusammenfassung: Die Genesis}{16}{section.2.7}%
+\contentsline {chapter}{\numberline {3}Sättigung: Die Geburt von $K_4$}{17}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Das Speicherfunktional}{17}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Berechnung von $\eta $ für kleine $n$}{18}{subsection.3.1.1}%
+\contentsline {section}{\numberline {3.2}Sättigung bei Genesis}{18}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Der Druck für $D_3$}{18}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Der formale Irreduzibilitätsbeweis}{19}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}$D_3$ wird erzwungen}{21}{subsection.3.3.2}%
+\contentsline {section}{\numberline {3.4}Die Emergenz von $D_3$}{21}{section.3.4}%
+\contentsline {section}{\numberline {3.5}Warum nicht $D_4$, $D_5$, \ldots ?}{22}{section.3.5}%
+\contentsline {section}{\numberline {3.6}Der Graph $K_4$}{22}{section.3.6}%
+\contentsline {section}{\numberline {3.7}Zusammenfassung: Von Genesis zu $K_4$}{23}{section.3.7}%
+\contentsline {part}{II\hspace {1em}Spektralgeometrie}{25}{part.2}%
+\contentsline {chapter}{\numberline {4}Der $K_4$-Laplacian}{27}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Der Graph-Laplacian}{27}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Eigenwerte und Eigenvektoren}{27}{section.4.2}%
+\contentsline {chapter}{\numberline {5}Dreidimensionale Emergenz}{29}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Eigenvektoren als Koordinaten}{29}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Räumliche Dimension aus Vielfachheit}{29}{section.5.2}%
+\contentsline {chapter}{\numberline {6}Lorentz-Signatur und Zeit}{31}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Zeitliche Dimension aus Drift}{31}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Die Lorentz-Signatur}{31}{section.6.2}%
+\contentsline {part}{III\hspace {1em}Metrik und Raumzeitstruktur}{33}{part.3}%
+\contentsline {chapter}{\numberline {7}Der metrische Tensor}{35}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Konstruktion der Metrik}{35}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Christoffel-Symbole}{35}{section.7.2}%
+\contentsline {part}{IV\hspace {1em}Krümmung und Feldgleichungen}{37}{part.4}%
+\contentsline {chapter}{\numberline {8}Zwei Ebenen der Krümmung}{39}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Geometrische Krümmung}{39}{section.8.1}%
+\contentsline {section}{\numberline {8.2}Spektrale Krümmung}{39}{section.8.2}%
+\contentsline {section}{\numberline {8.3}Die kosmologische Konstante}{39}{section.8.3}%
+\contentsline {chapter}{\numberline {9}Die Einsteinschen Feldgleichungen}{41}{chapter.9}%
+\contentsline {section}{\numberline {9.1}Die Kopplungskonstante}{41}{section.9.1}%
+\contentsline {section}{\numberline {9.2}Die vollständigen Gleichungen}{41}{section.9.2}%
+\contentsline {section}{\numberline {9.3}Konstantentabelle}{41}{section.9.3}%
+\contentsline {part}{V\hspace {1em}Physikalische Vorhersagen}{43}{part.5}%
+\contentsline {chapter}{\numberline {10}Vorhersagen und Testbarkeit}{45}{chapter.10}%
+\contentsline {section}{\numberline {10.1}Parameterfreie Vorhersagen (Königsklasse)}{45}{section.10.1}%
+\contentsline {section}{\numberline {10.2}Testbare Vorhersagen}{45}{section.10.2}%
+\contentsline {chapter}{\numberline {11}Kosmologie}{47}{chapter.11}%
+\contentsline {section}{\numberline {11.1}Der Urknall als Phasenübergang}{47}{section.11.1}%
+\contentsline {section}{\numberline {11.2}Das Problem der kosmologischen Konstante}{47}{section.11.2}%
+\contentsline {part}{VI\hspace {1em}Der vollständige Beweis}{49}{part.6}%
+\contentsline {chapter}{\numberline {12}Das ultimative Theorem}{51}{chapter.12}%
+\contentsline {section}{\numberline {12.1}Die Kausalkette}{51}{section.12.1}%
+\contentsline {section}{\numberline {12.2}Das ultimative Theorem}{52}{section.12.2}%
+\contentsline {chapter}{\numberline {13}Zusammenfassung und Schlussfolgerungen}{55}{chapter.13}%
+\contentsline {section}{\numberline {13.1}Was FD erreicht}{55}{section.13.1}%
+\contentsline {section}{\numberline {13.2}Was FD noch nicht erreicht}{55}{section.13.2}%
+\contentsline {section}{\numberline {13.3}Die philosophische Bedeutung}{56}{section.13.3}%
+\contentsline {section}{\numberline {13.4}Schlusswort}{56}{section.13.4}%
+\contentsline {chapter}{\numberline {A}Agda-Code-Referenz}{57}{appendix.A}%
+\contentsline {section}{\numberline {A.1}Wichtige Funktionen}{57}{section.A.1}%
+\contentsline {chapter}{Literatur}{59}{appendix*.8}%

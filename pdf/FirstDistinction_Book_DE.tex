@@ -48,7 +48,7 @@
 \usepackage{tikz}
 \usetikzlibrary{shapes,arrows,positioning,calc,decorations.pathreplacing,matrix}
 
-% Code-Listings - nur ASCII
+% Code-Listings - mit UTF-8 Unterstützung via literate
 \usepackage{listings}
 \lstset{
   language=Haskell,
@@ -67,6 +67,9 @@
   tabsize=2,
   morekeywords={data,where,record,field,module,Set,refl,theorem,proof},
   literate={->}{$\rightarrow$}2 {<-}{$\leftarrow$}2
+           {ä}{{\"a}}1 {ö}{{\"o}}1 {ü}{{\"u}}1
+           {Ä}{{\"A}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1
+           {ß}{{\ss}}1
 }
 
 % Tabellen

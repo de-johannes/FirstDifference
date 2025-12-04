@@ -1,10 +1,11 @@
-# DRIFE Book - Jekyll Configuration
-title: "DRIFE - The First Difference"
-description: "A Constructive, Axiom-Free Derivation of 4D General Relativity from Pure Distinction"
+# DRIFE - Jekyll Configuration
+title: "DRIFE"
+description: "Axiom-free derivation of 4D General Relativity from pure distinction. Machine-verified in Agda."
 author: "Johannes Wielsch"
+url: "https://de-johannes.github.io"
+baseurl: "/FirstDifference"
 
 # Build settings
-# Note: Using custom layout, no theme needed
 markdown: kramdown
 kramdown:
   math_engine: mathjax

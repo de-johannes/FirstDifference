@@ -92,11 +92,24 @@ This is not fine-tuning. It's a consequence of cosmic age.
 
 ## Classification
 
-| Category | Meaning | Examples |
-|----------|---------|----------|
-| **Königsklasse** | Exact, zero-parameter | d=3, Λ>0, signature |
-| **High-precision** | < 1% deviation | α, τ |
-| **Conjecture** | Plausible but unproven | N = 5×4¹⁰⁰ |
+| Category | Meaning | Status | Examples |
+|----------|---------|--------|----------|
+| **Theorem** | Machine-verified in Agda | ✅ Proven | d=3, signature, χ=2, κ=8, λ=4 |
+| **Derived** | Formula from K₄ invariants | ✅ Verified | α⁻¹ = 137.036, Λ\_bare = 3 |
+| **Conjecture** | Plausible but not proven | ⚠️ Speculative | N = 5×4¹⁰⁰, Λ-dilution, τ = 13.7 Gyr |
+
+### What is PROVEN (Agda --safe --without-K):
+- **d = 3** from eigenvector multiplicity of K₄ Laplacian
+- **Signature (−,+,+,+)** from drift irreversibility
+- **χ = 2** computed as V − E + F = 4 − 6 + 4
+- **κ = 8** from dim × χ = 4 × 2
+- **λ = 4** as Laplacian eigenvalue (L·φ = 4·φ)
+- **α⁻¹ ≈ 137.036** from spectral formula λ³χ + deg² + V/(deg(E²+1))
+
+### What is CONJECTURED (plausible but unproven):
+- **N = 5 × 4¹⁰⁰** — numerologically motivated, not derived
+- **τ = 13.7 Gyr** — depends on N conjecture
+- **Λ-dilution** — explains 10⁻¹²² ratio but mechanism not proven
 
 ---
 

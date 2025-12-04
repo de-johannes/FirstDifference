@@ -1,15 +1,29 @@
 #!/usr/bin/env python3
 """
 ═══════════════════════════════════════════════════════════════════════════════
-VALIDATE COSMIC AGE: N = 5 × 4^100 from K₄
+COSMIC AGE: N = 5 × 4^100 — A CONJECTURE (NOT A THEOREM)
 ═══════════════════════════════════════════════════════════════════════════════
 
-FD predicts: τ = 5 × 4^100 × t_Planck = 13.726 Gyr
+⚠️  STATUS: CONJECTURE — NOT MACHINE-VERIFIED ⚠️
 
-This script compares the K₄-derived cosmic age with various measurements.
+The formula N = 5 × 4^100 is NUMEROLOGICALLY motivated but NOT derived.
+
+What IS derived (Agda-verified):
+  - V = 4  (K₄ vertices)
+  - E = 6  (K₄ edges)  
+  - κ = 8  (Einstein coupling from dim × χ)
+  - d = 3  (from eigenvector multiplicity)
+
+What is CONJECTURED (plausible but unproven):
+  - Prefactor 5 = V + 1 (why +1?)
+  - Exponent 100 = E² + κ² (Pythagorean coincidence?)
+  - N counts "distinction events" (what does this mean physically?)
+
+The resulting age τ = 13.726 Gyr is close to observations, but this could
+be coincidence or post-hoc fitting.
 
 Author: Johannes + Claude
-Date: 2025-12-03
+Date: 2025-12-04 (updated with honest status)
 """
 
 import math

@@ -1,22 +1,31 @@
 #!/usr/bin/env python3
 """
 ═══════════════════════════════════════════════════════════════════════════════
-FD Λ-DILUTION NUMERICAL VALIDATION
+Λ-DILUTION: A CONJECTURE (NOT A THEOREM)
 ═══════════════════════════════════════════════════════════════════════════════
 
-This script validates the Λ-dilution derivation from distinction dynamics.
+⚠️  STATUS: CONJECTURE — PLAUSIBLE BUT NOT RIGOROUSLY DERIVED ⚠️
+
+The Λ-dilution mechanism offers a compelling EXPLANATION for the 10⁻¹²² ratio,
+but it is NOT a formal derivation.
+
+What IS derived (Agda-verified):
+  - Λ_bare = 3 (from K₄ spectral curvature)
+  - This comes from the trace of the Ricci tensor
+
+What is CONJECTURED (plausible but unproven):
+  - N ~ t/t_Planck counts "distinction events"
+  - Λ_eff = Λ_bare / N² (quadratic dilution)
+  - The 10⁻¹²² ratio is a "scaling relation, not fine-tuning"
+
+The argument is DIMENSIONAL (Λ has dimension length⁻²) but the physical
+mechanism connecting cosmic expansion to Λ reduction is not proven.
 
 Tests:
-1. Λ_bare = 3 (from K₄)
-2. Distinction count N ~ t_universe / t_Planck ~ 10^{60-61}
-3. Dilution factor ~ N⁻² (quadratic scaling)
-4. Observed ratio Λ_obs/Λ_Planck ~ 10^{-122}
-
-Physical Constants:
-- Planck length: ℓ_P = 1.616 × 10⁻³⁵ m
-- Planck time: t_P = 5.391 × 10⁻⁴⁴ s
-- Hubble radius: ℓ_H = c × t_universe ≈ 4.4 × 10²⁶ m
-- Age of universe: t_universe = 13.8 Gyr = 4.35 × 10¹⁷ s
+1. Λ_bare = 3 (from K₄) — THEOREM
+2. Distinction count N ~ t_universe / t_Planck ~ 10^{60-61} — ASSUMPTION
+3. Dilution factor ~ N⁻² (quadratic scaling) — CONJECTURE
+4. Observed ratio Λ_obs/Λ_Planck ~ 10^{-122} — EXPLAINED but not DERIVED
 
 Run: python3 validate_lambda.py
 ═══════════════════════════════════════════════════════════════════════════════

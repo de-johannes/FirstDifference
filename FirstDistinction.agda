@@ -258,6 +258,12 @@ data ℕ : Set where
 --     would produce IDENTICAL proofs (just much harder to read)
 --   • The pragma is allowed under --safe (it's not in the unsafe list)
 --
+-- WHERE ℕ IS PROPERLY DERIVED (not assumed):
+--   • § 2.2 (lines 223-229): ℕ defined as data type with zero/suc
+--   • § 2.3 (lines 263-269): count : List A → ℕ shows ℕ EMERGES from counting
+--   • § 2.4 (lines 277-288): theorem-count-witness proves ℕ ≅ lengths of lists
+--   • The Peano structure is the RESULT of counting, not an axiom!
+--
 {-# BUILTIN NATURAL ℕ #-}
 
 -- § 2.3 EMERGENCE: count - The Bridge from Events to Numbers

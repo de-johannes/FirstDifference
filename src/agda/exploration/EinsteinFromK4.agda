@@ -16,7 +16,7 @@
     R = 12    (scalar curvature) ← 4Λ = 4×3
 -}
 
-module proofs.EinsteinFromK4 where
+module exploration.EinsteinFromK4 where
 
 -- ============================================================================
 -- Foundational Types

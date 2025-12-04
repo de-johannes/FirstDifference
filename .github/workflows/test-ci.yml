@@ -7,8 +7,8 @@ on:
       - '!main'  # Exclude main (release-ci handles that)
     paths:
       - 'DRIFE.agda'
-      - 'proofs/*.py'
-      - 'proofs/*.agda'
+      - 'src/python/*.py'
+      - 'src/agda/**/*.agda'
       - '.github/workflows/test-ci.yml'
 
 permissions:
@@ -58,25 +58,25 @@ jobs:
       - name: Run K₄ validation
         run: |
           echo "🧮 Running validate_K4.py..."
-          python proofs/validate_K4.py
+          python src/python/validate_K4.py
           echo "✅ K₄ tests passed!"
 
       - name: Run α validation
         run: |
           echo "🧮 Running validate_alpha.py..."
-          python proofs/validate_alpha.py
+          python src/python/validate_alpha.py
           echo "✅ α tests passed!"
 
       - name: Run Λ validation
         run: |
           echo "🧮 Running validate_lambda.py..."
-          python proofs/validate_lambda.py
+          python src/python/validate_lambda.py
           echo "✅ Λ tests passed!"
 
       - name: Run cosmic age validation
         run: |
           echo "🧮 Running validate_cosmic_age.py..."
-          python proofs/validate_cosmic_age.py
+          python src/python/validate_cosmic_age.py
           echo "✅ Cosmic age tests passed!"
 
       - name: Summary

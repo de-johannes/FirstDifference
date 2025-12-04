@@ -18,7 +18,7 @@
 -- Author: Johannes + Claude
 -- Date: 2025-12-03
 
-module proofs.TetraederZentrum where
+module exploration.TetraederZentrum where
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- § 1  BASIC TYPES

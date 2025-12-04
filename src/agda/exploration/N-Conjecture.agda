@@ -24,7 +24,7 @@
 -- Author: Johannes + Claude
 -- Date: 2025-12-03
 
-module proofs.N-Conjecture where
+module exploration.N-Conjecture where
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- § 1  BASIC TYPES

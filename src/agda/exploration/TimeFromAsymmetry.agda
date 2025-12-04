@@ -17,7 +17,7 @@
     This asymmetry IS time.
 -}
 
-module proofs.TimeFromAsymmetry where
+module exploration.TimeFromAsymmetry where
 
 -- ============================================================================
 -- Foundational Types

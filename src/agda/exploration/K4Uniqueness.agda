@@ -17,7 +17,7 @@
     No new distinctions are forced because all pairs are already related.
 -}
 
-module proofs.K4Uniqueness where
+module exploration.K4Uniqueness where
 
 -- ============================================================================
 -- Foundational Types

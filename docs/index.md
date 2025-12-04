@@ -94,7 +94,7 @@ The code is the claim. If it compiles, the proof is valid.
 - We do not claim to have found "the truth".
 - We present a derivation that is machine-checked.
 - If an error exists, it's in the code — show us.
-- The α formula is elegant but not yet rigorously derived from K₄.
+- The α formula uses K₄ spectral invariants (λ³χ + deg² + correction).
 - The cosmic age N = 5 × 4¹⁰⁰ is a conjecture.
 
 [→ Open questions](faq)

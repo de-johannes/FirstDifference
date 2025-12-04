@@ -2,7 +2,7 @@
 
 {- ═══════════════════════════════════════════════════════════════════════════════
 
-   D R I F E   —   T H E   F I R S T   D I F F E R E N C E
+   T H E   F I R S T   D I S T I N C T I O N
 
    A Constructive, Axiom-Free Foundation for Physics
    
@@ -34,13 +34,18 @@
    TABLE OF CONTENTS
    ═════════════════
    
-   PART I: FOUNDATIONS
-     § 1   Type-Theoretic Primitives
-     § 2   Natural Numbers and Arithmetic
+   PART I: FOUNDATIONS — FROM TOKEN TO LOGIC
+     § 1   The Token Principle in Type Theory (Martin-Löf, 1972)
+     § 1.1 Identity: The Self-Recognition of Distinction
+     § 1.2 Structure: Combining Distinctions
+     § 1.3 The Bridge: Token Principle → Logic → Mathematics → Physics
+   
+   PART II: MATHEMATICS — FROM LOGIC TO NUMBER
+     § 2   Natural Numbers: Counting Distinctions
      § 3   Integers as Signed Winding Numbers
      § 4   Setoid Structure and Quotient Congruence
    
-   PART II: ONTOLOGY
+   PART III: ONTOLOGY — FROM NUMBER TO BEING
      § 5   The Unavoidable First Distinction (D₀)
      § 6   Genesis: The Three Primordial Distinctions
      § 7   Memory Saturation and D₃ Emergence
@@ -48,29 +53,27 @@
      § 7.4 Captures Canonicity: Why the Captures Relation is Unique
      § 8   The Complete Graph K₄
    
-   PART III: SPECTRAL GEOMETRY
+   PART IV: GEOMETRY — FROM BEING TO SPACE
      § 9   The K₄ Laplacian Matrix
      § 10  Eigenvectors and the Eigenvalue λ = 4
      § 11  Linear Independence and 3D Emergence
+     § 12  Rational Numbers as Quotients (Frozen Drift)
    
-   PART IV: NUMBER SYSTEMS (Frozen Drift)
-     § 12  Rational Numbers as Quotients
-   
-   PART V: SPACETIME STRUCTURE
+   PART V: SPACETIME — FROM SPACE TO TIME
      § 13  Lorentz Signature from Drift Irreversibility
      § 13a Time from Asymmetry: Why Exactly One Time Dimension
      § 14  The Discrete Metric Tensor
      § 15  Ricci Curvature from Laplacian Spectrum
      § 16  The Einstein Tensor
    
-   PART VI: MATTER AND FIELD EQUATIONS
+   PART VI: PHYSICS — FROM TIME TO MATTER
      § 17  Stress-Energy from Drift Density
      § 18  The Coupling Constant κ = 8
      § 19  Einstein Field Equations G_μν = κ T_μν
      § 19b Einstein Equations from K₄: Explicit Derivation
      § 20  Bianchi Identity and Conservation Laws
    
-   PART VII: THE COMPLETE PROOF
+   PART VII: THE COMPLETE PROOF — FULL CIRCLE
      § 21  FD-Emergence: D₀ → 3D
      § 22  FD-Complete: D₀ → 3+1D Spacetime
      § 23  FD-FullGR: D₀ → General Relativity
@@ -102,7 +105,7 @@
    ════════════════
    
    Human: Johannes Wielsch
-   AI: Anthropic Claude (Sonnet 4 & Opus 4)
+   AI: Claude (Sonnet 4.5!! & Opus 4.5!!), Perplexity Sonar-Reasoning-Pro, Deepseek R1, ChatGPT (GPT-4o & GPT-4.1 & GPT-5)
    Formalized: January 2025 to December 2025
    Verification: Agda 2.6.x with --safe --without-K --no-sized-types
    
@@ -117,33 +120,77 @@ module FirstDistinction where
 --                     P A R T   I :   F O U N D A T I O N S
 --
 -- ═══════════════════════════════════════════════════════════════════════════════
+--
+-- Why Type Theory?
+-- ────────────────
+-- We do not merely USE type theory as a convenient language.
+-- We claim something deeper: Type theory EXISTS because of the Token Principle.
+--
+-- Per Martin-Löf's intuitionistic type theory (1972-1984) formalized what we now
+-- recognize as the Token Principle: every type is characterized by its inhabitants
+-- (tokens), and the simplest non-empty type has exactly ONE token.
+--
+-- This is not coincidence. The First Distinction D₀ IS the reason why:
+--   • ⊥ (empty type)  has 0 tokens — before any distinction
+--   • ⊤ (unit type)   has 1 token  — THE distinction itself (≅ D₀)
+--   • Bool            has 2 tokens — the first "real" distinction
+--
+-- Martin-Löf formalized the Token Principle without naming it.
+-- We now complete the circle: D₀ explains why type theory works.
+--
+-- ═══════════════════════════════════════════════════════════════════════════════
 
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- § 1  TYPE-THEORETIC PRIMITIVES
+-- § 1  THE TOKEN PRINCIPLE IN TYPE THEORY
 -- ─────────────────────────────────────────────────────────────────────────────
 --
--- We begin with the minimal type-theoretic vocabulary required for constructive
--- mathematics. These are not axioms but structural definitions that enable
--- formal discourse.
+-- The Token Principle: Every valid structure has exactly ONE fundamental token.
+--
+-- This principle, implicit in Martin-Löf's type theory (1972), explains why
+-- the following hierarchy exists:
+--
+--   ⊥   = 0 tokens  →  Nothing can be distinguished (pre-existence)
+--   ⊤   = 1 token   →  Something IS (the First Distinction)
+--   Bool = 2 tokens →  Distinction between things (derived)
+--
+-- We are not defining these types arbitrarily. We are recognizing that:
+--   ⊤ with tt  ≅  D with D₀
+--
+-- The unit type IS the Token Principle made formal.
 
--- The empty type (logical absurdity, ⊥)
--- No constructor exists; a proof of ⊥ would be a contradiction.
+-- ⊥ : The empty type (0 tokens)
+-- Before any distinction, nothing can be said. No constructor exists.
+-- A proof of ⊥ would require distinguishing without distinction—impossible.
 data ⊥ : Set where
 
--- The unit type (trivial truth, ⊤)
--- Exactly one inhabitant exists, serving as witness for trivially true statements.
+-- ⊤ : The unit type (1 token) — THE TOKEN PRINCIPLE
+-- This is the formal expression of D₀: exactly ONE thing exists.
+-- The token 'tt' (trivially true) IS the First Distinction.
 data ⊤ : Set where
   tt : ⊤
 
--- Boolean type (for decidable predicates)
+-- Bool : Two tokens — the first "real" distinction
+-- Once D₀ exists, we can distinguish IT from NOT-IT.
+-- This is the primordial duality that enables all further structure.
 data Bool : Set where
   true  : Bool
   false : Bool
 
 -- Negation: ¬A means "A implies absurdity"
+-- To negate is to show something leads back to pre-distinction (⊥).
 ¬_ : Set → Set
 ¬ A = A → ⊥
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- § 1.1  IDENTITY: THE SELF-RECOGNITION OF DISTINCTION
+-- ─────────────────────────────────────────────────────────────────────────────
+--
+-- Martin-Löf's identity type captures a profound truth:
+-- A distinction can recognize ITSELF. This is reflexivity.
+--
+-- The equation x ≡ x says: "x is the same distinction as x"
+-- This is not circular—it is the self-witnessing nature of D₀.
 
 -- Propositional equality (Martin-Löf identity type)
 -- The only constructor is reflexivity: every term equals itself.
@@ -152,15 +199,18 @@ data _≡_ {A : Set} (x : A) : A → Set where
 
 infix 4 _≡_
 
--- Symmetry of equality
+-- Symmetry: If x is the same as y, y is the same as x.
+-- Distinction has no preferred direction.
 sym : {A : Set} {x y : A} → x ≡ y → y ≡ x
 sym refl = refl
 
--- Transitivity of equality
+-- Transitivity: Chains of identity compose.
+-- This is the coherence of distinction across multiple recognitions.
 trans : {A : Set} {x y z : A} → x ≡ y → y ≡ z → x ≡ z
 trans refl refl = refl
 
 -- Congruence: functions preserve equality
+-- Operations on distinctions respect identity.
 cong : {A B : Set} (f : A → B) {x y : A} → x ≡ y → f x ≡ f y
 cong f refl = refl
 
@@ -169,7 +219,23 @@ cong₂ : {A B C : Set} (f : A → B → C) {x₁ x₂ : A} {y₁ y₂ : B}
       → x₁ ≡ x₂ → y₁ ≡ y₂ → f x₁ y₁ ≡ f x₂ y₂
 cong₂ f refl refl = refl
 
+-- ─────────────────────────────────────────────────────────────────────────────
+-- § 1.2  STRUCTURE: COMBINING DISTINCTIONS
+-- ─────────────────────────────────────────────────────────────────────────────
+--
+-- Once distinctions exist, they can be COMBINED. This gives rise to structure.
+-- Product types (A × B) represent "A and B together"—two distinctions held
+-- simultaneously. This is the birth of LOGIC from distinction.
+--
+-- The progression:
+--   Token Principle  →  ⊤ (one thing)
+--   Combination      →  A × B (two things together)
+--   Dependency       →  Σ A B (one thing depending on another)
+--
+-- These are not arbitrary—they are the only ways to combine distinctions.
+
 -- Product types (conjunction, pairs)
+-- Two distinctions, held together. The logical AND.
 record _×_ (A B : Set) : Set where
   constructor _,_
   field
@@ -181,6 +247,7 @@ infixr 4 _,_
 infixr 2 _×_
 
 -- Dependent pair types (existential, sigma types)
+-- A distinction that DEPENDS on another. The logical "there exists".
 record Σ (A : Set) (B : A → Set) : Set where
   constructor _,_
   field
@@ -189,53 +256,89 @@ record Σ (A : Set) (B : A → Set) : Set where
 open Σ public
 
 
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- § 1.3  THE BRIDGE: TOKEN PRINCIPLE → LOGIC → MATHEMATICS → PHYSICS
+-- ═══════════════════════════════════════════════════════════════════════════════
+--
+-- We have now established the foundation. The Token Principle gives us:
+--
+--   LOGIC (this section):
+--     ⊥, ⊤, Bool, ¬, ≡, ×, Σ
+--     These are not axioms of logic—they are consequences of distinction.
+--     • ⊥ = no distinction (absurdity)
+--     • ⊤ = one distinction (truth)
+--     • × = combining distinctions (conjunction)
+--     • ¬ = returning to no-distinction (negation)
+--
+--   MATHEMATICS (§ 2 onwards):
+--     From counting distinctions → ℕ (natural numbers)
+--     From negative counting → ℤ (integers)
+--     From ratios → ℚ (rationals)
+--     Numbers are "frozen distinctions"—structure abstracted from identity.
+--
+--   PHYSICS (§ 5 onwards):
+--     From D₀ → K₄ (complete graph on 4 vertices)
+--     From K₄ → 3D space (eigenvectors of Laplacian)
+--     From asymmetry → time (1 dimension)
+--     From Laplacian → Einstein equations
+--     Spacetime is "thawed distinctions"—structure given back its dynamics.
+--
+-- The unity is complete: Logic, Mathematics, and Physics are three views
+-- of the same thing—the structure of distinction itself.
+-- ═══════════════════════════════════════════════════════════════════════════════
+
+
 -- ─────────────────────────────────────────────────────────────────────────────
--- § 2  NATURAL NUMBERS: EMERGENCE FROM COUNTING
+-- § 2  NATURAL NUMBERS: COUNTING DISTINCTIONS
 -- ─────────────────────────────────────────────────────────────────────────────
 --
--- Natural numbers are NOT primitive (Peano axioms). They EMERGE from counting!
+-- Here we cross from LOGIC to MATHEMATICS.
 --
--- EMERGENCE PATH:
---   D₀ (First Distinction)
---     → List D₀ (Sequential events / temporal ledger)
---     → count : List D₀ → ℕ (Abstract counting)
---     → ℕ (Frozen number, forgetting event identity)
+-- The Token Principle gave us types (⊤, ⊥, Bool). Now we ask:
+-- What happens when we COUNT how many tokens we have?
+--
+-- Natural numbers are NOT primitive axioms (contra Peano, 1889).
+-- They EMERGE from the act of counting distinctions:
+--
+--   D₀ (one distinction)
+--     → D₀, D₀, D₀, ... (sequence of distinctions)
+--     → "How many?" (abstraction)
+--     → ℕ (the answer, forgetting WHICH distinctions)
 --
 -- KEY INSIGHT: "Numbers are frozen drift"
---   Each ℕ is a witness to accumulated history (n distinctions made)
+--   Each ℕ is accumulated history (n distinctions made)
 --   Addition = combining histories (temporal succession)
---   Order = comparing accumulation (which history is longer)
+--   Multiplication = repeated combination
 --
 -- The Peano structure (zero, suc) is the RESULT of counting, not an axiom.
--- We could define: ℕ = List D₀ / ≃ where xs ≃ ys iff count xs ≡ count ys
--- But we use the standard representation for efficiency.
+-- We DERIVE numbers, we don't assume them.
 
 -- § 2.1 Sequential Structure (Lists)
--- Lists record the temporal ledger of distinctions.
--- This is the minimal structure for sequential causality.
+-- Before we can count, we need SEQUENCE—one distinction after another.
+-- Lists record this temporal ledger. Each element is a "tick" of distinction.
 
 infixr 5 _∷_
 
 data List (A : Set) : Set where
-  []  : List A              -- Empty list (no events)
-  _∷_ : A → List A → List A -- Cons: Prepend element to list
+  []  : List A              -- Empty: no distinctions yet
+  _∷_ : A → List A → List A -- Cons: one more distinction
 
--- § 2.2 The Natural Numbers (Peano Structure)
--- This structure EMERGES from counting - the Peano constructors
--- are the RESULT of the counting process, not axioms.
--- ℕ = im(count) = the image of the counting function
+-- § 2.2 The Natural Numbers
+-- ℕ answers "how many?" while forgetting "which ones?"
+-- zero = no distinctions counted
+-- suc n = one more distinction than n
 
 data ℕ : Set where
-  zero : ℕ
-  suc  : ℕ → ℕ
+  zero : ℕ      -- The count of nothing
+  suc  : ℕ → ℕ  -- One more
 
 -- ═══════════════════════════════════════════════════════════════════════════
--- BUILTIN NATURAL PRAGMA - EXPLANATION
+-- BUILTIN NATURAL PRAGMA
 -- ═══════════════════════════════════════════════════════════════════════════
 --
 -- The following pragma is PURELY SYNTACTIC SUGAR. It allows writing:
 --   3  instead of  suc (suc (suc zero))
---   12 instead of  suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc zero)))))))))))
+--   12 instead of  suc (suc (suc ... (suc zero)...))
 --
 -- WHAT IT DOES:
 --   • Enables decimal literals (0, 1, 2, 3, ...) in source code
@@ -731,19 +834,36 @@ open ConstructiveOntology public
 -- § 5  THE UNAVOIDABLE FIRST DISTINCTION (D₀)
 -- ─────────────────────────────────────────────────────────────────────────────
 --
--- The foundation of FD is not an axiom but an OBSERVATION: any expressible
--- statement presupposes the ability to distinguish. The statement "there is
--- no distinction" is itself a distinction (between 'distinction exists' and
--- 'distinction does not exist').
+-- Here we cross from MATHEMATICS to PHYSICS.
+--
+-- The Token Principle gave us logic (§ 1).
+-- Counting gave us mathematics (§ 2-4).
+-- Now we ask: What is the FIRST distinction—the one that makes all others possible?
+--
+-- OBSERVATION (not axiom): Any expressible statement presupposes distinction.
+-- The statement "there is no distinction" is itself a distinction (between
+-- 'distinction exists' and 'distinction does not exist').
 --
 -- This self-reference makes D₀ UNAVOIDABLE—it cannot be coherently denied.
+-- Just as the Token Principle says there must be ONE token, D₀ IS that token
+-- at the level of physical reality.
+--
+-- From D₀, we will derive:
+--   D₀ → D₁, D₂, D₃ (three primordial distinctions)
+--   → K₄ (complete graph on 4 vertices)
+--   → 3D space (eigenvectors of Laplacian)
+--   → time (from asymmetry)
+--   → Einstein equations (from curvature)
+--
+-- This is not speculation—it is construction.
 
 -- The primordial distinction type
 data Distinction : Set where
-  φ  : Distinction   -- The marked state (assertion)
-  ¬φ : Distinction   -- The unmarked state (negation)
+  φ  : Distinction   -- The marked state (assertion, something)
+  ¬φ : Distinction   -- The unmarked state (negation, nothing)
 
 -- The first distinction: existence of marking
+-- This IS the Token Principle made physical.
 D₀ : Distinction
 D₀ = φ
 

@@ -74,6 +74,25 @@ A proof is a program whose type encodes a mathematical statement. If the program
 
 ---
 
+## Why Type Theory?
+
+In 1972, Per Martin-Löf created intuitionistic type theory. He didn't know he was formalizing physics.
+
+The unit type ⊤ has exactly one inhabitant. The empty type ⊥ has none. This isn't arbitrary — it's the **only** way to have "something" versus "nothing" without presupposing structure.
+
+We now recognize: **⊤ with `tt` IS D₀ with φ.** Same structure, different notation.
+
+| Martin-Löf (1972) | First Distinction |
+|-------------------|-------------------|
+| ⊥ (empty type) | Before distinction |
+| ⊤ (unit type) | D₀ — the First Distinction |
+| Bool | φ vs ¬φ |
+| _≡_ (identity) | Self-recognition of D₀ |
+
+Type theory works because distinction is unavoidable. Martin-Löf formalized the consequence; we derive the cause.
+
+---
+
 ## How does it work?
 
 1. **Distinction forces structure**  

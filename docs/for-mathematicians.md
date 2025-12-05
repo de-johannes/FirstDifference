@@ -343,22 +343,32 @@ theorem-operad-equals-spectral = refl
 
 ## What's Already Proven (Mathematics)
 
-| Result | Status | Where |
-|--------|--------|-------|
-| K₄ uniqueness | ✅ PROVEN | FirstDistinction.agda § 7 + K4Uniqueness.agda |
-| d = 3 dimensions | ✅ PROVEN | FirstDistinction.agda § 11 |
-| Signature (−,+,+,+) | ✅ PROVEN | FirstDistinction.agda § 13 |
-| 3 generations | ? HYPOTHESIS | Same λ-multiplicity as d = 3 |
-| g = 2 | ? NUMERICAL | FirstDistinction.agda § 18c (= \|Bool\|) |
-| Spinor dim = 4 | ? NUMERICAL | FirstDistinction.agda § 18c (= \|Bool\|²) |
-| Clifford = K₄ combinatorics | ✅ MATH FACT | C(4,k) = {1,4,6,4,1} |
-| Correction term 4/111 | ✅ PROVEN | FirstDistinction.agda § 22f.3 |
-| Operad arities forced | ✅ PROVEN | FirstDistinction.agda § 22f.0a |
-| Time direction / signature | ✅ PROVEN | FirstDistinction.agda § 13 (`theorem-temporal-signature = refl`) |
-| Formula result = 137.036 | ✅ PROVEN | FirstDistinction.agda § 22f |
-| N = 5 × 4¹⁰⁰ | ✅ PROVEN | FirstDistinction.agda § 22b'' |
+| Result | Status | Where | Note |
+|--------|--------|-------|------|
+| K₄ uniqueness | ✅ PROVEN | § 7 | Captures relation forces exactly 4 |
+| d = 3 dimensions | ✅ PROVEN | § 11 | λ-multiplicity theorem |
+| Signature (−,+,+,+) | ✅ PROVEN | § 13 | Drift asymmetry theorem |
+| \|Bool\| = 2 | ✅ PROVEN | § 1 | Definition of distinction |
+| \|Bool\|² = 4 | ✅ PROVEN | § 18c | 2 × 2 = 4 |
+| C(4,k) = {1,4,6,4,1} | ✅ MATH FACT | § 18c | Pascal's triangle |
+| Formula = 137.036 | ✅ PROVEN | § 22f | Spectral formula computed |
+| N = 5 × 4¹⁰⁰ | ✅ PROVEN | § 22b'' | Epoch count formula |
+| **Physical identification:** | | | |
+| 3 generations = λ-mult | ? HYPOTHESIS | § 11 | Numbers match, link unproven |
+| g = 2 = \|Bool\| | ? HYPOTHESIS | § 18c | We define g := \|Bool\|, physics TBD |
+| Spinor = 4 = \|Bool\|² | ? HYPOTHESIS | § 18c | Numbers match, link unproven |
+| Clifford(K₄) = Cl(1,3) | ? HYPOTHESIS | § 18c | Structure matches, identity unproven |
+| 137.036 = α⁻¹ | ? HYPOTHESIS | § 22f | 0.00003% match, coincidence? |
 
-**Note:** "Proven" means the mathematical computation is verified. The identification with physics (e.g., "137.036 IS α⁻¹") remains hypothesis.
+**Key insight:** The NUMBERS are proven. The IDENTIFICATION with physics is hypothesis.
+
+The structural match between K₄ and Dirac is complete:
+- Both have 4 "generators" (vertices / γ-matrices)
+- Both have 6 "products" (edges / bivectors)
+- Both have 16-dimensional algebra (2⁴)
+- Both have signature (−,+,+,+)
+
+Whether this is **the same structure** or just **isomorphic structures** is the open question.
 
 **Further research may include**:
 - Deriving Hilbert space / quantum mechanics from distinction

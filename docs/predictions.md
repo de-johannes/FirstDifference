@@ -5,32 +5,34 @@ title: Predictions
 
 # Predictions
 
-All values derived from K₄ structure alone. No free parameters.
+All values computed from K₄ structure alone. No free parameters.
+
+**Epistemological note:** The mathematical computations below are **proven** in Agda. That these mathematical results correspond to physical constants is a **hypothesis** supported by numerical agreement.
 
 ---
 
-## Königsklasse (Zero-Parameter Predictions)
+## Structural Results (Proven)
 
-These are **exact** — no fitting, no calibration.
+These follow mathematically from K₄ structure:
 
-| Quantity | Formula | FD | Observed | Note |
-|----------|---------|-------|----------|------|
-| Spatial dimensions | λ=4 multiplicity | **d = 3** | 3 | exact |
-| Time dimensions | drift irreversibility | **1** | 1 | exact |
-| Metric signature | symmetric vs. asymmetric | **(−,+,+,+)** | (−,+,+,+) | exact |
-| Λ sign | λ₁ > 0 | **Λ > 0** | Λ > 0 | exact |
-| Ricci scalar | Tr(L) | **R = 12** | — | discrete |
-| Coupling constant | dim×χ = 4×2 | **κ = 8** | 8πG (→8 in Planck units) | π from continuum limit |
+| Quantity | Formula | K₄ Result | Matches Physics? |
+|----------|---------|-----------|------------------|
+| Spatial dimensions | λ=4 multiplicity | **d = 3** | ✓ (3 observed) |
+| Time dimensions | drift irreversibility | **1** | ✓ (1 observed) |
+| Metric signature | symmetric vs. asymmetric | **(−,+,+,+)** | ✓ (GR signature) |
+| Λ sign | λ₁ > 0 | **Λ > 0** | ✓ (accelerating expansion) |
+| Ricci scalar | Tr(L) | **R = 12** | (discrete, no direct comparison) |
+| Coupling constant | dim×χ = 4×2 | **κ = 8** | ✓ (8πG → 8 in Planck units) |
 
 ---
 
-## High-Precision Predictions
+## Numerical Coincidences?
 
-These match observations to remarkable accuracy.
+These K₄ formulas produce values remarkably close to measured physical constants.
 
 ### Fine Structure Constant α
 
-The α formula emerges from the **Drift-CoDrift Operad** structure!
+The K₄ spectral formula computes a number:
 
 #### Operad Derivation
 
@@ -55,7 +57,7 @@ $$= (2 \times 4 \times 2 \times 4) \times 2 + (3+3+2+1) = 64 \times 2 + 9 = 137$
 - **∇ : D → D×D** (divergent, 1→2) → outputs MULTIPLY → **Product**
 - χ = 2 = Drift-CoDrift duality (doubles the modes)
 
-This is the Σ vs Π duality from type theory, derived from the First Distinction!
+This is the Σ vs Π duality from type theory, computed from the First Distinction.
 
 **Bonus:** κ = 8 = number of operad laws!
 
@@ -79,15 +81,17 @@ Where ALL parameters are K₄ spectral/topological invariants:
 
 | | Value |
 |---|-------|
-| **FD** | 137.036036... |
+| **K₄ formula** | 137.036036... |
 | **CODATA 2018** | 137.035999084(21) |
-| **Deviation** | 0.000027% |
+| **Agreement** | 0.000027% |
+
+**Interpretation:** The K₄ formula computes 137.036. The physical α⁻¹ is 137.036. This is either a profound connection or a remarkable coincidence. The mathematical computation is proven; the physical identification is hypothesis.
 
 *The spectral gap λ=4 emerges from the K₄ Laplacian eigenvalues {0,4,4,4}. The exponent 3 in λ³ equals d (the spatial dimension), making this a discrete analog of the QED phase-space integral ∫d³k. This is the same λ that determines d=3 via its multiplicity.*
 
----
-
 ### Cosmic Age τ
+
+The formula for N is structurally derived from K₄:
 
 $$N = 5 \times 4^{100}$$
 
@@ -120,10 +124,12 @@ $$\tau = N \times t_{\text{Planck}} = 13.726 \text{ Gyr}$$
 
 | | Value |
 |---|-------|
-| **FD** | 13.726 Gyr |
+| **K₄ formula** | 13.726 Gyr |
 | **Planck 2018** | 13.787 ± 0.020 Gyr |
 | **SH0ES (Cepheids)** | 12.6 ± 0.4 Gyr |
-| **Deviation (Planck)** | 0.44% (3.0σ) |
+| **Agreement (Planck)** | 0.44% (3.0σ) |
+
+**Interpretation:** The K₄ formula produces an epoch count that, when multiplied by Planck time, gives 13.73 Gyr. Whether this is the actual cosmic age is hypothesis, but the 0.44% agreement is notable.
 
 ---
 
@@ -150,13 +156,13 @@ For specific loop sizes:
 
 The scaling relation: W(6) = W(3)^(s) = (0.895)^10.5 ≈ 0.37
 
-**Physical interpretation:** Larger loops probe deeper into the K₄ structure. The 10.5 combines three orthogonal information modes — spectral (how waves spread), topological (connectivity), and geometric (curvature).
+**Physical interpretation:** Larger loops probe deeper into the K₄ structure. The 10.5 combines three orthogonal information modes — spectral (how waves spread), topological (connectivity), and geometric (curvature). *(This is more speculative than the α and τ formulas.)*
 
 ---
 
 ### Cosmological Constant Λ
 
-The "10⁻¹²² problem" is explained by dilution:
+A proposed explanation for the "10⁻¹²² problem":
 
 $$\Lambda_{\text{obs}} = \frac{\Lambda_{\text{bare}}}{N^2} = \frac{3}{N^2}$$
 
@@ -164,33 +170,34 @@ With N ~ 10⁶¹ Planck times elapsed:
 
 $$\Lambda_{\text{obs}}/\Lambda_{\text{Planck}} \sim 10^{-122}$$
 
-This is not fine-tuning. It's a consequence of cosmic age.
+**Status:** This is a **hypothesis** about the Λ ratio, not a proven computation like α. The mechanism (dilution) is plausible but not formalized.
 
 ---
 
 ## Classification
 
-| Category | Meaning | Status | Examples |
-|----------|---------|--------|----------|
-| **Theorem** | Machine-verified in Agda | ✅ Proven | d=3, signature, χ=2, κ=8, λ=4, α⁻¹, N |
-| **Derived** | Formula from K₄ invariants | ✅ Verified | τ = 13.7 Gyr (from N) |
-| **Hypothesis** | Plausible mechanism | ⚠️ Unproven | Λ-dilution |
+| Category | Meaning | Examples |
+|----------|---------|----------|
+| **Computed** | Machine-verified formula in Agda | K₄ structure, formulas |
+| **Matches** | Numerical agreement with observation | α, τ, d=3 |
+| **Hypothesis** | Identification with physics | "137.036 IS α⁻¹" |
 
-### What is PROVEN (Agda --safe --without-K):
+### What is COMPUTED (Agda --safe --without-K):
 - **d = 3** from eigenvector multiplicity of K₄ Laplacian
 - **Signature (−,+,+,+)** from drift irreversibility
 - **χ = 2** computed as V − E + F = 4 − 6 + 4
 - **κ = 8** from dim × χ = 4 × 2
 - **λ = 4** as Laplacian eigenvalue (L·φ = 4·φ)
-- **α⁻¹ ≈ 137.036** from spectral formula λ³χ + deg² + V/(deg(E²+1))
-- **N = 5 × 4¹⁰⁰** — FULLY DERIVED:
-  - 5 = spacetime + observer (5 equivalent proofs)
-  - 4 = V = λ (K₄ structure)
-  - 100 = E² + κ² (K₄ uniquely Pythagorean among K_n)
-- **τ = 13.7 Gyr** from N × t_Planck
+- **Formula result: 137.036** from λ³χ + deg² + V/(deg(E²+1))
+- **N = 5 × 4¹⁰⁰** from structural derivation
 
-### What is HYPOTHESIS (plausible but mechanism unproven):
-- **Λ-dilution** — explains 10⁻¹²² ratio but physical mechanism not yet formalized
+### What is HYPOTHESIS (not proven by Agda):
+- **α⁻¹ = 137.036** — That the K₄ formula IS the fine structure constant
+- **τ = 13.7 Gyr** — That N × t_Planck IS the cosmic age
+- **Λ-dilution** — The physical mechanism for the 10⁻¹²² ratio
+- **K₄ ↔ Universe** — That K₄ structure IS physical spacetime
+
+**The mathematics is proven. The physics correspondence is testable hypothesis.**
 
 ---
 

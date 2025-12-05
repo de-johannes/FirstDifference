@@ -198,7 +198,7 @@ theorem-K4-stable : (p : GenesisPair) → captures? p ≡ true ∨ ...
 
 ## The α Formula
 
-Two independent derivations, same result:
+Two independent derivations produce the same number:
 
 ### Spectral Derivation
 
@@ -210,7 +210,7 @@ alpha-inverse-integer = (λ-nat ^ 3) * χ + (deg * deg)
 -- = 64 × 2 + 9 = 137
 
 theorem-alpha-integer : alpha-inverse-integer ≡ 137
-theorem-alpha-integer = refl
+theorem-alpha-integer = refl  -- COMPUTED!
 ```
 
 ### Operad Derivation
@@ -225,9 +225,11 @@ alpha-from-operad : ℕ
 alpha-from-operad = (2 * 4 * 2 * 4) * 2 + (3 + 3 + 2 + 1)
 -- = 64 × 2 + 9 = 137
 
-theorem-operad-equals-spectral : alpha-from-operad ≡ alpha-inverse-integer
+theorem-operad-equals-spectral : alpha-from-operad ≡ alpha-integer
 theorem-operad-equals-spectral = refl
 ```
+
+**Epistemological note:** The formulas computing 137 are **theorems** (Agda-verified). That this number IS the physical fine structure constant α⁻¹ is **hypothesis**, supported by the 0.00003% agreement.
 
 ---
 
@@ -242,39 +244,35 @@ theorem-operad-equals-spectral = refl
 | Holes | **0** |
 | Axiom K uses | **0** |
 
----
+## What IS Proven vs What is Hypothesis
 
-## What Makes This Different
+### PROVEN (Agda --safe --without-K):
+- K₄ emerges as the unique stable graph under the captures relation
+- The formulas compute specific numbers: d=3, 137.036, N=5×4¹⁰⁰, etc.
+- All mathematical derivations are machine-verified
 
-### From Set-Theoretic Foundations
+### HYPOTHESIS (not checkable by Agda):
+- That K₄ structure IS physical spacetime
+- That 137.036 IS α⁻¹ (rather than numerical coincidence)
+- That N × t_Planck IS the cosmic age
+- Any claim about "physics" beyond the mathematical computation
 
-- No ZFC axioms assumed
-- No axiom of choice
-- No excluded middle
-- Everything is constructive
-
-### From Category Theory
-
-- We don't assume categories exist
-- K₄ emerges from distinction, not as an axiom
-- The operad structure is derived, not postulated
-
-### From Physics-First Approaches
-
-- No spacetime manifold assumed
-- No metric signature assumed
-- No coupling constants fitted
+**The mathematics is proven. The physics correspondence is testable hypothesis supported by remarkable numerical agreement.**
 
 ---
 
-## What's Already Proven
+## What's Already Proven (Mathematics)
 
-| "Problem" | Status | Where |
-|-----------|--------|-------|
+| Result | Status | Where |
+|--------|--------|-------|
 | K₄ uniqueness | ✅ PROVEN | FirstDistinction.agda § 7 + K4Uniqueness.agda |
 | Correction term 4/111 | ✅ PROVEN | FirstDistinction.agda § 22f.3 |
 | Operad arities forced | ✅ PROVEN | FirstDistinction.agda § 22f.0a |
 | Time direction / signature | ✅ PROVEN | FirstDistinction.agda § 13 (`theorem-temporal-signature = refl`) |
+| Formula result = 137.036 | ✅ PROVEN | FirstDistinction.agda § 22f |
+| N = 5 × 4¹⁰⁰ | ✅ PROVEN | FirstDistinction.agda § 22b'' |
+
+**Note:** "Proven" means the mathematical computation is verified. The identification with physics (e.g., "137.036 IS α⁻¹") remains hypothesis.
 
 **Further research may include**:
 - Deriving Hilbert space / quantum mechanics from distinction

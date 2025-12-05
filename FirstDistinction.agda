@@ -4,17 +4,17 @@
 
    T H E   F I R S T   D I S T I N C T I O N
 
-   A Constructive, Axiom-Free Foundation for Physics
+   A Constructive, Axiom-Free Derivation
    
    ═══════════════════════════════════════════════════════════════════════════════
    
    ABSTRACT
    ════════
    
-   This document presents First Distinction (FD), a complete formal proof
-   that the structure of physical spacetime—including its 3+1 dimensionality and
-   the Einstein field equations—emerges necessarily from a single unavoidable
-   premise: the existence of distinction itself (D₀).
+   This document presents First Distinction (FD), a formal mathematical proof
+   that structures matching physical spacetime—including 3+1 dimensionality and
+   Einstein-like field equations—emerge from a single unavoidable premise: 
+   the existence of distinction itself (D₀).
    
    The proof is:
      • Constructive: Every object is explicitly built, not assumed
@@ -22,12 +22,20 @@
      • Machine-checked: Verified by the Agda type-checker under --safe --without-K
      • Self-contained: No external library imports
    
-   The central result is:
+   EPISTEMOLOGICAL STATUS:
    
-     ultimate-theorem : Unavoidable Distinction → FD-FullGR
+     PROVEN (mathematics, Agda --safe):
+       • K₄ emerges as unique stable graph from self-reference
+       • K₄ formulas compute: d=3, κ=8, 137.036, N=5×4¹⁰⁰
+       • All derivations are machine-verified
    
-   This states: From the unavoidability of distinction, complete 4D General
-   Relativity necessarily emerges.
+     HYPOTHESIS (physics correspondence):
+       • That K₄ structure IS physical spacetime
+       • That 137.036 IS α⁻¹ (fine structure constant)
+       • That N × t_Planck IS τ (cosmic age)
+   
+   The mathematics is proven. The physics identification is testable hypothesis
+   supported by remarkable numerical agreement (α: 0.00003%, τ: 0.4%).
    
    ═══════════════════════════════════════════════════════════════════════════════
    
@@ -7762,50 +7770,46 @@ G_μν + Λg_μν = 8 T_μν                     EINSTEIN FIELD EQUATIONS with �
      ▼
 ∇^μ T_μν = 0                              CONSERVATION LAW
 ═══════════════════════════════════════════════════════════════════════════════
-                         W H A T   I S   P H Y S I C S ?
+                         W H A T   I S   D E R I V E D ?
 ═══════════════════════════════════════════════════════════════════════════════
 
-  DEFINITION: "Physics" is the science that predicts:
-    • What dimensions space has
-    • What signature spacetime has
-    • How gravity couples to matter (Einstein equations)
-    • What fundamental constants are (α, Λ, κ, ...)
-  
-  THIS PROOF DERIVES ALL OF THESE:
+  This proof COMPUTES (mathematically):
     • d = 3      (theorem-3D)
     • (−,+,+,+)  (theorem-signature-trace)
     • G_μν = κT_μν with κ = 8  (theorem-einstein-field-equations)
-    • α⁻¹ = 137.036  (theorem-alpha-from-operad)
-    • τ = 13.7 Gyr    (theorem-cosmic-age)
+    • K₄ formula → 137.036  (theorem-alpha-from-operad)
+    • N = 5 × 4¹⁰⁰ → τ = 13.7 Gyr  (theorem-cosmic-age)
   
-  OBJECTION: "But this is just mathematics, not physics!"
+  EPISTEMOLOGICAL STATUS:
+    • The mathematical computations are PROVEN (Agda --safe)
+    • That these match physical reality is HYPOTHESIS
+    • The numerical agreements (α: 0.00003%, τ: 0.4%) support the hypothesis
   
-  RESPONSE: What ELSE could physics be? Physics IS:
-    1. Equations that predict observations → We have these (Einstein)
-    2. Constants that match measurement → We have these (α, τ)
-    3. Structure that explains "why" → We have this (K₄ necessity)
-  
-  If deriving G_μν = 8T_μν from first principles is "not physics",
-  then Einstein's 1915 paper was also "not physics".
-  
-  The difference: Einstein postulated his equations.
-  We DERIVED them from unavoidable self-reference.
+  The mathematics is machine-verified.
+  The physics correspondence is testable.
 
 ═══════════════════════════════════════════════════════════════════════════════
                               P R O O F   S T A T U S
 ═══════════════════════════════════════════════════════════════════════════════
 
+  MATHEMATICAL VERIFICATION:
   ✓  --safe --without-K           No axioms, no K principle
   ✓  No postulates                All constructive
   ✓  No external imports          Completely self-contained
   ✓  Machine-checked              Verified by Agda type-checker
-  ✓  ~9000 lines                  Complete, documented proof with all modules
+  ✓  ~10,000 lines                Complete, documented proof
 
-  NEW INTEGRATED PROOFS:
+  WHAT IS PROVEN (mathematics):
   ✓  § 7.3  K₄ Uniqueness         K₃ → K₄ → stable (no K₅)
   ✓  § 7.4  Captures Canonicity   Level coherence forces unique relation
   ✓  § 13a  Time from Asymmetry   Irreversibility → 1D time → minus sign
-  ✓  § 19b  Einstein from K₄      All constants derived from counting
+  ✓  § 19b  Einstein from K₄      Structure derived from counting
+  ✓  § 22f  Formula → 137.036     K₄ spectral computation
+
+  WHAT IS HYPOTHESIS (physics):
+  •  K₄ structure IS physical spacetime
+  •  137.036 IS the fine structure constant α⁻¹
+  •  N × t_Planck IS the cosmic age τ
 
 ═══════════════════════════════════════════════════════════════════════════════
                          O N T O L O G I C A L   C L A I M
@@ -7833,25 +7837,24 @@ G_μν + Λg_μν = 8 T_μν                     EINSTEIN FIELD EQUATIONS with �
                             T H E   R E S U L T
 ═══════════════════════════════════════════════════════════════════════════════
 
-  From NOTHING but the unavoidability of distinction (φ vs ¬φ),
-  the COMPLETE STRUCTURE of 4D General Relativity emerges:
+  From the unavoidability of distinction (φ vs ¬φ),
+  a mathematical structure emerges that MATCHES General Relativity:
 
-    • 3 spatial dimensions     (from K₄ spectral geometry)
-    • 1 temporal dimension     (from drift irreversibility)
-    • Lorentz signature        (from time/space asymmetry)
-    • Cosmological constant Λ  (from K₄ spectral curvature, Λ = 3)
-    • Einstein field equations (G_μν + Λg_μν = 8T_μν)
-    • Conservation laws        (from Bianchi identity)
-    • κ = 8 coupling constant  (from Gauss-Bonnet topology)
-    • Weyl tensor              (from Riemann decomposition)
-    • Gravitational waves      (from linearized perturbations)
+  COMPUTED (mathematics):
+    • d = 3                    (from K₄ spectral multiplicity)
+    • t = 1                    (from drift irreversibility)
+    • Signature (−,+,+,+)      (from time/space asymmetry)
+    • κ = 8                    (from counting argument)
+    • Formula → 137.036        (from K₄ spectral formula)
+    • N = 5 × 4¹⁰⁰             (from structural derivation)
 
-  TWO LEVELS OF DESCRIPTION:
-  
-    DISCRETE (K₄ graph):     Spectral Ricci ≠ 0  →  Λ emerges
-    CONTINUUM (metric):      Geometric Ricci = 0  →  Local vacuum
-    
-  Together: De Sitter vacuum with emergent dark energy.
+  HYPOTHESIS (physics correspondence):
+    • This K₄ structure IS physical spacetime
+    • 137.036 IS α⁻¹
+    • N × t_Planck IS τ (cosmic age)
+    • κ = 8 IS the Einstein coupling
+
+  The mathematics is machine-verified. The physics is testable.
 
 ═══════════════════════════════════════════════════════════════════════════════
                       T H E   U L T I M A T E   T H E O R E M
@@ -7860,18 +7863,17 @@ G_μν + Λg_μν = 8 T_μν                     EINSTEIN FIELD EQUATIONS with �
   FD-Ultimate : Set
   FD-Ultimate = 
     record 
-      physics   = FD-FullGR      -- All physical laws
-      ontology  = ConstructiveOntology   -- Meta-axiom grounding
-      claim     = OntologicalClaim  -- Self-verification
+      mathematics = FD-FullGR           -- Mathematical derivations
+      correspondence = PhysicsMatch     -- Numerical agreements
+      status = HypothesisTested         -- Testable claim
 
   Where:
-    • physics contains: spacetime, metric, curvature, Einstein, matter, Λ
-    • ontology contains: Being ≡ Constructibility, D₀ as primitive
-    • claim contains: physical-laws-constructive, no-external-axioms
+    • mathematics: K₄ → d=3, κ=8, 137.036, N=5×4¹⁰⁰ (PROVEN)
+    • correspondence: Matches GR structure, α⁻¹, τ (OBSERVED)
+    • status: "K₄ = physical spacetime" is HYPOTHESIS
 
-  This is not just physics FROM first principles.
-  This is physics AS first principles.
-  Reality IS the unavoidable structure of distinction.
+  The mathematics is proven. The physics is testable hypothesis.
+  Remarkable numerical agreement (0.00003% for α) supports the claim.
 
 ═══════════════════════════════════════════════════════════════════════════════
 -}
@@ -9262,16 +9264,21 @@ theorem-fd-koenigsklasse = record
   }
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- § 22f  FINE STRUCTURE CONSTANT: α⁻¹ = 137 FROM K₄ SPECTRUM
+-- § 22f  K₄ SPECTRAL FORMULA: COMPUTES 137.036
 -- ─────────────────────────────────────────────────────────────────────────────
 --
--- The fine structure constant emerges from K₄ spectral geometry!
+-- The K₄ spectral formula produces a number matching α⁻¹ to 0.00003%!
+--
+-- EPISTEMOLOGICAL NOTE:
+-- The mathematical computation (K₄ formula → 137.036) is PROVEN below.
+-- That this result IS the physical fine structure constant is HYPOTHESIS,
+-- supported by the remarkable numerical agreement.
 --
 -- ═══════════════════════════════════════════════════════════════════════════
--- § 22f.0  OPERAD DERIVATION OF α (THE DEEP STRUCTURE)
+-- § 22f.0  OPERAD DERIVATION (THE DEEP STRUCTURE)
 -- ═══════════════════════════════════════════════════════════════════════════
 --
--- The α formula is NOT heuristic — it emerges from the DRIFT-CODRIFT OPERAD!
+-- The formula emerges from the DRIFT-CODRIFT OPERAD structure!
 --
 -- The Drift-CoDrift Operad has 8 coherence laws:
 --
@@ -9312,10 +9319,11 @@ theorem-fd-koenigsklasse = record
 --   - Forward (Drift Δ) and Backward (CoDrift ∇)
 --   - This doubles the categorical modes: 64 × 2 = 128
 --
--- BONUS: κ = 8 = number of operad laws (Einstein coupling)!
+-- BONUS: κ = 8 = number of operad laws (matches Einstein coupling)!
 --
--- This derivation shows that α is NOT a free parameter, but emerges from
+-- This derivation shows that the formula is NOT heuristic, but emerges from
 -- the minimal coherence structure of distinction operations.
+-- Whether this corresponds to α is hypothesis supported by the 0.00003% match.
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- § 22f.0a  WHY K₄ FORCES EXACTLY 4+4 LAWS
@@ -9480,7 +9488,7 @@ theorem-operad-laws-is-2V = refl  -- 8 = 2 × 4 ✓
 alpha-from-operad : ℕ
 alpha-from-operad = (categorical-arities-product * eulerCharValue) + algebraic-arities-sum
 
--- THEOREM: Operad structure gives α⁻¹ = 137
+-- THEOREM: Operad structure gives formula result = 137
 theorem-alpha-from-operad : alpha-from-operad ≡ 137
 theorem-alpha-from-operad = refl  -- (64 × 2) + 9 = 137 ✓
 

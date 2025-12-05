@@ -102,17 +102,20 @@ A proof is a program whose type encodes a mathematical statement. If the program
 
 ---
 
-## What is derived?
+## What is computed?
 
-| Quantity | FD | Observation | Status |
-|----------|-------|-------------|--------|
-| Spatial dimensions | d = 3 | 3 | ✓ exact |
-| Time dimensions | 1 | 1 | ✓ exact |
-| Signature | (−,+,+,+) | (−,+,+,+) | ✓ exact |
-| Λ > 0 | yes | yes | ✓ exact |
-| α⁻¹ | 137.036 | 137.036 | 0.00003% |
-| N (Planck times) | 5×4¹⁰⁰ | ~10⁶¹ | ✓ derived |
-| τ (cosmic age) | 13.73 Gyr | 13.79 Gyr | 0.4% |
+The following are **mathematical theorems** (Agda `--safe --without-K`):
+
+| Quantity | K₄ Formula | Result | Physical Match |
+|----------|------------|--------|----------------|
+| Dimension | λ=4 multiplicity | **d = 3** | ✓ 3 spatial |
+| Time | Drift asymmetry | **1** | ✓ 1 temporal |
+| Signature | Symmetric/asymmetric | **(−,+,+,+)** | ✓ matches GR |
+| Coupling | dim × χ | **κ = 8** | ✓ matches 8πG |
+| Spectral formula | λ³χ + deg² + corr | **137.036** | ≈ α⁻¹ (0.00003%) |
+| Epoch count | 5 × 4¹⁰⁰ | **N** | ≈ τ/t_P (0.4%) |
+
+**The mathematical computations are proven. That they correspond to physical reality is a hypothesis supported by remarkable numerical agreement.**
 
 [→ All predictions](predictions)
 
@@ -181,10 +184,18 @@ The code is the claim. If it compiles, the proof is valid.
 
 ## Honesty
 
-- We do not claim to have found "the truth".
-- We present a derivation that is machine-checked.
-- The α formula uses K₄ spectral invariants (λ³χ + deg² + correction).
-- The cosmic age N = 5 × 4¹⁰⁰ is now fully derived from K₄ (see § 22b'').
+**What IS proven (Agda `--safe`):**
+- K₄ emerges from self-referential distinction
+- The K₄ spectral formula produces 137.036...
+- The structural formula produces N = 5 × 4¹⁰⁰
+- All computations are verified by the type-checker
+
+**What is HYPOTHESIS:**
+- That these mathematical objects ARE the physical constants
+- That K₄ structure IS the geometry of our universe
+- That the numerical agreements are not coincidental
+
+The mathematics is machine-verified. The physics interpretation requires experiment. We present the strongest possible mathematical evidence, but the identification with physics remains a testable claim.
 
 If you find an error, open an issue. We want to know.
 

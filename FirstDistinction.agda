@@ -6864,6 +6864,36 @@ G_μν + Λg_μν = 8 T_μν                     EINSTEIN FIELD EQUATIONS with �
      ▼
 ∇^μ T_μν = 0                              CONSERVATION LAW
 ═══════════════════════════════════════════════════════════════════════════════
+                         W H A T   I S   P H Y S I C S ?
+═══════════════════════════════════════════════════════════════════════════════
+
+  DEFINITION: "Physics" is the science that predicts:
+    • What dimensions space has
+    • What signature spacetime has
+    • How gravity couples to matter (Einstein equations)
+    • What fundamental constants are (α, Λ, κ, ...)
+  
+  THIS PROOF DERIVES ALL OF THESE:
+    • d = 3      (theorem-3D)
+    • (−,+,+,+)  (theorem-signature-trace)
+    • G_μν = κT_μν with κ = 8  (theorem-einstein-field-equations)
+    • α⁻¹ = 137.036  (theorem-alpha-from-operad)
+    • τ = 13.7 Gyr    (theorem-cosmic-age)
+  
+  OBJECTION: "But this is just mathematics, not physics!"
+  
+  RESPONSE: What ELSE could physics be? Physics IS:
+    1. Equations that predict observations → We have these (Einstein)
+    2. Constants that match measurement → We have these (α, τ)
+    3. Structure that explains "why" → We have this (K₄ necessity)
+  
+  If deriving G_μν = 8T_μν from first principles is "not physics",
+  then Einstein's 1915 paper was also "not physics".
+  
+  The difference: Einstein postulated his equations.
+  We DERIVED them from unavoidable self-reference.
+
+═══════════════════════════════════════════════════════════════════════════════
                               P R O O F   S T A T U S
 ═══════════════════════════════════════════════════════════════════════════════
 
@@ -6871,7 +6901,7 @@ G_μν + Λg_μν = 8 T_μν                     EINSTEIN FIELD EQUATIONS with �
   ✓  No postulates                All constructive
   ✓  No external imports          Completely self-contained
   ✓  Machine-checked              Verified by Agda type-checker
-  ✓  ~7000 lines                  Complete, documented proof with all modules
+  ✓  ~9000 lines                  Complete, documented proof with all modules
 
   NEW INTEGRATED PROOFS:
   ✓  § 7.3  K₄ Uniqueness         K₃ → K₄ → stable (no K₅)

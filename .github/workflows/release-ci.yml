@@ -139,29 +139,29 @@ jobs:
           echo "prev=${PREV_TAG}" >> "$GITHUB_OUTPUT"
           
           {
-            echo "## First Distinction Release ${{ steps.sha.outputs.short }}"
+            echo "## First Distinction ${{ steps.sha.outputs.short }}"
             echo ""
-            echo "🏆 **The First Distinction → Einstein Field Equations**"
+            echo "Machine-verified derivation of spacetime structure from pure type theory."
             echo ""
-            echo "### Königsklasse Predictions (zero free parameters):"
-            echo "- d = 3 (from K₄ eigenvalue degeneracy)"
-            echo "- Λ > 0 (from finite K₄)"
-            echo "- κ = 8 (from edge/vertex ratio)"
-            echo "- R = 12 (from K₄ scalar curvature)"
+            echo "### Zero-Parameter Predictions"
+            echo ""
+            echo "| Quantity | Value | Source |"
+            echo "|----------|-------|--------|"
+            echo "| Spatial dimensions | d = 3 | K₄ Laplacian eigenvalue multiplicity |"
+            echo "| Lorentz signature | (−,+,+,+) | Drift irreversibility |"
+            echo "| Einstein coupling | κ = 8 | dim × χ = 4 × 2 |"
+            echo "| Fine structure | α⁻¹ = 137.036 | Operad arities |"
+            echo "| Cosmic age | τ = 13.7 Gyr | N = 5 × 4¹⁰⁰ |"
             echo ""
             if [ -n "$PREV_TAG" ]; then
-              echo "### Changes since $PREV_TAG:"
+              echo "### Changes since $PREV_TAG"
               echo ""
               git log --no-decorate --pretty=format:'- %s (%h)' "${PREV_TAG}..HEAD"
-            else
-              echo "### Initial Release"
-              echo ""
-              echo "Complete proof: D₀ → K₄ saturation → G_μν = 8T_μν"
             fi
             echo ""
             echo "---"
-            echo "**Verification:** \`agda --safe --without-K --no-libraries FirstDistinction.agda\`"
-            echo "**Numerical:** \`python validate_K4.py\` (7/7 tests)"
+            echo ""
+            echo "**Verify:** \`agda --safe --without-K --no-libraries FirstDistinction.agda\`"
           } > CHANGELOG.md
 
       - name: Create source archive

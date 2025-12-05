@@ -1836,6 +1836,42 @@ theorem-3D-emergence _ = refl
 
 
 -- ─────────────────────────────────────────────────────────────────────────────
+-- § 11a  WHY SPECTRAL EMBEDDING = PHYSICAL SPACE (THE BRIDGE)
+-- ─────────────────────────────────────────────────────────────────────────────
+--
+-- This is the critical question: Why should the spectral embedding dimension
+-- of K₄ equal the dimension of physical space?
+--
+-- THE ARGUMENT (not circular, but definitional):
+--
+-- 1. SPACE is "where things can be distinguished by position"
+--    = the set of independent directions in which points can differ
+--
+-- 2. In K₄, the ONLY structure is edges (distinctions between vertices)
+--    There is no external coordinate system imposed
+--
+-- 3. The LAPLACIAN L = D - A encodes ALL edge relations
+--    L[i,j] = -1 if i,j connected, L[i,i] = degree
+--
+-- 4. EIGENVECTORS of L are the independent modes of "diffusion" on the graph
+--    They extract the orthogonal directions in which vertices differ
+--
+-- 5. Number of non-trivial eigenvectors = number of independent directions
+--    = dimension of the space in which vertices can be distinguished
+--
+-- 6. CONCLUSION: Spectral dimension IS spatial dimension
+--    Not by interpretation, but by DEFINITION of what "dimension" means
+--    in a relational ontology where space = distinguishability structure
+--
+-- FORMAL VERSION:
+--   Space := { directions in which points can be distinguished }
+--   K₄ has 3 independent eigenvectors (proven: det = 1)
+--   Therefore K₄-space has exactly 3 dimensions
+--
+-- This is not "spectral theory applied to physics"
+-- This is "spectral theory IS physics" when reality = distinctions
+
+-- ─────────────────────────────────────────────────────────────────────────────
 -- § 11a′  WHY d=3 FOR K₄ (AND THE SPECTRAL STRESS QUESTION)
 -- ─────────────────────────────────────────────────────────────────────────────
 --

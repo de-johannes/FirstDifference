@@ -267,9 +267,7 @@ theorem-operad-equals-spectral = refl
 
 ---
 
-## What's Already Proven (Not Open!)
-
-These might *look* like open problems, but they're solved in the codebase:
+## What's Already Proven
 
 | "Problem" | Status | Where |
 |-----------|--------|-------|
@@ -278,7 +276,7 @@ These might *look* like open problems, but they're solved in the codebase:
 | Operad arities forced | ✅ PROVEN | FirstDistinction.agda § 22f.0a |
 | Time direction / signature | ✅ PROVEN | FirstDistinction.agda § 13 (`theorem-temporal-signature = refl`) |
 
-**Actual open problems** (for the community):
+**Further research may include**:
 - Deriving Hilbert space / quantum mechanics from distinction
 - Higher-order corrections to α beyond 4/111
 

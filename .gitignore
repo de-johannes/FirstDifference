@@ -20,3 +20,5 @@
 *.lot
 
 work
+
+.venv

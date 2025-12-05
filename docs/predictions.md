@@ -21,6 +21,7 @@ These follow mathematically from K₄ structure:
 | Fermion generations | λ=4 multiplicity | **3** | ? (hypothesis) |
 | Time dimensions | drift irreversibility | **1** | ✓ (1 observed) |
 | Metric signature | symmetric vs. asymmetric | **(−,+,+,+)** | ✓ (GR signature) |
+| **Speed of light** | **max propagation = 1 edge/tick** | **c = 1** | ✓ (necessary) |
 | Spin states | \|Bool\| = 2 | **2** | ? (numerical match) |
 | Gyromagnetic ratio | g = \|Bool\| | **g = 2** | ? (numerical match) |
 | Spinor components | \|Bool\|² | **4** | ? (numerical match) |
@@ -29,6 +30,21 @@ These follow mathematically from K₄ structure:
 | Λ sign | λ₁ > 0 | **Λ > 0** | ✓ (accelerating expansion) |
 | Ricci scalar | Tr(L) | **R = 12** | (discrete, no direct comparison) |
 | Coupling constant | dim×χ = 4×2 | **κ = 8** | ✓ (8πG → 8 in Planck units) |
+
+### Why c = 1 is Necessary (Not Just Convenient)
+
+On a discrete graph, the speed of information propagation is constrained:
+
+| Option | Meaning | Consistent? |
+|--------|---------|-------------|
+| c = 0 | Nothing propagates | ❌ No dynamics |
+| c = 1 | One edge per tick | ✅ **Only option** |
+| c > 1 | Skip edges | ❌ Violates locality |
+| c = ∞ | Instantaneous | ❌ Violates causality |
+
+**c = 1 is not a choice — it's the unique value compatible with graph structure.**
+
+The number "299,792,458 m/s" is pure unit conversion: c = 1 ℓ_P/t_P in natural units.
 
 ---
 

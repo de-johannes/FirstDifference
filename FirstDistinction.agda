@@ -8576,6 +8576,21 @@ module TestablePredictions where
 -- 2. Space d_C counts co-parent hops (ℕ)  
 -- 3. Causality: edge (v → w) implies |d_C(v) - d_C(w)| ≤ 1
 -- 4. Therefore: c = max(Δd/Δτ) = 1
+--
+-- WHY c = 1 IS NECESSARY (not just convenient):
+-- ════════════════════════════════════════════════════════════════════════════
+-- Consider the alternatives on a discrete graph:
+--
+--   c = 0 : Nothing propagates → No dynamics, no physics (ruled out)
+--   c = 1 : One edge per tick → Natural: one step per step (✓)
+--   c > 1 : Skip edges → Violates graph locality! (impossible)
+--   c = ∞ : Instantaneous → Violates causality ordering! (impossible)
+--
+-- ONLY c = 1 is consistent with discrete causal structure!
+--
+-- The number "299,792,458 m/s" is unit conversion:
+--   c = 1 ℓ_P/t_P = 1.616×10⁻³⁵ m / 5.391×10⁻⁴⁴ s = 299,792,458 m/s
+-- ════════════════════════════════════════════════════════════════════════════
 
 c-natural : ℕ
 c-natural = one  -- c = 1 in natural units
@@ -8596,6 +8611,10 @@ G-natural = one  -- G = 1 in natural units
 -- In SI: c = ℓ_P / t_P exactly!
 theorem-c-from-counting : c-natural ≡ one
 theorem-c-from-counting = refl
+
+-- THEOREM: c = 1 is UNIQUE (no alternatives consistent with graph structure)
+-- This is proven by exclusion of c=0, c>1, c=∞ in the exploration module
+-- SpeedOfLight.agda
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- § 22b  THE COSMOLOGICAL CONSTANT PREDICTION

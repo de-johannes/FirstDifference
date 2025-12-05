@@ -27,6 +27,49 @@ title: D₀ (Home)
 
 ---
 
+## The Challenge
+
+**Try to deny that distinction exists.**
+
+To say "there is no distinction" — you must distinguish that statement from its opposite. To think "nothing is different from anything" — you must differentiate that thought from other thoughts.
+
+**You cannot deny distinction without using distinction.**
+
+This is not wordplay. It's an unavoidable logical fact:
+- To assert requires distinguishing assertion from non-assertion
+- To deny requires distinguishing denial from acceptance  
+- Even silence distinguishes itself from speech
+
+The First Distinction (D₀) cannot be coherently rejected. It is **self-evident** in the strongest possible sense: its denial presupposes it.
+
+---
+
+## The Ontology
+
+From this single unavoidable fact, we derive everything:
+
+> **What exists is exactly what can be constructed.**
+
+This is not a philosophical position we *choose*. It's the position that Agda (our proof system) *embodies*. In constructive type theory:
+- "X exists" means "X can be built"
+- No axioms, no assumptions, no faith required
+- If you can't construct it, it doesn't exist in the proof
+
+**One premise. Zero parameters. Machine-checked.**
+
+---
+
+## How deep do you want to go?
+
+| Level | For whom | Start here |
+|-------|----------|------------|
+| **1. Curious** | "What's the claim?" | Keep reading below |
+| **2. Skeptical** | "Prove it compiles" | [→ Verification](verify) |
+| **3. Technical** | "Show me the math" | [→ Part 1: Foundations](part-1-foundations/) |
+| **4. Expert** | "I want the Agda" | [→ FirstDistinction.agda](https://github.com/de-johannes/FirstDistinction/blob/main/FirstDistinction.agda) |
+
+---
+
 ## What is First Distinction?
 
 **First Distinction (FD)** is an axiom-free derivation of 4D General Relativity from a single premise:
@@ -95,20 +138,27 @@ Type theory works because distinction is unavoidable. Martin-Löf formalized the
 
 ## How does it work?
 
-1. **Distinction forces structure**  
-   D₀ ≠ D₁ requires a "witness" D₂. This creates K₃.
+**In plain language:**
 
-2. **K₃ is unstable**  
-   New pairs (D₀,D₂) lack a witness → D₃ emerges.
+1. **You can't have ONE distinction alone**  
+   If D₀ exists, you can distinguish D₀ from "not D₀". That's a second distinction D₁.
 
-3. **K₄ is stable**  
-   All 6 pairs are "witnessed". No further distinction is forced.
+2. **Two distinctions need a third**  
+   "D₀ is different from D₁" — that *relation* is itself a distinction: D₂.
 
-4. **K₄ = Tetrahedron = 3D space**  
-   The Laplacian eigenvalues {0,4,4,4} span 3 dimensions.
+3. **Three isn't stable**  
+   Now (D₀, D₂) is a new pair without a witness. This forces D₃.
 
-5. **Drift = Time**  
-   The irreversible accumulation of distinctions is the arrow of time.
+4. **Four is stable**  
+   With 4 distinctions, all 6 possible pairs are "witnessed". Nothing new is forced.
+
+5. **Four points = Tetrahedron = 3D space**  
+   The geometry of 4 vertices connected by 6 edges IS three-dimensional space.
+
+6. **The process of arriving there = Time**  
+   The irreversible sequence D₀ → D₁ → D₂ → D₃ is the arrow of time.
+
+**That's it.** From "distinction exists" to 3+1 dimensional spacetime in 6 steps.
 
 ---
 

@@ -2376,8 +2376,9 @@ K4-eigenvectors-nonzero-det : det-eigenvectors ≡ 0ℤ → ⊥
 K4-eigenvectors-nonzero-det ()
 
 -- Embedding dimension = number of linearly independent eigenvectors
+-- This equals K₄ degree: eigenvalue multiplicity = V - 1 = deg = 3
 EmbeddingDimension : ℕ
-EmbeddingDimension = suc (suc (suc zero))  -- 3
+EmbeddingDimension = K4-deg  -- ALIAS: d = 3 (§ 7.3.5)
 
 -- THEOREM: The spatial embedding dimension is 3
 -- This follows from having exactly 3 linearly independent eigenvectors
@@ -2748,19 +2749,19 @@ theorem-K4-complete v₃ v₂ ()
 
 -- Derivation 1: Eigenvalue multiplicity (Laplacian λ = 4 has multiplicity 3)
 d-from-eigenvalue-multiplicity : ℕ
-d-from-eigenvalue-multiplicity = 3  -- Proven by det ≠ 0
+d-from-eigenvalue-multiplicity = K4-deg  -- multiplicity = V - 1 = deg = 3 (§ 7.3.5)
 
 -- Derivation 2: Eigenvector count (3 linearly independent eigenvectors)
 d-from-eigenvector-count : ℕ
-d-from-eigenvector-count = 3  -- det-eigenvectors ≡ 1
+d-from-eigenvector-count = K4-deg  -- eigenvector count = deg = 3 (§ 7.3.5)
 
 -- Derivation 3: K₄ vertices minus 1 (V - 1 = 4 - 1 = 3)
 d-from-V-minus-1 : ℕ
-d-from-V-minus-1 = 4 ∸ 1  -- 3
+d-from-V-minus-1 = K4-V ∸ 1  -- V - 1 = 4 - 1 = 3 (§ 7.3.5)
 
 -- Derivation 4: Spectral gap formula λ = d + 1, so d = λ - 1 = 4 - 1 = 3
 d-from-spectral-gap : ℕ
-d-from-spectral-gap = 4 ∸ 1  -- 3
+d-from-spectral-gap = K4-V ∸ 1  -- λ = V for K_V, so d = V - 1 (§ 7.3.5)
 
 -- All derivations agree!
 record DimensionConsistency : Set where
@@ -3622,9 +3623,9 @@ conformalFactor = mkℤ (suc (suc (suc zero))) zero  -- φ² = 3 (degree of K₄
 -- In K₄: 4 vertices, 6 edges, each vertex has degree 3
 -- This is consistent: degree × vertices = 2 × edges → 3 × 4 = 2 × 6 ✓
 
--- Vertex degree in K₄
+-- Vertex degree in K₄ (ALIASED from § 7.3.5)
 vertexDegree : ℕ
-vertexDegree = suc (suc (suc zero))  -- 3
+vertexDegree = K4-deg  -- ALIAS: deg = 3 (§ 7.3.5)
 
 -- THEOREM: Conformal factor equals vertex degree
 theorem-conformal-equals-degree : conformalFactor ≃ℤ mkℤ vertexDegree zero
@@ -5483,8 +5484,9 @@ K₄-faces-count = K4-F  -- ALIAS: F = 4 (§ 7.3.5)
 -- This IS the spatial embedding space
 
 -- THEOREM: Spatial dimension d = 3 = 4 - 1 (from K₄)
+-- This is K₄ degree: d = V - 1 = deg
 derived-spatial-dimension : ℕ
-derived-spatial-dimension = suc (suc (suc zero))  -- 3 = n - 1 for K_n
+derived-spatial-dimension = K4-deg  -- ALIAS: d = deg = 3 (§ 7.3.5)
 
 theorem-spatial-dim-from-K4 : derived-spatial-dimension ≡ suc (suc (suc zero))
 theorem-spatial-dim-from-K4 = refl

@@ -2077,8 +2077,9 @@ edge-12 = mkEdge v₁ v₂ id₁≢id₂
 edge-13 = mkEdge v₁ v₃ id₁≢id₃
 edge-23 = mkEdge v₂ v₃ id₂≢id₃
 
+-- Edge count (ALIASED from § 7.3.5)
 k4-edge-count : ℕ
-k4-edge-count = suc (suc (suc (suc (suc (suc zero)))))
+k4-edge-count = K4-E  -- ALIAS: E = 6 (§ 7.3.5)
 
 -- THEOREM: K₄ has exactly 6 edges
 theorem-k4-has-6-edges : k4-edge-count ≡ suc (suc (suc (suc (suc (suc zero)))))
@@ -4523,17 +4524,16 @@ theorem-Tττ-density v = refl
 --
 -- This is FORCED by the graph structure, not chosen.
 
--- K₄ graph structure constants (ALL DERIVED from V = 4)
+-- K₄ graph structure constants (ALIASED from § 7.3.5 canonical definitions)
+-- These are NOT redefinitions - they reference the single source of truth
 vertexCountK4 : ℕ
-vertexCountK4 = suc (suc (suc (suc zero)))  -- V = 4 (from saturation theorem)
+vertexCountK4 = K4-V  -- ALIAS: V = 4 (defined in § 7.3.5)
 
--- E = C(V,2) = V(V-1)/2 = 4×3/2 = 6
 edgeCountK4 : ℕ
-edgeCountK4 = suc (suc (suc (suc (suc (suc zero)))))  -- E = 6
+edgeCountK4 = K4-E  -- ALIAS: E = 6 (defined in § 7.3.5)
 
--- F = C(V,3) = V(V-1)(V-2)/6 = 4×3×2/6 = 4 (clique complex!)
 faceCountK4 : ℕ
-faceCountK4 = suc (suc (suc (suc zero)))  -- F = 4
+faceCountK4 = K4-F  -- ALIAS: F = 4 (defined in § 7.3.5)
 
 -- THEOREM: E = V(V-1)/2 (complete graph formula)
 -- For V=4: E = 4×3/2 = 6
@@ -4667,12 +4667,13 @@ theorem-deficit-is-pi = refl
 --
 -- This is EXACT, not an approximation!
 
--- Euler characteristic value (DERIVED from V, E, F in § 18)
--- This connects to eulerChar-computed above
+-- Euler characteristic value (ALIASED to § 7.3.5 canonical definition)
+-- Verified against eulerChar-computed above
 eulerCharValue : ℕ
-eulerCharValue = eulerChar-computed  -- χ = 2 from V-E+F = 4-6+4
+eulerCharValue = K4-chi  -- ALIAS: χ = 2 (§ 7.3.5)
 
 -- THEOREM: eulerCharValue equals the computed Euler characteristic
+-- This proves the § 7.3.5 definition matches the V-E+F computation
 theorem-euler-consistent : eulerCharValue ≡ eulerChar-computed
 theorem-euler-consistent = refl
 
@@ -5442,19 +5443,16 @@ theorem-dust-offdiag-yz = refl
 -- § 19b.1  FUNDAMENTAL K₄ NUMBERS
 -- ═══════════════════════════════════════════════════════════════════════════
 
--- K₄ vertex count
+-- K₄ constants (ALIASED from § 7.3.5 canonical definitions)
+-- Single source of truth: all K₄ invariants defined once in § 7.3.5
 K₄-vertices-count : ℕ
-K₄-vertices-count = suc (suc (suc (suc zero)))  -- 4
+K₄-vertices-count = K4-V  -- ALIAS: V = 4 (§ 7.3.5)
 
--- K₄ edge count (E = V(V-1)/2 for complete graph)
--- For V = 4: E = 4 × 3 / 2 = 6
 K₄-edges-count : ℕ
-K₄-edges-count = suc (suc (suc (suc (suc (suc zero)))))  -- 6
+K₄-edges-count = K4-E  -- ALIAS: E = 6 (§ 7.3.5)
 
--- K₄ vertex degree: DERIVED as V - 1 (complete graph property!)
--- Each vertex connects to all V-1 other vertices
 K₄-degree-count : ℕ
-K₄-degree-count = K₄-vertices-count ∸ 1  -- V - 1 = 4 - 1 = 3
+K₄-degree-count = K4-deg  -- ALIAS: deg = 3 (§ 7.3.5)
 
 -- THEOREM: Degree = 3 (COMPUTED from V)
 theorem-degree-from-V : K₄-degree-count ≡ 3
@@ -5465,9 +5463,9 @@ theorem-degree-from-V = refl
 theorem-complete-graph : K₄-vertices-count * K₄-degree-count ≡ 2 * K₄-edges-count
 theorem-complete-graph = refl
 
--- K₄ triangular faces
+-- K₄ triangular faces (ALIASED from § 7.3.5)
 K₄-faces-count : ℕ
-K₄-faces-count = K₄-vertices-count  -- 4
+K₄-faces-count = K4-F  -- ALIAS: F = 4 (§ 7.3.5)
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- § 19b.2  DERIVING d = 3 FROM SPECTRAL GEOMETRY
@@ -7325,12 +7323,12 @@ theorem-ontological-necessity = record
 --   - Edge/vertex ratio = 6/4 = 3/2
 --   - Face/edge ratio = 4/6 = 2/3
 
--- Fundamental K₄ ratios
+-- Fundamental K₄ ratios (ALIASED from § 7.3.5)
 k4-vertex-count : ℕ
-k4-vertex-count = suc (suc (suc (suc zero)))  -- 4
+k4-vertex-count = K4-V  -- ALIAS: V = 4 (§ 7.3.5)
 
 k4-face-count : ℕ
-k4-face-count = suc (suc (suc (suc zero)))    -- 4 triangular faces
+k4-face-count = K4-F  -- ALIAS: F = 4 (§ 7.3.5)
 
 -- Edge/Vertex ratio = 6/4 = 3/2
 -- In integer form: 2 * edges = 3 * vertices
@@ -8286,24 +8284,24 @@ record PlanckHubbleHierarchy : Set where
 -- STEP 1: K₄ COMBINATORICS (already proven above)
 -- ─────────────────────────────────────────────────────────────────────────────
 
--- K₄ vertices (proven in §5)
+-- K₄ vertices (ALIASED from § 7.3.5 canonical definitions)
 K4-vertices : ℕ
-K4-vertices = 4
+K4-vertices = K4-V  -- ALIAS: V = 4 (§ 7.3.5)
 
--- K₄ edges: n(n-1)/2 = 4×3/2 = 6
+-- K₄ edges (ALIASED from § 7.3.5)
 K4-edges : ℕ
-K4-edges = edges-in-complete-graph K4-vertices
+K4-edges = K4-E  -- ALIAS: E = 6 (§ 7.3.5)
 
 theorem-K4-has-6-edges : K4-edges ≡ 6
 theorem-K4-has-6-edges = refl
 
--- K₄ faces (triangles): C(4,3) = 4
+-- K₄ faces (ALIASED from § 7.3.5)
 K4-faces : ℕ
-K4-faces = 4
+K4-faces = K4-F  -- ALIAS: F = 4 (§ 7.3.5)
 
--- Euler characteristic: V - E + F = 4 - 6 + 4 = 2
+-- Euler characteristic (ALIASED from § 7.3.5)
 K4-euler : ℕ
-K4-euler = (K4-vertices + K4-faces) ∸ K4-edges
+K4-euler = K4-chi  -- ALIAS: χ = 2 (§ 7.3.5)
 
 theorem-K4-euler-is-2 : K4-euler ≡ 2
 theorem-K4-euler-is-2 = refl

@@ -65,8 +65,9 @@ This is not a philosophical position we *choose*. It's the position that Agda (o
 |-------|----------|------------|
 | **1. Curious** | "What's the claim?" | Keep reading below |
 | **2. Skeptical** | "Prove it compiles" | [→ Verification](verify) |
-| **3. Technical** | "Show me the math" | [→ Part 1: Foundations](part-1-foundations/) |
-| **4. Expert** | "I want the Agda" | [→ FirstDistinction.agda](https://github.com/de-johannes/FirstDistinction/blob/main/FirstDistinction.agda) |
+| **3. Physicist** | "Show me the equations" | [→ For Physicists](for-physicists) |
+| **4. Mathematician** | "Show me the proofs" | [→ For Mathematicians](for-mathematicians) |
+| **5. Expert** | "I want the Agda" | [→ FirstDistinction.agda](https://github.com/de-johannes/FirstDistinction/blob/main/FirstDistinction.agda) |
 
 ---
 

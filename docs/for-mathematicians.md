@@ -267,15 +267,20 @@ theorem-operad-equals-spectral = refl
 
 ---
 
-## Open Problems
+## What's Already Proven (Not Open!)
 
-1. **Uniqueness of K₄**: We prove K₄ is stable. Can we prove it's the ONLY stable complete graph?
+These might *look* like open problems, but they're solved in the codebase:
 
-2. **The correction term**: Why exactly V/(deg(E²+1)) = 4/111?
+| "Problem" | Status | Where |
+|-----------|--------|-------|
+| K₄ uniqueness | ✅ PROVEN | `src/agda/exploration/K4Uniqueness.agda` |
+| Correction term 4/111 | ✅ PROVEN | FirstDistinction.agda § 22f.3 |
+| Operad arities forced | ✅ PROVEN | FirstDistinction.agda § 22f.0a |
+| Time direction | ✅ PROVEN | `src/agda/exploration/TimeFromAsymmetry.agda` |
 
-3. **Quantum structure**: Can we derive Hilbert space from distinction?
-
-4. **Operad arities**: Are (3,3,2,1) and (2,4,2,4) forced by K₄, or is there freedom?
+**Actual open problems** (for the community):
+- Deriving Hilbert space / quantum mechanics from distinction
+- Higher-order corrections to α beyond 4/111
 
 ---
 

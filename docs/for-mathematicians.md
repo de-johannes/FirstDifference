@@ -273,10 +273,10 @@ These might *look* like open problems, but they're solved in the codebase:
 
 | "Problem" | Status | Where |
 |-----------|--------|-------|
-| K₄ uniqueness | ✅ PROVEN | `src/agda/exploration/K4Uniqueness.agda` |
+| K₄ uniqueness | ✅ PROVEN | FirstDistinction.agda § 7 + K4Uniqueness.agda |
 | Correction term 4/111 | ✅ PROVEN | FirstDistinction.agda § 22f.3 |
 | Operad arities forced | ✅ PROVEN | FirstDistinction.agda § 22f.0a |
-| Time direction | ✅ PROVEN | `src/agda/exploration/TimeFromAsymmetry.agda` |
+| Time direction / signature | ✅ PROVEN | FirstDistinction.agda § 13 (`theorem-temporal-signature = refl`) |
 
 **Actual open problems** (for the community):
 - Deriving Hilbert space / quantum mechanics from distinction

@@ -6,10 +6,6 @@ on:
       - main
     paths:
       - 'FirstDistinction.agda'
-      - 'src/python/*.py'
-      - 'src/agda/**/*.agda'
-      - 'README.md'
-      - '.github/workflows/release-ci.yml'
 
 permissions:
   contents: write

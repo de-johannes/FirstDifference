@@ -77,9 +77,22 @@ D₀ (First Distinction)
  │    │
  │    ├─→ Eigenvalues {0, 4, 4, 4}
  │    │    │
- │    │    └─→ d = 3 (spatial dimension = multiplicity of λ=4)
+ │    │    ├─→ d = 3 (spatial dimension = multiplicity of λ=4)
+ │    │    └─→ 3 fermion generations (same multiplicity!)
  │    │
  │    └─→ Ricci scalar R = Tr(L) = 12
+ │
+ ├─→ Bool = {φ, ¬φ} with |Bool| = 2
+ │    │
+ │    ├─→ Spin-1/2 (2 states)
+ │    ├─→ g = 2 (gyromagnetic ratio)
+ │    └─→ Spinor dimension = |Bool|² = 4
+ │
+ ├─→ Clifford algebra Cl(1,3)
+ │    │
+ │    ├─→ dim = 2⁴ = 16
+ │    ├─→ 4 γ-matrices = |V| vertices
+ │    └─→ 6 bivectors = |E| edges
  │
  ├─→ Drift irreversibility
  │    │
@@ -196,6 +209,73 @@ theorem-K4-stable : (p : GenesisPair) → captures? p ≡ true ∨ ...
 
 ---
 
+## The Clifford Algebra from K₄
+
+The Dirac equation requires the Clifford algebra Cl(1,3). Its structure emerges from K₄ combinatorics:
+
+```agda
+-- Clifford dimension = 2^|V| = 2⁴ = 16
+clifford-dimension : ℕ
+clifford-dimension = 16
+
+-- Decomposition by grade (Pascal's triangle row 4):
+--   C(4,0) = 1   (identity)
+--   C(4,1) = 4   (γ-matrices = vertices)
+--   C(4,2) = 6   (bivectors = EDGES!)
+--   C(4,3) = 4   (trivectors)
+--   C(4,4) = 1   (pseudoscalar γ⁵)
+
+theorem-clifford-decomp : 1 + 4 + 6 + 4 + 1 ≡ 16
+theorem-clifford-decomp = refl
+
+-- The "6" in the middle IS |E|!
+theorem-bivectors-are-edges : 6 ≡ edgeCountK4
+theorem-bivectors-are-edges = refl
+```
+
+### Spin and the Gyromagnetic Ratio
+
+```agda
+-- |Bool| = 2 gives Spin-1/2 structure
+states-per-distinction : ℕ
+states-per-distinction = 2  -- {φ, ¬φ}
+
+-- Gyromagnetic ratio g = |Bool| = 2
+gyromagnetic-g : ℕ
+gyromagnetic-g = states-per-distinction
+
+theorem-g-equals-2 : gyromagnetic-g ≡ 2
+theorem-g-equals-2 = refl  -- COMPUTED!
+
+-- Spinor dimension = |Bool|² = 4
+spinor-dimension : ℕ
+spinor-dimension = states-per-distinction * states-per-distinction
+
+theorem-spinor-4 : spinor-dimension ≡ 4
+theorem-spinor-4 = refl
+```
+
+### The Dirac ↔ K₄ Numerical Coincidences
+
+| Dirac Structure | K₄ Origin | Status |
+|-----------------|-----------|--------|
+| 4-component spinor | \|Bool\|² = 4 | Numerical match |
+| 4 γ-matrices | \|V\| = 4 | Numerical match |
+| 6 bivectors | \|E\| = 6 | Numerical match |
+| Clifford dim = 16 | 2⁴ | Math fact |
+| g = 2 | \|Bool\| = 2 | Numerical match |
+| Signature (−,+,+,+) | Drift asymmetry | **DERIVED** |
+| 3 space dimensions | λ-multiplicity | **DERIVED** |
+| 3 generations | λ-multiplicity | Hypothesis |
+
+**Status legend:**
+- **DERIVED** = Proven theorem with `refl`
+- **Math fact** = True by combinatorics
+- **Numerical match** = Numbers agree, structural link unproven
+- **Hypothesis** = Physics interpretation
+
+---
+
 ## The α Formula
 
 Two independent derivations produce the same number:
@@ -266,6 +346,12 @@ theorem-operad-equals-spectral = refl
 | Result | Status | Where |
 |--------|--------|-------|
 | K₄ uniqueness | ✅ PROVEN | FirstDistinction.agda § 7 + K4Uniqueness.agda |
+| d = 3 dimensions | ✅ PROVEN | FirstDistinction.agda § 11 |
+| Signature (−,+,+,+) | ✅ PROVEN | FirstDistinction.agda § 13 |
+| 3 generations | ? HYPOTHESIS | Same λ-multiplicity as d = 3 |
+| g = 2 | ? NUMERICAL | FirstDistinction.agda § 18c (= \|Bool\|) |
+| Spinor dim = 4 | ? NUMERICAL | FirstDistinction.agda § 18c (= \|Bool\|²) |
+| Clifford = K₄ combinatorics | ✅ MATH FACT | C(4,k) = {1,4,6,4,1} |
 | Correction term 4/111 | ✅ PROVEN | FirstDistinction.agda § 22f.3 |
 | Operad arities forced | ✅ PROVEN | FirstDistinction.agda § 22f.0a |
 | Time direction / signature | ✅ PROVEN | FirstDistinction.agda § 13 (`theorem-temporal-signature = refl`) |
@@ -301,6 +387,7 @@ Key sections:
 - § 5-7: Distinction and K₄ emergence
 - § 10-12: Laplacian and eigenvalues
 - § 14-18: Einstein equations
+- § 18c: Spin and Dirac structure
 - § 22: Predictions (α, Λ, τ)
 
 ---

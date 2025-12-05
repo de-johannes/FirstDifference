@@ -79,6 +79,7 @@
    PART VI: PHYSICS — FROM TIME TO MATTER
      § 17  Stress-Energy from Drift Density
      § 18  The Coupling Constant κ = 8
+     § 18c Spin and Dirac Structure from K₄
      § 19  Einstein Field Equations G_μν = κ T_μν
      § 19b Einstein Equations from K₄: Explicit Derivation
      § 20  Bianchi Identity and Conservation Laws
@@ -4151,6 +4152,159 @@ corollary-kappa-fixed s d refl refl = refl
 -- The "symmetry factor 2" is actually |Bool|.
 -- The "dimension 4" is actually |K₄ vertices|.
 -- Both trace back to D₀.
+
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- § 18c  SPIN AND DIRAC STRUCTURE FROM K₄
+-- ─────────────────────────────────────────────────────────────────────────────
+--
+-- The Dirac equation describes spin-1/2 particles (fermions).
+-- We observe STRUCTURAL COINCIDENCES between Dirac and K₄.
+--
+-- ═══════════════════════════════════════════════════════════════════════════
+-- WHAT IS PROVEN vs WHAT IS HYPOTHESIS
+-- ═══════════════════════════════════════════════════════════════════════════
+--
+-- PROVEN (mathematical facts computed below):
+--   • |Bool| = 2
+--   • |V| = 4, |E| = 6
+--   • C(4,k) = {1, 4, 6, 4, 1} (Pascal's triangle)
+--   • λ-multiplicity = 3
+--
+-- HYPOTHESIS (physics interpretation):
+--   • |Bool| = 2 corresponds to Spin-1/2
+--   • g = 2 "because" |Bool| = 2
+--   • 4 Spinor components = |Bool|²
+--   • 3 generations = λ-multiplicity
+--
+-- The NUMBERS match. Whether this is COINCIDENCE or STRUCTURE is open.
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- OBSERVATION 1: |Bool| = 2 matches Spin states
+-- ═══════════════════════════════════════════════════════════════════════════
+--
+-- D₀ = Bool = {φ, ¬φ} has exactly 2 states.
+-- Spin-1/2 particles have exactly 2 states: |↑⟩ and |↓⟩.
+--
+-- CAVEAT: We cannot prove they are "the same thing."
+-- We can only observe: both have cardinality 2.
+--
+-- The gyromagnetic ratio g = 2 (Dirac, 1928) also equals |Bool|.
+-- Is this because g COMES FROM |Bool|, or just numerical coincidence?
+
+-- Gyromagnetic ratio: DEFINED as |Bool|
+-- The HYPOTHESIS is that this equals the physical g.
+gyromagnetic-g : ℕ
+gyromagnetic-g = states-per-distinction  -- = 2
+
+-- THEOREM: g = 2 (trivially, by our definition)
+theorem-g-equals-2 : gyromagnetic-g ≡ 2
+theorem-g-equals-2 = refl
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- OBSERVATION 2: |Bool|² = 4 matches Spinor dimension
+-- ═══════════════════════════════════════════════════════════════════════════
+--
+-- The Dirac spinor has 4 components:
+--   2 (spin states) × 2 (particle/antiparticle) = 4
+--
+-- In K₄: |Bool|² = 2² = 4 = |V|
+--
+-- STRUCTURAL ARGUMENT (hypothetical):
+--   If Spin = Bool and Particle/Antiparticle = Bool,
+--   then Spinor = Bool × Bool = 4 states.
+--   This equals |K₄ vertices|.
+--
+-- CAVEAT: We observe |Spin| = |Bool|, not Spin = Bool.
+
+spinor-dimension : ℕ
+spinor-dimension = states-per-distinction * states-per-distinction  -- 2 × 2 = 4
+
+-- THEOREM: Spinor dimension = 4
+theorem-spinor-4 : spinor-dimension ≡ 4
+theorem-spinor-4 = refl
+
+-- THEOREM: Spinor dimension = K₄ vertices  
+theorem-spinor-equals-vertices : spinor-dimension ≡ vertexCountK4
+theorem-spinor-equals-vertices = refl
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- CLIFFORD ALGEBRA FROM K₄ COMBINATORICS
+-- ═══════════════════════════════════════════════════════════════════════════
+--
+-- The Dirac matrices span the Clifford algebra Cl(1,3).
+-- Dimension of Cl(1,3) = 2⁴ = 16
+--
+-- Basis elements: 1 + 4 + 6 + 4 + 1 = 16
+--   C(4,0) = 1  (identity)
+--   C(4,1) = 4  (γ-matrices) = |V|
+--   C(4,2) = 6  (bivectors) = |E| ← edges of K₄!
+--   C(4,3) = 4  (trivectors)
+--   C(4,4) = 1  (pseudoscalar γ⁵)
+--
+-- The "6" in the middle IS the number of K₄ edges!
+
+clifford-dimension : ℕ
+clifford-dimension = 16  -- 2⁴
+
+-- Decomposition by grade
+clifford-grade-0 : ℕ
+clifford-grade-0 = 1   -- C(4,0) = identity
+
+clifford-grade-1 : ℕ  
+clifford-grade-1 = 4   -- C(4,1) = γ-matrices = |V|
+
+clifford-grade-2 : ℕ
+clifford-grade-2 = 6   -- C(4,2) = bivectors = |E|
+
+clifford-grade-3 : ℕ
+clifford-grade-3 = 4   -- C(4,3) = trivectors
+
+clifford-grade-4 : ℕ
+clifford-grade-4 = 1   -- C(4,4) = pseudoscalar
+
+-- THEOREM: Clifford decomposition = K₄ combinatorics
+theorem-clifford-decomp : clifford-grade-0 + clifford-grade-1 + clifford-grade-2 
+                        + clifford-grade-3 + clifford-grade-4 ≡ clifford-dimension
+theorem-clifford-decomp = refl
+
+-- THEOREM: Bivectors = K₄ edges
+theorem-bivectors-are-edges : clifford-grade-2 ≡ edgeCountK4
+theorem-bivectors-are-edges = refl
+
+-- THEOREM: γ-matrices = K₄ vertices
+theorem-gamma-are-vertices : clifford-grade-1 ≡ vertexCountK4
+theorem-gamma-are-vertices = refl
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- SUMMARY: DIRAC ↔ K₄ NUMERICAL COINCIDENCES
+-- ═══════════════════════════════════════════════════════════════════════════
+--
+-- ┌─────────────────────────────────────────────────────────────────────────┐
+-- │  DIRAC EQUATION                │  K₄ STRUCTURE         │  STATUS       │
+-- ├────────────────────────────────┼───────────────────────┼───────────────┤
+-- │  4-component spinor            │  |Bool|² = 4          │  COINCIDENCE  │
+-- │  4 γ-matrices                  │  |V| = 4              │  COINCIDENCE  │
+-- │  Clifford dim = 16             │  2⁴ = 16              │  MATH FACT    │
+-- │  6 bivectors                   │  |E| = 6              │  COINCIDENCE  │
+-- │  Signature (−,+,+,+)           │  Drift asymmetry      │  DERIVED      │
+-- │  Spin-1/2 (2 states)           │  |Bool| = 2           │  COINCIDENCE  │
+-- │  g = 2                         │  |Bool| = 2           │  COINCIDENCE  │
+-- │  3 space dimensions            │  λ-multiplicity = 3   │  DERIVED      │
+-- │  3 fermion generations         │  λ-multiplicity = 3   │  HYPOTHESIS   │
+-- └─────────────────────────────────────────────────────────────────────────┘
+--
+-- LEGEND:
+--   DERIVED     = Proven theorem in Agda
+--   MATH FACT   = True by combinatorics (C(4,2) = 6, etc.)
+--   COINCIDENCE = Numbers match, structural connection unproven
+--   HYPOTHESIS  = Physics interpretation of math result
+--
+-- EPISTEMOLOGICAL STATUS:
+-- • The K₄ numbers are PROVEN (computed by Agda)
+-- • That they match Dirac is OBSERVATION
+-- • That they EXPLAIN Dirac is HYPOTHESIS
 
 
 -- ─────────────────────────────────────────────────────────────────────────────

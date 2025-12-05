@@ -1,5 +1,9 @@
 # First Distinction (FD)
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17826219.svg)](https://doi.org/10.5281/zenodo.17826219)
+[![Agda](https://img.shields.io/badge/Agda-2.7.0.1-blue)](https://agda.readthedocs.io/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 **A Zero-Axiom Proof that Spacetime Must Be As It Is**
 
 ---

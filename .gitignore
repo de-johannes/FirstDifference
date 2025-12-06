@@ -2,6 +2,7 @@
 # (We track the main proof cache as evidence of successful compilation)
 *.agdai
 !FirstDistinction.agdai
+!FD-minimal.agdai
 
 # macOS cruft
 .DS_Store

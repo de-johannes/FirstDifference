@@ -1,5 +1,5 @@
--- Core.agda: D₀ → K₄ → {3, 8, 137}
--- agda --safe --without-K Core.agda
+-- FD-minimal.agda: D₀ → K₄ → {3, 8, 137}
+-- agda --safe --without-K FD-minimal.agda
 --
 -- This is the minimal extraction. Full proof: FirstDistinction.agda
 

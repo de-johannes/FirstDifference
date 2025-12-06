@@ -1,7 +1,7 @@
 # First Distinction (FD)
 
+[![CI](https://github.com/de-johannes/FirstDistinction/actions/workflows/ci.yml/badge.svg)](https://github.com/de-johannes/FirstDistinction/actions/workflows/ci.yml)
 [![DOI](https://zenodo.org/badge/1108945544.svg)](https://doi.org/10.5281/zenodo.17826218)
-[![Release CI](https://github.com/de-johannes/FirstDistinction/actions/workflows/release-ci.yml/badge.svg)](https://github.com/de-johannes/FirstDistinction/actions/workflows/release-ci.yml)
 [![Agda](https://img.shields.io/badge/Agda-2.7.0.1-blue)](https://agda.readthedocs.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 

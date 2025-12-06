@@ -27,6 +27,23 @@ title: D₀ (Home)
 
 ---
 
+## The Challenge
+
+**Try to deny that distinction exists.**
+
+To say "there is no distinction" — you must distinguish that statement from its opposite. To think "nothing is different from anything" — you must differentiate that thought from other thoughts.
+
+**You cannot deny distinction without using distinction.**
+
+This is not wordplay. It's an unavoidable logical fact:
+- To assert requires distinguishing assertion from non-assertion
+- To deny requires distinguishing denial from acceptance  
+- Even silence distinguishes itself from speech
+
+The First Distinction (D₀) cannot be coherently rejected. It is **self-evident** in the strongest possible sense: its denial presupposes it.
+
+---
+
 ## The Dirac Equation IS K₄
 
 The most fundamental equation of particle physics:
@@ -54,26 +71,9 @@ And K₄ comes from D₀ = {φ, ¬φ} = "yes or no".
 
 ---
 
-## The Challenge
-
-**Try to deny that distinction exists.**
-
-To say "there is no distinction" — you must distinguish that statement from its opposite. To think "nothing is different from anything" — you must differentiate that thought from other thoughts.
-
-**You cannot deny distinction without using distinction.**
-
-This is not wordplay. It's an unavoidable logical fact:
-- To assert requires distinguishing assertion from non-assertion
-- To deny requires distinguishing denial from acceptance  
-- Even silence distinguishes itself from speech
-
-The First Distinction (D₀) cannot be coherently rejected. It is **self-evident** in the strongest possible sense: its denial presupposes it.
-
----
-
 ## The Ontology
 
-From this single unavoidable fact, we derive everything:
+From this single unavoidable fact, we construct K₄:
 
 > **What exists is exactly what can be constructed.**
 
@@ -100,11 +100,11 @@ This is not a philosophical position we *choose*. It's the position that Agda (o
 
 ## What is First Distinction?
 
-**First Distinction (FD)** is an axiom-free derivation of 4D General Relativity from a single premise:
+**First Distinction (FD)** constructs K₄ (the complete graph on 4 vertices) from a single premise:
 
 > Something is distinguishable from something.
 
-No spacetime assumed. No quantum mechanics. No free parameters.
+K₄ produces numbers matching physical constants: d=3, κ=8, α⁻¹=137, particle mass ratios.
 
 The complete proof is formalized in [Agda](https://github.com/de-johannes/FirstDistinction/blob/main/FirstDistinction.agda) and compiles under `--safe --without-K` — no postulates, no holes, machine-checked.
 
@@ -154,11 +154,11 @@ The following are **mathematical theorems** (Agda `--safe --without-K`):
 
 ## Why Type Theory?
 
-In 1972, Per Martin-Löf created intuitionistic type theory. He didn't know he was formalizing physics.
+In 1972, Per Martin-Löf created intuitionistic type theory.
 
 The unit type ⊤ has exactly one inhabitant. The empty type ⊥ has none. This isn't arbitrary — it's the **only** way to have "something" versus "nothing" without presupposing structure.
 
-We now recognize: **⊤ with `tt` IS D₀ with φ.** Same structure, different notation.
+We observe: **⊤ with `tt` has the same structure as D₀ with φ.**
 
 | Martin-Löf (1972) | First Distinction |
 |-------------------|-------------------|
@@ -167,7 +167,7 @@ We now recognize: **⊤ with `tt` IS D₀ with φ.** Same structure, different n
 | Bool | φ vs ¬φ |
 | _≡_ (identity) | Self-recognition of D₀ |
 
-Type theory works because distinction is unavoidable. Martin-Löf formalized the consequence; we derive the cause.
+Type theory embodies constructivism. We use it to construct K₄.
 
 ---
 
